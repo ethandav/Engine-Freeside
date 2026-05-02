@@ -38,6 +38,10 @@ bool Window::IsOpen()
     return m_isOpen;
 }
 
+HWND Window::GetHwnd()
+{
+    return m_hwnd;
+}
 
 /*
 To Implement:

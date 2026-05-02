@@ -7,13 +7,6 @@
 #include <Windows.h>
 #include <string>
 
-struct WindowProperties
-{
-	UINT width = 0;
-	UINT height = 0;
-	std::wstring name = L"";
-};
-
 class Window
 {
 public:
@@ -21,6 +14,7 @@ public:
 	void Show(int nCmdShow);
 	void PollEvents();
 	bool IsOpen();
+	HWND GetHwnd();
 
 private:
 	bool m_isOpen = false;

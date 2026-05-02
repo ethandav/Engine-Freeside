@@ -134,6 +134,9 @@
     <ProjectReference Include="..\Engine\efg.Platform\efg.Platform.vcxproj">
       <Project>{55f8282a-d0d6-48fc-bb2a-089bd1aec460}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Engine\efg.Renderer\efg.Renderer.vcxproj">
+      <Project>{a6d3881d-a23c-4ab4-b93f-d9fc5312cd53}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Win32Application.h" />
