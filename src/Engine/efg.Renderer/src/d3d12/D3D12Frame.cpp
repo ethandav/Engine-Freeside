@@ -25,13 +25,6 @@ void Renderer::BeginFrame()
         D3D12_RESOURCE_STATE_RENDER_TARGET
     );
     Clear();
-    ResourceBarrierTransition(
-        m_commandList.Get(),
-        m_renderTargets[m_frameIndex].Get(),
-        D3D12_RESOURCE_STATE_RENDER_TARGET,
-        D3D12_RESOURCE_STATE_PRESENT
-    );
-    D3D12_THROW_IF_FAILED(m_commandList->Close());
 }
 
 void Renderer::Clear()
@@ -44,6 +37,14 @@ void Renderer::Clear()
 
 void Renderer::EndFrame()
 {
+    ResourceBarrierTransition(
+        m_commandList.Get(),
+        m_renderTargets[m_frameIndex].Get(),
+        D3D12_RESOURCE_STATE_RENDER_TARGET,
+        D3D12_RESOURCE_STATE_PRESENT
+    );
+    D3D12_THROW_IF_FAILED(m_commandList->Close());
+
     ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 

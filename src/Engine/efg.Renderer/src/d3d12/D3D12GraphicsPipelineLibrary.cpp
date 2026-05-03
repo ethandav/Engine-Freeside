@@ -71,4 +71,6 @@ void GraphicsPipelineLibary::CreateTrianglePipeline(ID3D12Device* device, const 
     psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
     psoDesc.SampleDesc.Count = 1;
     D3D12_THROW_IF_FAILED(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipeline.pipelineState)));
+
+    AddGraphicsPipeline(PipelineId::Triangle, pipeline);
 }

@@ -17,8 +17,8 @@ VSOutput VSMain(uint vertexId : SV_VertexID)
 
     float4 colors[3] =
     {
-        float4(1.0f, 0.0f, 0.0f, 1.0f),
-        float4(0.0f, 1.0f, 0.0f, 1.0f),
+        float4(0.0f, 0.0f, 1.0f, 1.0f),
+        float4(0.0f, 0.0f, 1.0f, 1.0f),
         float4(0.0f, 0.0f, 1.0f, 1.0f)
     };
 

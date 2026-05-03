@@ -10,8 +10,12 @@
 #include "..\include\d3d12\D3D12Error.h"
 #include "..\include\d3d12\D3D12GraphicsPipelineLibrary.h"
 #include "..\include\d3d12\D3D12ShaderLibrary.h"
+#include "..\include\d3d12\D3D12BufferFactory.h"
+#include "..\include\d3d12\D3D12MeshLibrary.h"
+#include "..\include\MeshData.h"
 
 using Microsoft::WRL::ComPtr;
+using namespace Engine;
 
 struct RendererDesc
 {
@@ -27,6 +31,8 @@ public:
 	void BeginFrame();
 	void Clear();
 	void EndFrame();
+	MeshHandle UploadMesh(const MeshData& mesh);
+	void DrawMesh(MeshHandle handle);
 private:
 	void CreateFactory();
 	void GetHardwareAdapter(bool requestHighPerformanceAdapter = false);
@@ -37,6 +43,8 @@ private:
 	void CreateRenderTargetViews();
 	void CreateFence();
 	void WaitForGPU();
+	void BeginUploadCommands();
+	void EndUploadCommands();
 
 	static const UINT FrameCount = 2;
 
@@ -60,7 +68,6 @@ private:
 
 	GraphicsPipelineLibary m_graphicsPipelineLibrary;
 	ShaderLibrary m_shaderLibrary;
-
-	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
-	ComPtr<ID3D12Resource> m_vertexBuffer;
+	BufferFactory m_bufferFactory;
+	MeshLibrary m_meshLibrary;
 };
