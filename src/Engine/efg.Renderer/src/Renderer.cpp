@@ -28,10 +28,13 @@ void Renderer::Initialize(const RendererDesc& desc)
 
     m_graphicsContext.Initialize(false);
     m_commandContext.Initialize(&m_graphicsContext);
+    m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorContext);
+    m_descriptorContext.Initialize(&m_graphicsContext);
 
-    CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
-    CreateDescriptorHeaps();
-    CreateRenderTargetViews();
+    m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
+    m_descriptorContext.CreateRTVDescriptorHeap(2);
+    m_swapChain.CreateRenderTargetViews();
+
     CreateFence();
 
     m_shaderLibrary.Initialize();

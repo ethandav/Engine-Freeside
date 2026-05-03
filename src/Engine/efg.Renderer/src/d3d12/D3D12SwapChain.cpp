@@ -4,11 +4,19 @@
 #include <Windows.h>
 #include <d3dx12.h>
 
-#include "..\..\include\Renderer.h"
+#include "..\..\include\d3d12\D3D12SwapChain.h"
+#include "..\..\include\d3d12\D3D12Error.h"
 
-void Renderer::CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height)
+void SwapChain::Initialize(D3D12Context* graphicsContext, D3D12CommandContext* commandContext, D3D12DescriptorContext* descriptorContext)
 {
-    ID3D12CommandQueue* queue = m_commandContext.GetCommandQueue();
+    m_graphicsContext = graphicsContext;
+    m_commandContext = commandContext;
+    m_descriptorContext = descriptorContext;
+}
+
+void SwapChain::CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height)
+{
+    ID3D12CommandQueue* queue = m_commandContext->GetCommandQueue();
     ComPtr<IDXGISwapChain1> swapChain;
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
     swapChainDesc.BufferCount = FrameCount;
@@ -19,7 +27,7 @@ void Renderer::CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     swapChainDesc.SampleDesc.Count = 1;
 
-    D3D12_THROW_IF_FAILED(m_graphicsContext.GetFactory()->CreateSwapChainForHwnd(
+    D3D12_THROW_IF_FAILED(m_graphicsContext->GetFactory()->CreateSwapChainForHwnd(
         queue,
         static_cast<HWND>(nativeWindowHandle),
         &swapChainDesc,
@@ -32,14 +40,36 @@ void Renderer::CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_
     m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 }
 
-void Renderer::CreateRenderTargetViews()
+void SwapChain::CreateRenderTargetViews()
 {
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-
-    for (UINT n = 0; n < FrameCount; n++)
+    for (uint32_t i = 0; i < FrameCount; ++i)
     {
-        D3D12_THROW_IF_FAILED(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n])));
-        m_graphicsContext.GetDevice()->CreateRenderTargetView(m_renderTargets[n].Get(), nullptr, rtvHandle);
-        rtvHandle.Offset(1, m_rtvDescriptorSize);
+        D3D12_THROW_IF_FAILED(m_swapChain->GetBuffer(i, IID_PPV_ARGS(m_renderTargets[i].GetAddressOf())));
+        m_rtvHandles[i] = m_descriptorContext->CreateRTV(m_renderTargets[i].Get(), nullptr);
     }
+}
+
+UINT SwapChain::GetFrameIndex()
+{
+    return m_frameIndex;
+}
+
+ID3D12Resource* SwapChain::GetCurrentBackBuffer() const
+{
+    return m_renderTargets[m_frameIndex].Get();
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE SwapChain::GetCurrentRTV() const
+{
+    return m_rtvHandles[m_frameIndex];
+}
+
+void SwapChain::Present()
+{
+    D3D12_THROW_IF_FAILED(m_swapChain->Present(1, 0));
+}
+
+void SwapChain::UpdateFrameIndex()
+{
+    m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 }

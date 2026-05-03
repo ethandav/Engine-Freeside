@@ -45,6 +45,12 @@
     <ClInclude Include="include\d3d12\D3D12CommandContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\d3d12\D3D12SwapChain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\D3D12DescriptorContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Renderer.cpp">
@@ -59,7 +65,7 @@
     <ClCompile Include="src\d3d12\D3D12SwapChain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3d12\D3D12Descriptors.cpp">
+    <ClCompile Include="src\d3d12\D3D12DescriptorContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\d3d12\D3D12Frame.cpp">

@@ -22,7 +22,7 @@ void Renderer::BeginFrame()
     list->RSSetScissorRects(1, &m_scissorRect);
     ResourceBarrierTransition(
         list,
-        m_renderTargets[m_frameIndex].Get(),
+        m_swapChain.GetCurrentBackBuffer(),
         D3D12_RESOURCE_STATE_PRESENT,
         D3D12_RESOURCE_STATE_RENDER_TARGET
     );
@@ -32,7 +32,7 @@ void Renderer::BeginFrame()
 void Renderer::Clear()
 {
     ID3D12GraphicsCommandList* list = m_commandContext.GetCommandList();
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
+    D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChain.GetCurrentRTV();
     list->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
     const float clearColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
     list->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
@@ -44,7 +44,7 @@ void Renderer::EndFrame()
     ID3D12CommandQueue* queue = m_commandContext.GetCommandQueue();
     ResourceBarrierTransition(
         list,
-        m_renderTargets[m_frameIndex].Get(),
+        m_swapChain.GetCurrentBackBuffer(),
         D3D12_RESOURCE_STATE_RENDER_TARGET,
         D3D12_RESOURCE_STATE_PRESENT
     );
@@ -53,7 +53,7 @@ void Renderer::EndFrame()
     ID3D12CommandList* ppCommandLists[] = { list };
     queue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-    D3D12_THROW_IF_FAILED(m_swapChain->Present(1, 0));
+    m_swapChain.Present();
 
     WaitForGPU();
 }
@@ -85,5 +85,5 @@ void Renderer::WaitForGPU()
         WaitForSingleObject(m_fenceEvent, INFINITE);
     }
 
-    m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+    m_swapChain.UpdateFrameIndex();
 }

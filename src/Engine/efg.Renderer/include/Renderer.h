@@ -8,13 +8,14 @@
 #include <stdexcept>
 
 #include "d3d12\D3D12Context.h"
-#include "..\include\d3d12\D3D12Error.h"
-#include "..\include\d3d12\D3D12GraphicsPipelineLibrary.h"
-#include "..\include\d3d12\D3D12ShaderLibrary.h"
-#include "..\include\d3d12\D3D12BufferFactory.h"
-#include "..\include\d3d12\D3D12MeshLibrary.h"
-#include "..\include\MeshData.h"
+#include "d3d12\D3D12Error.h"
+#include "d3d12\D3D12GraphicsPipelineLibrary.h"
+#include "d3d12\D3D12ShaderLibrary.h"
+#include "d3d12\D3D12BufferFactory.h"
+#include "d3d12\D3D12MeshLibrary.h"
 #include "d3d12\D3D12CommandContext.h"
+#include "d3d12\D3D12SwapChain.h"
+#include "MeshData.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace Engine;
@@ -37,29 +38,25 @@ public:
 	void DrawMesh(MeshHandle handle);
 private:
 	void CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height);
-	void CreateDescriptorHeaps();
-	void CreateRenderTargetViews();
 	void CreateFence();
 	void WaitForGPU();
 
-	static const UINT FrameCount = 2;
-
 	UINT m_rtvDescriptorSize = 0;
-	UINT m_frameIndex = 0;
+
 	HANDLE m_fenceEvent;
 	UINT64 m_fenceValue;
 	D3D12_VIEWPORT m_viewport;
 	D3D12_RECT m_scissorRect;
-	ComPtr<ID3D12Fence> m_fence;
 
-	ComPtr<IDXGISwapChain3> m_swapChain;
+	ComPtr<ID3D12Fence> m_fence;
 	ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
-	ComPtr<ID3D12Resource> m_renderTargets[FrameCount];
 
 	D3D12Context m_graphicsContext = {};
 	D3D12CommandContext m_commandContext = {};
+	D3D12DescriptorContext m_descriptorContext = {};
 	GraphicsPipelineLibary m_graphicsPipelineLibrary;
 	ShaderLibrary m_shaderLibrary;
 	BufferFactory m_bufferFactory;
 	MeshLibrary m_meshLibrary;
+	SwapChain m_swapChain = {};
 };
