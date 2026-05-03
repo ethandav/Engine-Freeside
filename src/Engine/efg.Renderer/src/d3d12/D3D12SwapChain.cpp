@@ -18,7 +18,7 @@ void Renderer::CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     swapChainDesc.SampleDesc.Count = 1;
 
-    D3D12_THROW_IF_FAILED(m_factory->CreateSwapChainForHwnd(
+    D3D12_THROW_IF_FAILED(m_graphicsContext.GetFactory()->CreateSwapChainForHwnd(
         m_commandQueue.Get(),
         static_cast<HWND>(nativeWindowHandle),
         &swapChainDesc,
@@ -38,7 +38,7 @@ void Renderer::CreateRenderTargetViews()
     for (UINT n = 0; n < FrameCount; n++)
     {
         D3D12_THROW_IF_FAILED(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n])));
-        m_device->CreateRenderTargetView(m_renderTargets[n].Get(), nullptr, rtvHandle);
+        m_graphicsContext.GetDevice()->CreateRenderTargetView(m_renderTargets[n].Get(), nullptr, rtvHandle);
         rtvHandle.Offset(1, m_rtvDescriptorSize);
     }
 }

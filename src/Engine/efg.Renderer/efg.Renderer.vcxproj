@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\d3d12\D3D12BufferData.h" />
+    <ClInclude Include="include\d3d12\D3D12Context.h" />
     <ClInclude Include="include\d3d12\D3D12Error.h" />
     <ClInclude Include="include\d3d12\D3D12GraphicsPipelineLibrary.h" />
     <ClInclude Include="include\d3d12\D3D12ShaderLibrary.h" />
@@ -140,6 +141,7 @@
     <ClInclude Include="include\d3d12\D3D12MeshLibrary.h" />
     <ClCompile Include="src\d3d12\D3D12BufferFactory.cpp" />
     <ClCompile Include="src\d3d12\D3D12Commands.cpp" />
+    <ClCompile Include="src\d3d12\D3D12Context.cpp" />
     <ClCompile Include="src\d3d12\D3D12Descriptors.cpp" />
     <ClCompile Include="src\d3d12\D3D12Device.cpp" />
     <ClCompile Include="src\d3d12\D3D12Frame.cpp" />

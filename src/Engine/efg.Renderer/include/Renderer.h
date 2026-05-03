@@ -7,6 +7,7 @@
 #include <wrl.h>
 #include <stdexcept>
 
+#include "d3d12\D3D12Context.h"
 #include "..\include\d3d12\D3D12Error.h"
 #include "..\include\d3d12\D3D12GraphicsPipelineLibrary.h"
 #include "..\include\d3d12\D3D12ShaderLibrary.h"
@@ -34,9 +35,7 @@ public:
 	MeshHandle UploadMesh(const MeshData& mesh);
 	void DrawMesh(MeshHandle handle);
 private:
-	void CreateFactory();
-	void GetHardwareAdapter(bool requestHighPerformanceAdapter = false);
-	void CreateDevice();
+
 	void CreateCommandObjects();
 	void CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height);
 	void CreateDescriptorHeaps();
@@ -48,7 +47,6 @@ private:
 
 	static const UINT FrameCount = 2;
 
-	bool m_useWarpDevice = false;
 	UINT m_rtvDescriptorSize = 0;
 	UINT m_frameIndex = 0;
 	HANDLE m_fenceEvent;
@@ -56,9 +54,7 @@ private:
 	D3D12_VIEWPORT m_viewport;
 	D3D12_RECT m_scissorRect;
 	ComPtr<ID3D12Fence> m_fence;
-	ComPtr<IDXGIFactory4> m_factory;
-	ComPtr<IDXGIAdapter1> m_hardwareAdapter;
-	ComPtr<ID3D12Device> m_device;
+
 	ComPtr<ID3D12CommandQueue> m_commandQueue;
 	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 	ComPtr<ID3D12GraphicsCommandList> m_commandList;
@@ -66,6 +62,7 @@ private:
 	ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
 	ComPtr<ID3D12Resource> m_renderTargets[FrameCount];
 
+	D3D12Context m_graphicsContext = {};
 	GraphicsPipelineLibary m_graphicsPipelineLibrary;
 	ShaderLibrary m_shaderLibrary;
 	BufferFactory m_bufferFactory;

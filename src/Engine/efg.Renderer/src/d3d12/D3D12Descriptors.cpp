@@ -13,5 +13,5 @@ UINT CreateRTVDescriptorHeap(ID3D12Device* device, const UINT FrameCount, ID3D12
 
 void Renderer::CreateDescriptorHeaps()
 {
-    m_rtvDescriptorSize = CreateRTVDescriptorHeap(m_device.Get(), FrameCount, m_rtvHeap.GetAddressOf());
+    m_rtvDescriptorSize = CreateRTVDescriptorHeap(m_graphicsContext.GetDevice(), FrameCount, m_rtvHeap.GetAddressOf());
 }

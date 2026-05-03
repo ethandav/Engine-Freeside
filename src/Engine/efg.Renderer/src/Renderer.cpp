@@ -26,8 +26,8 @@ void Renderer::Initialize(const RendererDesc& desc)
     m_scissorRect.right = static_cast<LONG>(desc.width);
     m_scissorRect.bottom = static_cast<LONG>(desc.height);
 
-    CreateFactory();
-    CreateDevice();
+    m_graphicsContext.Initialize(false);
+
     CreateCommandObjects();
     CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
     CreateDescriptorHeaps();
@@ -35,15 +35,15 @@ void Renderer::Initialize(const RendererDesc& desc)
     CreateFence();
 
     m_shaderLibrary.Initialize();
-    m_graphicsPipelineLibrary.Initialize(m_device.Get(), m_shaderLibrary);
+    m_graphicsPipelineLibrary.Initialize(&m_graphicsContext, m_shaderLibrary);
 }
 
 MeshHandle Renderer::UploadMesh(const MeshData& mesh)
 {
     MeshHandle handle = m_meshLibrary.RegisterMesh(mesh);
     BeginUploadCommands();
-    GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer(m_device.Get(), m_commandList.Get(), mesh.vertices.data(), (mesh.vertices.size() * sizeof(Vertex)), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-    GpuBuffer indexBuffer = m_bufferFactory.CreateStaticBuffer(m_device.Get(), m_commandList.Get(), mesh.indices.data(), (mesh.indices.size() * sizeof(uint32_t)), D3D12_RESOURCE_STATE_INDEX_BUFFER);
+    GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), m_commandList.Get(), mesh.vertices.data(), (mesh.vertices.size() * sizeof(Vertex)), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    GpuBuffer indexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), m_commandList.Get(), mesh.indices.data(), (mesh.indices.size() * sizeof(uint32_t)), D3D12_RESOURCE_STATE_INDEX_BUFFER);
     m_meshLibrary.SetVertexBuffer(handle, vertexBuffer);
     m_meshLibrary.SetIndexBuffer(handle, indexBuffer);
     EndUploadCommands();

@@ -39,6 +39,9 @@
     <ClInclude Include="include\d3d12\D3D12BufferData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\d3d12\D3D12Context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Renderer.cpp">
@@ -69,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\d3d12\D3D12MeshLibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\D3D12Context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

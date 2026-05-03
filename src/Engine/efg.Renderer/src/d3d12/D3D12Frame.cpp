@@ -55,7 +55,7 @@ void Renderer::EndFrame()
 
 void Renderer::CreateFence()
 {
-    D3D12_THROW_IF_FAILED(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
+    D3D12_THROW_IF_FAILED(m_graphicsContext.GetDevice()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
     m_fenceValue = 1;
 
     m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);

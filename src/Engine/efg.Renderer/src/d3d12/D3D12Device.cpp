@@ -1,14 +1,15 @@
-#include "..\..\include\Renderer.h"
+#include "..\..\include\d3d12\D3D12Context.h"
+#include "..\..\include\d3d12\D3D12Error.h"
 
-void Renderer::CreateFactory()
+void D3D12Context::CreateFactory()
 {
     UINT dxgiFactoryFlags = 0;
     D3D12_THROW_IF_FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&m_factory)));
 }
 
-void Renderer::CreateDevice()
+void D3D12Context::CreateDevice(bool useWarpDevice)
 {
-    if (m_useWarpDevice)
+    if (useWarpDevice)
     {
         ComPtr<IDXGIAdapter> warpAdapter;
 
@@ -22,7 +23,7 @@ void Renderer::CreateDevice()
     }
 }
 
-void Renderer::GetHardwareAdapter(bool requestHighPerformanceAdapter)
+void D3D12Context::GetHardwareAdapter(bool requestHighPerformanceAdapter)
 {
     m_hardwareAdapter.Reset();
 

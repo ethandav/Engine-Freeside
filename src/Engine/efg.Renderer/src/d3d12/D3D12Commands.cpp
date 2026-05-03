@@ -22,7 +22,7 @@ void CreateCommandList(ID3D12Device* device, ID3D12CommandAllocator* commandAllo
 
 void Renderer::CreateCommandObjects()
 {
-	CreateCommandQueue(m_device.Get(), m_commandQueue.GetAddressOf());
-    CreateCommandAllocator(m_device.Get(), m_commandAllocator.GetAddressOf());
-    CreateCommandList(m_device.Get(), m_commandAllocator.Get(), m_commandList.GetAddressOf());
+	CreateCommandQueue(m_graphicsContext.GetDevice(), m_commandQueue.GetAddressOf());
+    CreateCommandAllocator(m_graphicsContext.GetDevice(), m_commandAllocator.GetAddressOf());
+    CreateCommandList(m_graphicsContext.GetDevice(), m_commandAllocator.Get(), m_commandList.GetAddressOf());
 }

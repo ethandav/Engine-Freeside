@@ -9,6 +9,7 @@
 
 #include "D3D12Error.h"
 #include "D3D12ShaderLibrary.h"
+#include "D3D12Context.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -29,14 +30,15 @@ struct GraphicsPipelineState
 class GraphicsPipelineLibary
 {
 public:
-	void Initialize(ID3D12Device* device, const ShaderLibrary& shaderLibrary);
+	void Initialize(D3D12Context* context, const ShaderLibrary& shaderLibrary);
 	const GraphicsPipelineState& Get(PipelineId id) const;
 
 private:
-	void CreateRootSignature(ID3D12Device* device, ID3D12RootSignature** rootSignature);
+	void CreateRootSignature(ID3D12RootSignature** rootSignature);
 	void CreatePipelineStateObject();
 	void AddGraphicsPipeline(PipelineId id, GraphicsPipelineState pipeline);
-	void CreateTrianglePipeline(ID3D12Device* device, const ShaderLibrary& shaderLibrary);
+	void CreateTrianglePipeline(const ShaderLibrary& shaderLibrary);
 
+	D3D12Context* m_graphicsContext = nullptr;
 	std::array<GraphicsPipelineState, static_cast<size_t>(PipelineId::Count)> m_graphicsPipelines;
 };
