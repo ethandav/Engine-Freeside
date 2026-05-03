@@ -8,6 +8,7 @@
 
 void Renderer::CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height)
 {
+    ID3D12CommandQueue* queue = m_commandContext.GetCommandQueue();
     ComPtr<IDXGISwapChain1> swapChain;
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
     swapChainDesc.BufferCount = FrameCount;
@@ -19,7 +20,7 @@ void Renderer::CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_
     swapChainDesc.SampleDesc.Count = 1;
 
     D3D12_THROW_IF_FAILED(m_graphicsContext.GetFactory()->CreateSwapChainForHwnd(
-        m_commandQueue.Get(),
+        queue,
         static_cast<HWND>(nativeWindowHandle),
         &swapChainDesc,
         nullptr,

@@ -14,12 +14,14 @@ void ResourceBarrierTransition(ID3D12GraphicsCommandList* commandList, ID3D12Res
 
 void Renderer::BeginFrame()
 {
-    D3D12_THROW_IF_FAILED(m_commandAllocator->Reset());
-    D3D12_THROW_IF_FAILED(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
-    m_commandList->RSSetViewports(1, &m_viewport);
-    m_commandList->RSSetScissorRects(1, &m_scissorRect);
+    ID3D12CommandAllocator* allocator = m_commandContext.GetCommandAllocator();
+    ID3D12GraphicsCommandList* list = m_commandContext.GetCommandList();
+    D3D12_THROW_IF_FAILED(allocator->Reset());
+    D3D12_THROW_IF_FAILED(list->Reset(allocator, nullptr));
+    list->RSSetViewports(1, &m_viewport);
+    list->RSSetScissorRects(1, &m_scissorRect);
     ResourceBarrierTransition(
-        m_commandList.Get(),
+        list,
         m_renderTargets[m_frameIndex].Get(),
         D3D12_RESOURCE_STATE_PRESENT,
         D3D12_RESOURCE_STATE_RENDER_TARGET
@@ -29,24 +31,27 @@ void Renderer::BeginFrame()
 
 void Renderer::Clear()
 {
+    ID3D12GraphicsCommandList* list = m_commandContext.GetCommandList();
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
-    m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+    list->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
     const float clearColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
-    m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+    list->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 }
 
 void Renderer::EndFrame()
 {
+    ID3D12GraphicsCommandList* list = m_commandContext.GetCommandList();
+    ID3D12CommandQueue* queue = m_commandContext.GetCommandQueue();
     ResourceBarrierTransition(
-        m_commandList.Get(),
+        list,
         m_renderTargets[m_frameIndex].Get(),
         D3D12_RESOURCE_STATE_RENDER_TARGET,
         D3D12_RESOURCE_STATE_PRESENT
     );
-    D3D12_THROW_IF_FAILED(m_commandList->Close());
+    D3D12_THROW_IF_FAILED(list->Close());
 
-    ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
-    m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+    ID3D12CommandList* ppCommandLists[] = { list };
+    queue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     D3D12_THROW_IF_FAILED(m_swapChain->Present(1, 0));
 
@@ -69,8 +74,9 @@ void Renderer::CreateFence()
 
 void Renderer::WaitForGPU()
 {
+    ID3D12CommandQueue* queue = m_commandContext.GetCommandQueue();
     const UINT64 fence = m_fenceValue;
-    D3D12_THROW_IF_FAILED(m_commandQueue->Signal(m_fence.Get(), fence));
+    D3D12_THROW_IF_FAILED(queue->Signal(m_fence.Get(), fence));
     m_fenceValue++;
 
     if (m_fence->GetCompletedValue() < fence)

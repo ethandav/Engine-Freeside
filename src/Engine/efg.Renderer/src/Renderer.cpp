@@ -27,8 +27,8 @@ void Renderer::Initialize(const RendererDesc& desc)
     m_scissorRect.bottom = static_cast<LONG>(desc.height);
 
     m_graphicsContext.Initialize(false);
+    m_commandContext.Initialize(&m_graphicsContext);
 
-    CreateCommandObjects();
     CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
     CreateDescriptorHeaps();
     CreateRenderTargetViews();
@@ -40,52 +40,36 @@ void Renderer::Initialize(const RendererDesc& desc)
 
 MeshHandle Renderer::UploadMesh(const MeshData& mesh)
 {
+    ID3D12GraphicsCommandList* list = m_commandContext.GetCommandList();
     MeshHandle handle = m_meshLibrary.RegisterMesh(mesh);
-    BeginUploadCommands();
-    GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), m_commandList.Get(), mesh.vertices.data(), (mesh.vertices.size() * sizeof(Vertex)), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-    GpuBuffer indexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), m_commandList.Get(), mesh.indices.data(), (mesh.indices.size() * sizeof(uint32_t)), D3D12_RESOURCE_STATE_INDEX_BUFFER);
+    m_commandContext.BeginRecording();
+    GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), list, mesh.vertices.data(), (mesh.vertices.size() * sizeof(Vertex)), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    GpuBuffer indexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), list, mesh.indices.data(), (mesh.indices.size() * sizeof(uint32_t)), D3D12_RESOURCE_STATE_INDEX_BUFFER);
     m_meshLibrary.SetVertexBuffer(handle, vertexBuffer);
     m_meshLibrary.SetIndexBuffer(handle, indexBuffer);
-    EndUploadCommands();
+    m_commandContext.EndRecording();
+    WaitForGPU();
     return handle;
 }
 
 void Renderer::DrawMesh(MeshHandle handle)
 {
+    ID3D12GraphicsCommandList* list = m_commandContext.GetCommandList();
     const GpuMesh& mesh = m_meshLibrary.Get(handle);
     const GraphicsPipelineState& pipeline = m_graphicsPipelineLibrary.Get(PipelineId::Triangle);
 
-    m_commandList->SetGraphicsRootSignature(pipeline.rootSignature.Get());
-    m_commandList->SetPipelineState(pipeline.pipelineState.Get());
-    m_commandList->IASetPrimitiveTopology(pipeline.primitiveTopology);
-    m_commandList->IASetVertexBuffers(0,1,&mesh.vertexBufferView);
+    list->SetGraphicsRootSignature(pipeline.rootSignature.Get());
+    list->SetPipelineState(pipeline.pipelineState.Get());
+    list->IASetPrimitiveTopology(pipeline.primitiveTopology);
+    list->IASetVertexBuffers(0,1,&mesh.vertexBufferView);
 
     if (mesh.indexCount > 0)
     {
-        m_commandList->IASetIndexBuffer(&mesh.indexBufferView);
-        m_commandList->DrawIndexedInstanced(mesh.indexCount,1,0,0,0);
+        list->IASetIndexBuffer(&mesh.indexBufferView);
+        list->DrawIndexedInstanced(mesh.indexCount,1,0,0,0);
     }
     else
     {
-        m_commandList->DrawInstanced(mesh.vertexCount,1,0,0);
+        list->DrawInstanced(mesh.vertexCount,1,0,0);
     }
-}
-
-void Renderer::BeginUploadCommands()
-{
-    D3D12_THROW_IF_FAILED(m_commandAllocator->Reset());
-    D3D12_THROW_IF_FAILED(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
-}
-
-void Renderer::EndUploadCommands()
-{
-    D3D12_THROW_IF_FAILED(m_commandList->Close());
-
-    ID3D12CommandList* lists[] =
-    {
-        m_commandList.Get()
-    };
-
-    m_commandQueue->ExecuteCommandLists(_countof(lists), lists);
-    WaitForGPU();
 }

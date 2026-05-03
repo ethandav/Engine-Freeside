@@ -14,6 +14,7 @@
 #include "..\include\d3d12\D3D12BufferFactory.h"
 #include "..\include\d3d12\D3D12MeshLibrary.h"
 #include "..\include\MeshData.h"
+#include "d3d12\D3D12CommandContext.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace Engine;
@@ -35,15 +36,11 @@ public:
 	MeshHandle UploadMesh(const MeshData& mesh);
 	void DrawMesh(MeshHandle handle);
 private:
-
-	void CreateCommandObjects();
 	void CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height);
 	void CreateDescriptorHeaps();
 	void CreateRenderTargetViews();
 	void CreateFence();
 	void WaitForGPU();
-	void BeginUploadCommands();
-	void EndUploadCommands();
 
 	static const UINT FrameCount = 2;
 
@@ -55,14 +52,12 @@ private:
 	D3D12_RECT m_scissorRect;
 	ComPtr<ID3D12Fence> m_fence;
 
-	ComPtr<ID3D12CommandQueue> m_commandQueue;
-	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
-	ComPtr<ID3D12GraphicsCommandList> m_commandList;
 	ComPtr<IDXGISwapChain3> m_swapChain;
 	ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
 	ComPtr<ID3D12Resource> m_renderTargets[FrameCount];
 
 	D3D12Context m_graphicsContext = {};
+	D3D12CommandContext m_commandContext = {};
 	GraphicsPipelineLibary m_graphicsPipelineLibrary;
 	ShaderLibrary m_shaderLibrary;
 	BufferFactory m_bufferFactory;
