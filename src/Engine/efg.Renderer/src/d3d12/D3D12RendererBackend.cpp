@@ -31,10 +31,11 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
     }
 
     m_frameSync.CreateFence(1);
-    m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
 
     m_shaderLibrary.Initialize();
     m_graphicsPipelineLibrary.Initialize(&m_graphicsContext, m_shaderLibrary);
+
+    m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
 }
 
 void D3D12RendererBackend::Shutdown()
