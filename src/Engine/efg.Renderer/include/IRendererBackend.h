@@ -1,0 +1,16 @@
+#pragma once
+
+#include "Renderer.h" //TODO: Move needed types from here so I can stop including renderer header
+#include "MeshData.h"
+
+class IRendererBackend
+{
+public:
+    virtual ~IRendererBackend() = default;
+    virtual void Initialize(const RendererDesc& desc) = 0;
+    virtual void Shutdown() = 0;
+    virtual void BeginFrame() = 0;
+    virtual void EndFrame() = 0;
+    virtual Engine::MeshHandle UploadMesh(const Engine::MeshData& mesh) = 0;
+    virtual void DrawMesh(Engine::MeshHandle handle) = 0;
+};
