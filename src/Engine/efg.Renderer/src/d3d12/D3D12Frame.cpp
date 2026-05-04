@@ -54,36 +54,8 @@ void Renderer::EndFrame()
     queue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     m_swapChain.Present();
-
-    WaitForGPU();
-}
-
-void Renderer::CreateFence()
-{
-    D3D12_THROW_IF_FAILED(m_graphicsContext.GetDevice()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
-    m_fenceValue = 1;
-
-    m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-    if (m_fenceEvent == nullptr)
-    {
-        D3D12_THROW_IF_FAILED(HRESULT_FROM_WIN32(GetLastError()));
-    }
-
-    WaitForGPU();
-}
-
-void Renderer::WaitForGPU()
-{
-    ID3D12CommandQueue* queue = m_commandContext.GetCommandQueue();
-    const UINT64 fence = m_fenceValue;
-    D3D12_THROW_IF_FAILED(queue->Signal(m_fence.Get(), fence));
-    m_fenceValue++;
-
-    if (m_fence->GetCompletedValue() < fence)
-    {
-        D3D12_THROW_IF_FAILED(m_fence->SetEventOnCompletion(fence, m_fenceEvent));
-        WaitForSingleObject(m_fenceEvent, INFINITE);
-    }
-
     m_swapChain.UpdateFrameIndex();
+
+    m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
 }
+

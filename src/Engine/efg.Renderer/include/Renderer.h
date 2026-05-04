@@ -15,6 +15,7 @@
 #include "d3d12\D3D12MeshLibrary.h"
 #include "d3d12\D3D12CommandContext.h"
 #include "d3d12\D3D12SwapChain.h"
+#include "d3d12\D3D12FrameSynchronizer.h"
 #include "MeshData.h"
 
 using Microsoft::WRL::ComPtr;
@@ -37,19 +38,9 @@ public:
 	MeshHandle UploadMesh(const MeshData& mesh);
 	void DrawMesh(MeshHandle handle);
 private:
-	void CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height);
-	void CreateFence();
-	void WaitForGPU();
-
 	UINT m_rtvDescriptorSize = 0;
-
-	HANDLE m_fenceEvent;
-	UINT64 m_fenceValue;
 	D3D12_VIEWPORT m_viewport;
 	D3D12_RECT m_scissorRect;
-
-	ComPtr<ID3D12Fence> m_fence;
-	ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
 
 	D3D12Context m_graphicsContext = {};
 	D3D12CommandContext m_commandContext = {};
@@ -59,4 +50,5 @@ private:
 	BufferFactory m_bufferFactory;
 	MeshLibrary m_meshLibrary;
 	SwapChain m_swapChain = {};
+	D3D12FrameSynchronizer m_frameSync = {};
 };

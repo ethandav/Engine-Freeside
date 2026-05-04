@@ -2,7 +2,6 @@
 
 void Renderer::Initialize(const RendererDesc& desc)
 {
-
     m_viewport.TopLeftX = 0.0f;
     m_viewport.TopLeftY = 0.0f;
     m_viewport.Width = static_cast<float>(desc.width);
@@ -19,12 +18,15 @@ void Renderer::Initialize(const RendererDesc& desc)
     m_commandContext.Initialize(&m_graphicsContext);
     m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorContext);
     m_descriptorContext.Initialize(&m_graphicsContext);
+    m_frameSync.Initialize(&m_graphicsContext);
+
 
     m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
     m_descriptorContext.CreateRTVDescriptorHeap(2);
     m_swapChain.CreateRenderTargetViews();
 
-    CreateFence();
+    m_frameSync.CreateFence();
+    m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
 
     m_shaderLibrary.Initialize();
     m_graphicsPipelineLibrary.Initialize(&m_graphicsContext, m_shaderLibrary);
@@ -40,7 +42,7 @@ MeshHandle Renderer::UploadMesh(const MeshData& mesh)
     m_meshLibrary.SetVertexBuffer(handle, vertexBuffer);
     m_meshLibrary.SetIndexBuffer(handle, indexBuffer);
     m_commandContext.EndRecording();
-    WaitForGPU();
+    m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
     return handle;
 }
 
