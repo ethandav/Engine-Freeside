@@ -67,6 +67,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE SwapChain::GetCurrentRTV() const
 void SwapChain::Present()
 {
     D3D12_THROW_IF_FAILED(m_swapChain->Present(1, 0));
+    UpdateFrameIndex();
 }
 
 void SwapChain::UpdateFrameIndex()

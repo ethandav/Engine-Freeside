@@ -6,10 +6,10 @@ void D3D12FrameSynchronizer::Initialize(D3D12Context* graphicsContext)
 	m_graphicsContext = graphicsContext;
 }
 
-void D3D12FrameSynchronizer::CreateFence()
+void D3D12FrameSynchronizer::CreateFence(UINT64 fenceValue)
 {
     D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
-    m_fenceValue = 1;
+    m_fenceValue = fenceValue;
 
     m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
     if (m_fenceEvent == nullptr)

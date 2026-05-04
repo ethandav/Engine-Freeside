@@ -25,7 +25,7 @@ void Renderer::Initialize(const RendererDesc& desc)
     m_descriptorContext.CreateRTVDescriptorHeap(2);
     m_swapChain.CreateRenderTargetViews();
 
-    m_frameSync.CreateFence();
+    m_frameSync.CreateFence(1);
     m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
 
     m_shaderLibrary.Initialize();

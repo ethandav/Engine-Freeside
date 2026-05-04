@@ -54,8 +54,6 @@ void Renderer::EndFrame()
     queue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     m_swapChain.Present();
-    m_swapChain.UpdateFrameIndex();
-
     m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
 }
 

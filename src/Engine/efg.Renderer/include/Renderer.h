@@ -38,7 +38,6 @@ public:
 	MeshHandle UploadMesh(const MeshData& mesh);
 	void DrawMesh(MeshHandle handle);
 private:
-	UINT m_rtvDescriptorSize = 0;
 	D3D12_VIEWPORT m_viewport;
 	D3D12_RECT m_scissorRect;
 

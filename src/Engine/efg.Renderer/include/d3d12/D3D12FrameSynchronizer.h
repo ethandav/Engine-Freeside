@@ -6,7 +6,7 @@ class D3D12FrameSynchronizer
 {
 public:
 	void Initialize(D3D12Context* graphicsContext);
-	void CreateFence();
+	void CreateFence(UINT64 fenceValue);
 	void WaitForGPU(ID3D12CommandQueue* queue);
 
 private:
