@@ -2,18 +2,7 @@
 
 void Renderer::Initialize(const RendererDesc& desc)
 {
-    UINT dxgiFactoryFlags = 0;
-#if defined(_DEBUG)
-    {
-        ComPtr<ID3D12Debug> debugController;
-        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
-        {
-            debugController->EnableDebugLayer();
 
-            dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-        }
-    }
-#endif
     m_viewport.TopLeftX = 0.0f;
     m_viewport.TopLeftY = 0.0f;
     m_viewport.Width = static_cast<float>(desc.width);

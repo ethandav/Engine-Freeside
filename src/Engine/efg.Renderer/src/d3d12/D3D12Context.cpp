@@ -2,6 +2,18 @@
 
 void D3D12Context::Initialize(bool useWarpDevice)
 {
+    UINT dxgiFactoryFlags = 0;
+#if defined(_DEBUG)
+    {
+        ComPtr<ID3D12Debug> debugController;
+        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+        {
+            debugController->EnableDebugLayer();
+
+            dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+        }
+    }
+#endif
 	CreateFactory();
 	CreateDevice(useWarpDevice);
 }
