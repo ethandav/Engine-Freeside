@@ -47,6 +47,7 @@ MeshHandle Renderer::UploadMesh(const MeshData& mesh)
     m_meshLibrary.SetVertexBuffer(handle, vertexBuffer);
     m_meshLibrary.SetIndexBuffer(handle, indexBuffer);
     m_commandContext.EndRecording();
+    m_commandContext.Execute();
     m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
     return handle;
 }

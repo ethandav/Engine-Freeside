@@ -5,8 +5,6 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
-#include <stdexcept>
-#include <array>
 
 #include "d3d12\D3D12Context.h"
 #include "d3d12\D3D12Error.h"
@@ -34,7 +32,6 @@ class Renderer
 public:
 	void Initialize(const RendererDesc& desc);
 	void BeginFrame();
-	void Clear();
 	void EndFrame();
 	MeshHandle UploadMesh(const MeshData& mesh);
 	void DrawMesh(MeshHandle handle);

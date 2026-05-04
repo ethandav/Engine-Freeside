@@ -1,6 +1,8 @@
 #include "..\..\include\d3d12\D3D12CommandContext.h"
 #include "..\..\include\d3d12\D3D12Error.h"
 
+#include <d3dx12.h>
+
 void D3D12CommandContext::Initialize(D3D12Context* context)
 {
     m_graphicsContext = context;
@@ -57,11 +59,32 @@ void D3D12CommandContext::BeginRecording(ID3D12CommandAllocator* commandAllocato
 void D3D12CommandContext::EndRecording()
 {
     D3D12_THROW_IF_FAILED(m_commandList->Close());
+}
 
-    ID3D12CommandList* lists[] =
-    {
-        m_commandList.Get()
-    };
+void D3D12CommandContext::ResourceBarrierTransition(ID3D12Resource* pResource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
+{
+    auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(pResource, before, after);
+    m_commandList->ResourceBarrier(1, &barrier);
+}
 
-    m_commandQueue->ExecuteCommandLists(_countof(lists), lists);
+void D3D12CommandContext::Execute()
+{
+    ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
+    m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+}
+
+void D3D12CommandContext::SetViewportAndScissor(const D3D12_VIEWPORT& m_viewport, const D3D12_RECT& m_scissorRect)
+{
+    m_commandList->RSSetViewports(1, &m_viewport);
+    m_commandList->RSSetScissorRects(1, &m_scissorRect);
+}
+
+void D3D12CommandContext::SetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& renderTargetDescriptorHandle)
+{
+    m_commandList->OMSetRenderTargets(1, &renderTargetDescriptorHandle, FALSE, nullptr);
+}
+
+void D3D12CommandContext::ClearRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, const float clearColor[])
+{
+    m_commandList->ClearRenderTargetView(handle, clearColor, 0, nullptr);
 }
