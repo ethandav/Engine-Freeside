@@ -22,8 +22,13 @@ void Renderer::Initialize(const RendererDesc& desc)
 
 
     m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
-    m_descriptorContext.CreateRTVDescriptorHeap(2);
+    m_descriptorContext.CreateRTVDescriptorHeap(NumFramesInFlight);
     m_swapChain.CreateRenderTargetViews();
+
+    for (UINT i = 0; i < NumFramesInFlight; i++)
+    {
+        m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator();
+    }
 
     m_frameSync.CreateFence(1);
     m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
@@ -36,7 +41,7 @@ MeshHandle Renderer::UploadMesh(const MeshData& mesh)
 {
     ID3D12GraphicsCommandList* list = m_commandContext.GetCommandList();
     MeshHandle handle = m_meshLibrary.RegisterMesh(mesh);
-    m_commandContext.BeginRecording();
+    m_commandContext.BeginRecording(m_frameResources[m_swapChain.GetFrameIndex()].commandAllocator.Get());
     GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), list, mesh.vertices.data(), (mesh.vertices.size() * sizeof(Vertex)), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
     GpuBuffer indexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), list, mesh.indices.data(), (mesh.indices.size() * sizeof(uint32_t)), D3D12_RESOURCE_STATE_INDEX_BUFFER);
     m_meshLibrary.SetVertexBuffer(handle, vertexBuffer);

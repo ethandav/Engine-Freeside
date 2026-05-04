@@ -6,6 +6,7 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 #include <stdexcept>
+#include <array>
 
 #include "d3d12\D3D12Context.h"
 #include "d3d12\D3D12Error.h"
@@ -38,6 +39,8 @@ public:
 	MeshHandle UploadMesh(const MeshData& mesh);
 	void DrawMesh(MeshHandle handle);
 private:
+	static constexpr UINT NumFramesInFlight = 2;
+
 	D3D12_VIEWPORT m_viewport;
 	D3D12_RECT m_scissorRect;
 
@@ -50,4 +53,12 @@ private:
 	MeshLibrary m_meshLibrary;
 	SwapChain m_swapChain = {};
 	D3D12FrameSynchronizer m_frameSync = {};
+
+	struct FrameResource
+	{
+		ComPtr<ID3D12CommandAllocator> commandAllocator;
+		UINT64 fenceValue = 0;
+	};
+
+	FrameResource m_frameResources[NumFramesInFlight];
 };

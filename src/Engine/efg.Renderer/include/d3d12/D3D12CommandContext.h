@@ -5,15 +5,14 @@ class D3D12CommandContext
 {
 public:
 	void Initialize(D3D12Context* graphicsContext);
-	void BeginRecording();
+	void BeginRecording(ID3D12CommandAllocator* commandAllocator);
 	void EndRecording();
 	ID3D12GraphicsCommandList* GetCommandList();
-	ID3D12CommandAllocator* GetCommandAllocator();
 	ID3D12CommandQueue* GetCommandQueue();
+	ComPtr<ID3D12CommandAllocator> CreateCommandAllocator();
 private:
 	void CreateCommandObjects();
 	void CreateCommandList();
-	void CreateCommandAllocator();
 	void CreateCommandQueue();
 
 

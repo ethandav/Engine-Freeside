@@ -14,8 +14,11 @@ void ResourceBarrierTransition(ID3D12GraphicsCommandList* commandList, ID3D12Res
 
 void Renderer::BeginFrame()
 {
-    ID3D12CommandAllocator* allocator = m_commandContext.GetCommandAllocator();
+    UINT frameIndex = m_swapChain.GetFrameIndex();
+    FrameResource& frame = m_frameResources[frameIndex];
+    ID3D12CommandAllocator* allocator = frame.commandAllocator.Get();
     ID3D12GraphicsCommandList* list = m_commandContext.GetCommandList();
+    m_frameSync.WaitForFence(frame.fenceValue);
     D3D12_THROW_IF_FAILED(allocator->Reset());
     D3D12_THROW_IF_FAILED(list->Reset(allocator, nullptr));
     list->RSSetViewports(1, &m_viewport);
@@ -54,6 +57,7 @@ void Renderer::EndFrame()
     queue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     m_swapChain.Present();
-    m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
+    FrameResource& frame = m_frameResources[m_swapChain.GetFrameIndex()];
+    frame.fenceValue = m_frameSync.Signal(queue);
 }
 

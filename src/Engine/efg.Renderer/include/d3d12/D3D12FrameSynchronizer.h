@@ -8,10 +8,13 @@ public:
 	void Initialize(D3D12Context* graphicsContext);
 	void CreateFence(UINT64 fenceValue);
 	void WaitForGPU(ID3D12CommandQueue* queue);
+	UINT64 Signal(ID3D12CommandQueue* queue);
+	void WaitForFence(UINT64 value);
 
 private:
 	D3D12Context* m_graphicsContext = nullptr;
 	HANDLE m_fenceEvent = 0;
 	UINT64 m_fenceValue = 0;
+	UINT64 m_nextFenceValue = 0;
 	ComPtr<ID3D12Fence> m_fence;
 };

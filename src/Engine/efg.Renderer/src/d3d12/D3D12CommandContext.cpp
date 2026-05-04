@@ -12,11 +12,6 @@ ID3D12GraphicsCommandList* D3D12CommandContext::GetCommandList()
     return m_commandList.Get();
 }
 
-ID3D12CommandAllocator* D3D12CommandContext::GetCommandAllocator()
-{
-    return m_commandAllocator.Get();
-}
-
 ID3D12CommandQueue* D3D12CommandContext::GetCommandQueue()
 {
     return m_commandQueue.Get();
@@ -31,9 +26,11 @@ void D3D12CommandContext::CreateCommandQueue()
     D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)));
 }
 
-void D3D12CommandContext::CreateCommandAllocator()
+ComPtr<ID3D12CommandAllocator> D3D12CommandContext::CreateCommandAllocator()
 {
-    D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
+    ComPtr<ID3D12CommandAllocator> commandAllocator;
+    D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator)));
+    return commandAllocator;
 }
 
 void D3D12CommandContext::CreateCommandList()
@@ -44,16 +41,17 @@ void D3D12CommandContext::CreateCommandList()
 
 void D3D12CommandContext::CreateCommandObjects()
 {
+    m_commandAllocator = CreateCommandAllocator();
 	CreateCommandQueue();
-    CreateCommandAllocator();
     CreateCommandList();
+    m_commandAllocator.Reset();
 }
 
 
-void D3D12CommandContext::BeginRecording()
+void D3D12CommandContext::BeginRecording(ID3D12CommandAllocator* commandAllocator)
 {
-    D3D12_THROW_IF_FAILED(m_commandAllocator->Reset());
-    D3D12_THROW_IF_FAILED(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
+    D3D12_THROW_IF_FAILED(commandAllocator->Reset());
+    D3D12_THROW_IF_FAILED(m_commandList->Reset(commandAllocator, nullptr));
 }
 
 void D3D12CommandContext::EndRecording()
