@@ -1,6 +1,6 @@
-#include "..\..\include\renderer.h"
+#include "..\..\include\d3d12\D3D12RendererBackend.h"
 
-void Renderer::BeginFrame()
+void D3D12RendererBackend::BeginFrame()
 {
     UINT frameIndex = m_swapChain.GetFrameIndex();
     FrameResource& frame = m_frameResources[frameIndex];
@@ -16,7 +16,7 @@ void Renderer::BeginFrame()
     m_commandContext.ClearRenderTarget(rtvHandle, clearColor);
 }
 
-void Renderer::EndFrame()
+void D3D12RendererBackend::EndFrame()
 {
     ID3D12GraphicsCommandList* list = m_commandContext.GetCommandList();
     ID3D12CommandQueue* queue = m_commandContext.GetCommandQueue();

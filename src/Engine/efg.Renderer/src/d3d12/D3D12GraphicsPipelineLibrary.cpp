@@ -1,13 +1,13 @@
 #include "..\..\include\d3d12\D3D12GraphicsPipelineLibrary.h"
 #include <d3dx12.h>
 
-void GraphicsPipelineLibary::Initialize(D3D12Context* device, const ShaderLibrary& shaderLibrary)
+void D3D12GraphicsPipelineLibary::Initialize(D3D12Context* device, const D3D12ShaderLibrary& shaderLibrary)
 {
     m_graphicsContext = device;
     CreateTrianglePipeline(shaderLibrary);
 }
 
-const GraphicsPipelineState& GraphicsPipelineLibary::Get(PipelineId id) const
+const GraphicsPipelineState& D3D12GraphicsPipelineLibary::Get(PipelineId id) const
 {
     const auto index = static_cast<size_t>(id);
 
@@ -19,7 +19,7 @@ const GraphicsPipelineState& GraphicsPipelineLibary::Get(PipelineId id) const
     return m_graphicsPipelines[index];
 }
 
-void GraphicsPipelineLibary::CreateRootSignature(ID3D12RootSignature** rootSignature)
+void D3D12GraphicsPipelineLibary::CreateRootSignature(ID3D12RootSignature** rootSignature)
 {
     CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
 
@@ -31,7 +31,7 @@ void GraphicsPipelineLibary::CreateRootSignature(ID3D12RootSignature** rootSigna
     D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(rootSignature)));
 }
 
-void GraphicsPipelineLibary::AddGraphicsPipeline(PipelineId id, GraphicsPipelineState pipeline)
+void D3D12GraphicsPipelineLibary::AddGraphicsPipeline(PipelineId id, GraphicsPipelineState pipeline)
 {
     const size_t index = static_cast<size_t>(id);
 
@@ -43,7 +43,7 @@ void GraphicsPipelineLibary::AddGraphicsPipeline(PipelineId id, GraphicsPipeline
     m_graphicsPipelines[index] = std::move(pipeline);
 }
 
-void GraphicsPipelineLibary::CreateTrianglePipeline(const ShaderLibrary& shaderLibrary)
+void D3D12GraphicsPipelineLibary::CreateTrianglePipeline(const D3D12ShaderLibrary& shaderLibrary)
 {
     GraphicsPipelineState pipeline = {};
     CreateRootSignature(pipeline.rootSignature.GetAddressOf());

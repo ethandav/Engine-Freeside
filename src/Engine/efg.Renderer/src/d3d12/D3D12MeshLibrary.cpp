@@ -1,7 +1,7 @@
 #include "..\..\include\d3d12\D3D12MeshLibrary.h"
 #include "..\..\include\d3d12\D3D12Error.h"
 
-MeshHandle MeshLibrary::RegisterMesh(const MeshData& meshData)
+MeshHandle D3D12MeshLibrary::RegisterMesh(const MeshData& meshData)
 {
     if (meshData.vertices.empty())
     {
@@ -27,7 +27,7 @@ MeshHandle MeshLibrary::RegisterMesh(const MeshData& meshData)
     };
 }
 
-const GpuMesh& MeshLibrary::Get(MeshHandle handle) const
+const GpuMesh& D3D12MeshLibrary::Get(MeshHandle handle) const
 {
     if (!handle.IsValid() || handle.index >= m_meshes.size())
     {
@@ -37,13 +37,13 @@ const GpuMesh& MeshLibrary::Get(MeshHandle handle) const
     return m_meshes[handle.index];
 }
 
-void MeshLibrary::SetVertexBuffer(MeshHandle handle, GpuBuffer buffer)
+void D3D12MeshLibrary::SetVertexBuffer(MeshHandle handle, GpuBuffer buffer)
 {
     m_meshes[handle.index].vertexBufferView.BufferLocation = buffer.resource->GetGPUVirtualAddress();
     m_meshes[handle.index].vertexBuffer.resource = buffer.resource;
 }
 
-void MeshLibrary::SetIndexBuffer(MeshHandle handle, GpuBuffer buffer)
+void D3D12MeshLibrary::SetIndexBuffer(MeshHandle handle, GpuBuffer buffer)
 {
     m_meshes[handle.index].indexBufferView.BufferLocation = buffer.resource->GetGPUVirtualAddress();
     m_meshes[handle.index].indexBuffer.resource = buffer.resource;

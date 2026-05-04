@@ -30,7 +30,7 @@ struct ShaderBytecode
     }
 };
 
-class ShaderLibrary
+class D3D12ShaderLibrary
 {
 public:
 	void Initialize();

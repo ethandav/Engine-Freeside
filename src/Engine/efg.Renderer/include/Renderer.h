@@ -1,24 +1,9 @@
 #pragma once
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxgi.lib")
+#include <memory>
 
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <wrl.h>
-
-#include "d3d12\D3D12Context.h"
-#include "d3d12\D3D12Error.h"
-#include "d3d12\D3D12GraphicsPipelineLibrary.h"
-#include "d3d12\D3D12ShaderLibrary.h"
-#include "d3d12\D3D12BufferFactory.h"
-#include "d3d12\D3D12MeshLibrary.h"
-#include "d3d12\D3D12CommandContext.h"
-#include "d3d12\D3D12SwapChain.h"
-#include "d3d12\D3D12FrameSynchronizer.h"
 #include "MeshData.h"
 
-using Microsoft::WRL::ComPtr;
-using namespace Engine;
+class IRendererBackend;
 
 struct RendererDesc
 {
@@ -30,32 +15,14 @@ struct RendererDesc
 class Renderer
 {
 public:
+	Renderer();
+	~Renderer();
 	void Initialize(const RendererDesc& desc);
+	void Shutdown();
 	void BeginFrame();
 	void EndFrame();
-	MeshHandle UploadMesh(const MeshData& mesh);
-	void DrawMesh(MeshHandle handle);
+	Engine::MeshHandle UploadMesh(const Engine::MeshData& mesh);
+	void DrawMesh(Engine::MeshHandle handle);
 private:
-	static constexpr UINT NumFramesInFlight = 2;
-
-	D3D12_VIEWPORT m_viewport;
-	D3D12_RECT m_scissorRect;
-
-	D3D12Context m_graphicsContext = {};
-	D3D12CommandContext m_commandContext = {};
-	D3D12DescriptorContext m_descriptorContext = {};
-	GraphicsPipelineLibary m_graphicsPipelineLibrary;
-	ShaderLibrary m_shaderLibrary;
-	BufferFactory m_bufferFactory;
-	MeshLibrary m_meshLibrary;
-	SwapChain m_swapChain = {};
-	D3D12FrameSynchronizer m_frameSync = {};
-
-	struct FrameResource
-	{
-		ComPtr<ID3D12CommandAllocator> commandAllocator;
-		UINT64 fenceValue = 0;
-	};
-
-	FrameResource m_frameResources[NumFramesInFlight];
+	std::unique_ptr<IRendererBackend> m_backend;
 };

@@ -54,6 +54,12 @@
     <ClInclude Include="include\d3d12\D3D12FrameSynchronizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\IRendererBackend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\D3D12RendererBackend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Renderer.cpp">
@@ -90,6 +96,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\d3d12\D3D12FrameSynchronizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\D3D12RendererBackend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

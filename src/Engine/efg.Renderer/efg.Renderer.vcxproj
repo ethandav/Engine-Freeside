@@ -135,8 +135,10 @@
     <ClInclude Include="include\d3d12\D3D12Error.h" />
     <ClInclude Include="include\d3d12\D3D12FrameSynchronizer.h" />
     <ClInclude Include="include\d3d12\D3D12GraphicsPipelineLibrary.h" />
+    <ClInclude Include="include\d3d12\D3D12RendererBackend.h" />
     <ClInclude Include="include\d3d12\D3D12ShaderLibrary.h" />
     <ClInclude Include="include\d3d12\D3D12SwapChain.h" />
+    <ClInclude Include="include\IRendererBackend.h" />
     <ClInclude Include="include\MeshData.h" />
     <ClInclude Include="include\Renderer.h" />
   </ItemGroup>
@@ -152,6 +154,7 @@
     <ClCompile Include="src\d3d12\D3D12FrameSynchronizer.cpp" />
     <ClCompile Include="src\d3d12\D3D12GraphicsPipelineLibrary.cpp" />
     <ClCompile Include="src\d3d12\D3D12MeshLibrary.cpp" />
+    <ClCompile Include="src\d3d12\D3D12RendererBackend.cpp" />
     <ClCompile Include="src\d3d12\D3D12ShaderLibrary.cpp" />
     <ClCompile Include="src\d3d12\D3D12SwapChain.cpp" />
     <ClCompile Include="src\Renderer.cpp" />

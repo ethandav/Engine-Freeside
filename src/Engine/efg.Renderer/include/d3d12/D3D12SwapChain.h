@@ -3,7 +3,7 @@
 #include "D3D12DescriptorContext.h"
 #include "D3D12CommandContext.h"
 
-class SwapChain
+class D3D12SwapChain
 {
 public:
 	void Initialize(D3D12Context* graphicsContext, D3D12CommandContext* commandContext, D3D12DescriptorContext* descriptorContext);

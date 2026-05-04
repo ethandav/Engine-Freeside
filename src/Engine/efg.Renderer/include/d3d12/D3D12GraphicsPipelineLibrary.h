@@ -27,17 +27,17 @@ struct GraphicsPipelineState
 	D3D12_PRIMITIVE_TOPOLOGY primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 };
 
-class GraphicsPipelineLibary
+class D3D12GraphicsPipelineLibary
 {
 public:
-	void Initialize(D3D12Context* context, const ShaderLibrary& shaderLibrary);
+	void Initialize(D3D12Context* context, const D3D12ShaderLibrary& shaderLibrary);
 	const GraphicsPipelineState& Get(PipelineId id) const;
 
 private:
 	void CreateRootSignature(ID3D12RootSignature** rootSignature);
 	void CreatePipelineStateObject();
 	void AddGraphicsPipeline(PipelineId id, GraphicsPipelineState pipeline);
-	void CreateTrianglePipeline(const ShaderLibrary& shaderLibrary);
+	void CreateTrianglePipeline(const D3D12ShaderLibrary& shaderLibrary);
 
 	D3D12Context* m_graphicsContext = nullptr;
 	std::array<GraphicsPipelineState, static_cast<size_t>(PipelineId::Count)> m_graphicsPipelines;

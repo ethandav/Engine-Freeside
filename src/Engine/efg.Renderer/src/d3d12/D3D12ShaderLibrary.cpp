@@ -1,11 +1,11 @@
 #include "..\..\include\d3d12\D3D12ShaderLibrary.h"
 
-void ShaderLibrary::Initialize()
+void D3D12ShaderLibrary::Initialize()
 {
     CompileAllShaders();
 }
 
-const ShaderBytecode& ShaderLibrary::Get(ShaderId id) const
+const ShaderBytecode& D3D12ShaderLibrary::Get(ShaderId id) const
 {
     const size_t index = static_cast<size_t>(id);
 
@@ -24,7 +24,7 @@ const ShaderBytecode& ShaderLibrary::Get(ShaderId id) const
     return shader;
 }
 
-void ShaderLibrary::CompileAllShaders()
+void D3D12ShaderLibrary::CompileAllShaders()
 {
     AddShader(
         ShaderId::TriangleVS,
@@ -41,7 +41,7 @@ void ShaderLibrary::CompileAllShaders()
     );
 }
 
-ComPtr<ID3DBlob> ShaderLibrary::CompileShaderFromFile(const std::wstring& filePath, const std::string& entryPoint, const std::string& target)
+ComPtr<ID3DBlob> D3D12ShaderLibrary::CompileShaderFromFile(const std::wstring& filePath, const std::string& entryPoint, const std::string& target)
 {
     UINT compileFlags = 0;
 
@@ -78,7 +78,7 @@ ComPtr<ID3DBlob> ShaderLibrary::CompileShaderFromFile(const std::wstring& filePa
     return shaderBlob;
 }
 
-void ShaderLibrary::AddShader(
+void D3D12ShaderLibrary::AddShader(
     ShaderId id,
     const std::wstring& filePath,
     const std::string& entryPoint,

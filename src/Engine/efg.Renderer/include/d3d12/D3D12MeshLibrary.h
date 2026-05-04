@@ -27,7 +27,7 @@ struct GpuMesh
     MeshHandle handle = {};
 };
 
-class MeshLibrary
+class D3D12MeshLibrary
 {
 public:
     void InitializeBuiltIns(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
