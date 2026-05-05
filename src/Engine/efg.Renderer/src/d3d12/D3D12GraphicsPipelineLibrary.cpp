@@ -22,11 +22,25 @@ const GraphicsPipelineState& D3D12GraphicsPipelineLibary::Get(PipelineId id) con
 void D3D12GraphicsPipelineLibary::CreateRootSignature(ID3D12RootSignature** rootSignature)
 {
     CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-
-    rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
+    CD3DX12_ROOT_PARAMETER rootParameters[1] = {};
     ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> error;
+
+    // b0: Camera constant buffer
+    rootParameters[0].InitAsConstantBufferView(
+        0, // shader register b0
+        0, // register space
+        D3D12_SHADER_VISIBILITY_VERTEX
+    );
+
+    rootSignatureDesc.Init(
+        _countof(rootParameters),
+        rootParameters,
+        0,
+        nullptr,
+        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
+    );
+
     D3D12_THROW_IF_FAILED(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
     D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(rootSignature)));
 }

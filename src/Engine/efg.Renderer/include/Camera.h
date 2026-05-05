@@ -3,6 +3,11 @@
 #include "..\..\efg.Core\include\math\math.h"
 namespace efg
 {
+    struct CameraConstants
+    {
+        Mat4 viewProjection;
+    };
+
     class Camera
     {
     public:

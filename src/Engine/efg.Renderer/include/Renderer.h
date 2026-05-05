@@ -2,6 +2,7 @@
 #include <memory>
 
 #include "MeshData.h"
+#include "Camera.h"
 
 class IRendererBackend;
 
@@ -19,7 +20,7 @@ public:
 	~Renderer();
 	void Initialize(const RendererDesc& desc);
 	void Shutdown();
-	void BeginFrame();
+	void BeginFrame(efg::Camera camera);
 	void EndFrame();
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh);
 	void DrawMesh(efg::MeshHandle handle);

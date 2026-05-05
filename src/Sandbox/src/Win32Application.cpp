@@ -3,6 +3,7 @@
 #include "..\..\Engine\efg.Renderer\include\Renderer.h"
 #include "..\..\Engine\efg.Core\include\math\math.h"
 #include "..\..\Engine\efg.Renderer\include\MeshData.h"
+#include "..\..\Engine\efg.Renderer\include\Camera.h"
 
 void Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
@@ -32,12 +33,17 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	window.Show(nCmdShow);
 	rendererDesc.nativeWindowHandle = window.GetHwnd();
 	renderer.Initialize(rendererDesc);
+
+	efg::Camera camera;
+	camera.LookAt(efg::Vec3(0.0f, 0.0f, -5.0f), efg::Vec3(0.0f, 0.0f, 0.0f));
+	camera.SetPerspective(0.78539816339f, static_cast<float>(rendererDesc.width) / static_cast<float>(rendererDesc.height), 0.1f, 1000.0f);
+
 	efg::MeshHandle triangleMeshHandle = renderer.CreateMesh(triangleMeshData);
 
 	while (window.IsOpen())
 	{
 		window.PollEvents();
-		renderer.BeginFrame();
+		renderer.BeginFrame(camera);
 		renderer.DrawMesh(triangleMeshHandle);
 		renderer.EndFrame();
 	}

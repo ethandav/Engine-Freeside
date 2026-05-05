@@ -16,7 +16,7 @@ class D3D12RendererBackend final : public IRendererBackend
 public:
 	void Initialize(const RendererDesc& desc) override;
 	void Shutdown() override;
-	void BeginFrame() override;
+	void BeginFrame(efg::Camera camera) override;
 	void EndFrame() override;
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh) override;
 	void DrawMesh(efg::MeshHandle handle) override;
@@ -44,6 +44,7 @@ private:
 	{
 		ComPtr<ID3D12CommandAllocator> commandAllocator;
 		UINT64 fenceValue = 0;
+		GpuConstantBuffer cameraConstantBuffer = {};
 	};
 
 	std::array<FrameResource, NumFramesInFlight> m_frameResources = {};

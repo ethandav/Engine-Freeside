@@ -26,9 +26,9 @@ void Renderer::Shutdown()
     }
 }
 
-void Renderer::BeginFrame()
+void Renderer::BeginFrame(efg::Camera camera)
 {
-    m_backend->BeginFrame();
+    m_backend->BeginFrame(camera);
 }
 
 void Renderer::EndFrame()

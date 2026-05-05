@@ -1,4 +1,5 @@
 #include "..\..\include\d3d12\D3D12RendererBackend.h"
+#include "..\..\include\Camera.h"
 
 void D3D12RendererBackend::Initialize(const RendererDesc& desc)
 {
@@ -28,6 +29,7 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
     for (UINT i = 0; i < NumFramesInFlight; i++)
     {
         m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
+        m_frameResources[i].cameraConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(CameraConstants));
     }
 
     m_directFence.CreateFence(0);
@@ -41,6 +43,10 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
 void D3D12RendererBackend::Shutdown()
 {
     m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
+    for (UINT i = 0; i < NumFramesInFlight; i++)
+    {
+        m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].cameraConstantBuffer);
+    }
 }
 
 MeshHandle D3D12RendererBackend::CreateMesh(const MeshData& mesh)
@@ -65,6 +71,7 @@ void D3D12RendererBackend::DrawMesh(MeshHandle handle)
     list->SetPipelineState(pipeline.pipelineState.Get());
     list->IASetPrimitiveTopology(pipeline.primitiveTopology);
     list->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);
+    list->SetGraphicsRootConstantBufferView(0, m_frameResources[m_swapChain.GetFrameIndex()].cameraConstantBuffer.resource->GetGPUVirtualAddress());
 
     if (mesh.indexCount > 0)
     {

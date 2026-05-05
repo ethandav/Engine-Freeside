@@ -1,6 +1,7 @@
 #include "..\..\include\d3d12\D3D12RendererBackend.h"
+#include "../../include/Camera.h"
 
-void D3D12RendererBackend::BeginFrame()
+void D3D12RendererBackend::BeginFrame(Camera camera)
 {
     UINT frameIndex = m_swapChain.GetFrameIndex();
     FrameResource& frame = m_frameResources[frameIndex];
@@ -17,10 +18,15 @@ void D3D12RendererBackend::BeginFrame()
     {
         m_uploadContext.RetireCompletedUploads();
     }
+    CameraConstants cameraConstants = {};
+    cameraConstants.viewProjection = efg::Transpose(camera.GetViewProjectionMatrix());
+    m_bufferFactory.UpdateConstantBuffer(frame.cameraConstantBuffer, &cameraConstants, sizeof(CameraConstants));
+
     m_commandContext.SetViewportAndScissor(m_viewport, m_scissorRect);
     m_commandContext.ResourceBarrierTransition(m_swapChain.GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     m_commandContext.SetRenderTarget(rtvHandle);
     m_commandContext.ClearRenderTarget(rtvHandle, clearColor);
+
 }
 
 void D3D12RendererBackend::EndFrame()
