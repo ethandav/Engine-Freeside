@@ -39,21 +39,6 @@ GpuBuffer D3D12BufferFactory::CreateStaticBuffer(ID3D12Device* device, ID3D12Gra
 
     memcpy(mappedData, data, static_cast<size_t>(sizeInBytes));
     buffer.uploadResource->Unmap(0, nullptr);
-    commandList->CopyBufferRegion(
-        buffer.resource.Get(),
-        0,
-        buffer.uploadResource.Get(),
-        0,
-        sizeInBytes
-    );
-
-    auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-        buffer.resource.Get(),
-        D3D12_RESOURCE_STATE_COPY_DEST,
-        finalState
-    );
-
-    commandList->ResourceBarrier(1, &barrier);
 
     return buffer;
 }

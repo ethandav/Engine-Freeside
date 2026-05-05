@@ -44,14 +44,10 @@ void D3D12DirectCommandContext::CreateCommandList(ID3D12GraphicsCommandList** li
 void D3D12DirectCommandContext::CreateCommandObjects()
 {
     m_directCommandAllocator = CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    m_copyCommandAllocator = CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COPY);
     CreateCommandQueue(m_directQueue.GetAddressOf(), D3D12_COMMAND_LIST_TYPE_DIRECT);
-    CreateCommandQueue(m_copyQueue.GetAddressOf(), D3D12_COMMAND_LIST_TYPE_COPY);
     CreateCommandList(m_directCommandList.GetAddressOf(), m_directCommandAllocator.Get(), D3D12_COMMAND_LIST_TYPE_DIRECT);
-    CreateCommandList(m_copyCommandList.GetAddressOf(), m_copyCommandAllocator.Get(), D3D12_COMMAND_LIST_TYPE_COPY);
     m_directCommandAllocator.Reset();
 }
-
 
 void D3D12DirectCommandContext::BeginRecording(ID3D12CommandAllocator* commandAllocator)
 {
@@ -74,12 +70,6 @@ void D3D12DirectCommandContext::ExecuteDirect()
 {
     ID3D12CommandList* ppCommandLists[] = { m_directCommandList.Get() };
     m_directQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-}
-
-void D3D12DirectCommandContext::ExecuteCopy()
-{
-    ID3D12CommandList* ppCommandLists[] = { m_copyCommandList.Get() };
-    m_copyQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
 
 void D3D12DirectCommandContext::SetViewportAndScissor(const D3D12_VIEWPORT& m_viewport, const D3D12_RECT& m_scissorRect)

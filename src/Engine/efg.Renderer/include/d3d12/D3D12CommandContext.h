@@ -23,9 +23,6 @@ private:
 
 	D3D12Context* m_graphicsContext = {};
 	ComPtr<ID3D12CommandAllocator> m_directCommandAllocator;
-	ComPtr<ID3D12CommandAllocator> m_copyCommandAllocator;
 	ComPtr<ID3D12CommandQueue> m_directQueue;
-	ComPtr<ID3D12CommandQueue> m_copyQueue;
 	ComPtr<ID3D12GraphicsCommandList> m_directCommandList;
-	ComPtr<ID3D12GraphicsCommandList> m_copyCommandList;
 };

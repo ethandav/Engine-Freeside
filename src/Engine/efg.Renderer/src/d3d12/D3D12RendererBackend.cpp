@@ -16,10 +16,10 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
 
     m_graphicsContext.Initialize(false);
     m_commandContext.Initialize(&m_graphicsContext);
+    m_uploadContext.Initialize(&m_graphicsContext);
     m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorContext);
     m_descriptorContext.Initialize(&m_graphicsContext);
     m_directFence.Initialize(&m_graphicsContext);
-
 
     m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
     m_descriptorContext.CreateRTVDescriptorHeap(NumFramesInFlight);
@@ -47,14 +47,24 @@ MeshHandle D3D12RendererBackend::UploadMesh(const MeshData& mesh)
 {
     ID3D12GraphicsCommandList* list = m_commandContext.GetDirectCommandList();
     MeshHandle handle = m_meshLibrary.RegisterMesh(mesh);
-    m_commandContext.BeginRecording(m_frameResources[m_swapChain.GetFrameIndex()].commandAllocator.Get());
     GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), list, mesh.vertices.data(), (mesh.vertices.size() * sizeof(Vertex)), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
     GpuBuffer indexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), list, mesh.indices.data(), (mesh.indices.size() * sizeof(uint32_t)), D3D12_RESOURCE_STATE_INDEX_BUFFER);
     m_meshLibrary.SetVertexBuffer(handle, vertexBuffer);
     m_meshLibrary.SetIndexBuffer(handle, indexBuffer);
+    m_uploadContext.BeginRecording();
+    m_uploadContext.CopyBufferRegion(vertexBuffer.resource.Get(), vertexBuffer.uploadResource.Get(), vertexBuffer.sizeInBytes);
+    m_uploadContext.CopyBufferRegion(indexBuffer.resource.Get(), indexBuffer.uploadResource.Get(), indexBuffer.sizeInBytes);
+    m_uploadContext.EndRecording();
+    m_uploadContext.Submit();
+    UINT64 nextFenceValue = m_uploadContext.copyfence.Signal(m_uploadContext.GetCommandQueue());
+    m_directFence.WaitForQueue(m_uploadContext.GetCommandQueue(), nextFenceValue);;
+    m_commandContext.BeginRecording(m_frameResources[0].commandAllocator.Get());
+    m_commandContext.ResourceBarrierTransition(vertexBuffer.resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    m_commandContext.ResourceBarrierTransition(indexBuffer.resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
     m_commandContext.EndRecording();
     m_commandContext.ExecuteDirect();
-    m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
+    UINT64 nextDSignal = m_directFence.Signal(m_commandContext.GetDirectCommandQueue());
+    m_directFence.WaitForCPU(nextDSignal);
     return handle;
 }
 
