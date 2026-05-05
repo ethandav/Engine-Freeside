@@ -51,13 +51,16 @@
     <ClInclude Include="include\d3d12\D3D12DescriptorContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\d3d12\D3D12FrameSynchronizer.h">
+    <ClInclude Include="include\d3d12\D3D12QueueFence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\IRendererBackend.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\d3d12\D3D12RendererBackend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\D3D12UploadContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -95,10 +98,13 @@
     <ClCompile Include="src\d3d12\D3D12Context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3d12\D3D12FrameSynchronizer.cpp">
+    <ClCompile Include="src\d3d12\D3D12QueueFence.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\d3d12\D3D12RendererBackend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\D3D12UploadContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

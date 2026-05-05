@@ -7,7 +7,7 @@
 #include "..\..\include\d3d12\D3D12SwapChain.h"
 #include "..\..\include\d3d12\D3D12Error.h"
 
-void D3D12SwapChain::Initialize(D3D12Context* graphicsContext, D3D12CommandContext* commandContext, D3D12DescriptorContext* descriptorContext)
+void D3D12SwapChain::Initialize(D3D12Context* graphicsContext, D3D12DirectCommandContext* commandContext, D3D12DescriptorContext* descriptorContext)
 {
     m_graphicsContext = graphicsContext;
     m_commandContext = commandContext;
@@ -16,7 +16,7 @@ void D3D12SwapChain::Initialize(D3D12Context* graphicsContext, D3D12CommandConte
 
 void D3D12SwapChain::CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height)
 {
-    ID3D12CommandQueue* queue = m_commandContext->GetCommandQueue();
+    ID3D12CommandQueue* queue = m_commandContext->GetDirectCommandQueue();
     ComPtr<IDXGISwapChain1> swapChain;
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
     swapChainDesc.BufferCount = FrameCount;

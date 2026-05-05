@@ -133,11 +133,12 @@
     <ClInclude Include="include\d3d12\D3D12Context.h" />
     <ClInclude Include="include\d3d12\D3D12DescriptorContext.h" />
     <ClInclude Include="include\d3d12\D3D12Error.h" />
-    <ClInclude Include="include\d3d12\D3D12FrameSynchronizer.h" />
+    <ClInclude Include="include\d3d12\D3D12QueueFence.h" />
     <ClInclude Include="include\d3d12\D3D12GraphicsPipelineLibrary.h" />
     <ClInclude Include="include\d3d12\D3D12RendererBackend.h" />
     <ClInclude Include="include\d3d12\D3D12ShaderLibrary.h" />
     <ClInclude Include="include\d3d12\D3D12SwapChain.h" />
+    <ClInclude Include="include\d3d12\D3D12UploadContext.h" />
     <ClInclude Include="include\IRendererBackend.h" />
     <ClInclude Include="include\MeshData.h" />
     <ClInclude Include="include\Renderer.h" />
@@ -151,12 +152,13 @@
     <ClCompile Include="src\d3d12\D3D12DescriptorContext.cpp" />
     <ClCompile Include="src\d3d12\D3D12Device.cpp" />
     <ClCompile Include="src\d3d12\D3D12Frame.cpp" />
-    <ClCompile Include="src\d3d12\D3D12FrameSynchronizer.cpp" />
+    <ClCompile Include="src\d3d12\D3D12QueueFence.cpp" />
     <ClCompile Include="src\d3d12\D3D12GraphicsPipelineLibrary.cpp" />
     <ClCompile Include="src\d3d12\D3D12MeshLibrary.cpp" />
     <ClCompile Include="src\d3d12\D3D12RendererBackend.cpp" />
     <ClCompile Include="src\d3d12\D3D12ShaderLibrary.cpp" />
     <ClCompile Include="src\d3d12\D3D12SwapChain.cpp" />
+    <ClCompile Include="src\d3d12\D3D12UploadContext.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>

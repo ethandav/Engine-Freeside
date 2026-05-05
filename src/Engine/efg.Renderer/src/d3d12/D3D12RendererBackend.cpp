@@ -18,7 +18,7 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
     m_commandContext.Initialize(&m_graphicsContext);
     m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorContext);
     m_descriptorContext.Initialize(&m_graphicsContext);
-    m_frameSync.Initialize(&m_graphicsContext);
+    m_directFence.Initialize(&m_graphicsContext);
 
 
     m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
@@ -27,25 +27,25 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
 
     for (UINT i = 0; i < NumFramesInFlight; i++)
     {
-        m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator();
+        m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
     }
 
-    m_frameSync.CreateFence(1);
+    m_directFence.CreateFence(0);
 
     m_shaderLibrary.Initialize();
     m_graphicsPipelineLibrary.Initialize(&m_graphicsContext, m_shaderLibrary);
 
-    m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
+    m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
 }
 
 void D3D12RendererBackend::Shutdown()
 {
-    m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
+    m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
 }
 
 MeshHandle D3D12RendererBackend::UploadMesh(const MeshData& mesh)
 {
-    ID3D12GraphicsCommandList* list = m_commandContext.GetCommandList();
+    ID3D12GraphicsCommandList* list = m_commandContext.GetDirectCommandList();
     MeshHandle handle = m_meshLibrary.RegisterMesh(mesh);
     m_commandContext.BeginRecording(m_frameResources[m_swapChain.GetFrameIndex()].commandAllocator.Get());
     GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), list, mesh.vertices.data(), (mesh.vertices.size() * sizeof(Vertex)), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
@@ -53,14 +53,14 @@ MeshHandle D3D12RendererBackend::UploadMesh(const MeshData& mesh)
     m_meshLibrary.SetVertexBuffer(handle, vertexBuffer);
     m_meshLibrary.SetIndexBuffer(handle, indexBuffer);
     m_commandContext.EndRecording();
-    m_commandContext.Execute();
-    m_frameSync.WaitForGPU(m_commandContext.GetCommandQueue());
+    m_commandContext.ExecuteDirect();
+    m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
     return handle;
 }
 
 void D3D12RendererBackend::DrawMesh(MeshHandle handle)
 {
-    ID3D12GraphicsCommandList* list = m_commandContext.GetCommandList();
+    ID3D12GraphicsCommandList* list = m_commandContext.GetDirectCommandList();
     const GpuMesh& mesh = m_meshLibrary.Get(handle);
     const GraphicsPipelineState& pipeline = m_graphicsPipelineLibrary.Get(PipelineId::Triangle);
 

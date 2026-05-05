@@ -6,7 +6,7 @@
 class D3D12SwapChain
 {
 public:
-	void Initialize(D3D12Context* graphicsContext, D3D12CommandContext* commandContext, D3D12DescriptorContext* descriptorContext);
+	void Initialize(D3D12Context* graphicsContext, D3D12DirectCommandContext* commandContext, D3D12DescriptorContext* descriptorContext);
 	void CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height);
 	UINT GetFrameIndex();
 	ID3D12Resource* GetCurrentBackBuffer() const;
@@ -20,7 +20,7 @@ private:
 
 	UINT m_frameIndex = 0;
 	D3D12Context* m_graphicsContext = nullptr;
-	D3D12CommandContext* m_commandContext = nullptr;
+	D3D12DirectCommandContext* m_commandContext = nullptr;
 	D3D12DescriptorContext* m_descriptorContext = nullptr;
 	ComPtr<IDXGISwapChain3> m_swapChain;
 	ComPtr<ID3D12Resource> m_renderTargets[FrameCount];
