@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\d3d12\D3D12BufferData.h" />
     <ClInclude Include="include\d3d12\D3D12CommandContext.h" />
     <ClInclude Include="include\d3d12\D3D12Context.h" />
@@ -146,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="include\d3d12\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\D3D12MeshLibrary.h" />
+    <ClCompile Include="src\d3d12\Camera.cpp" />
     <ClCompile Include="src\d3d12\D3D12BufferFactory.cpp" />
     <ClCompile Include="src\d3d12\D3D12CommandContext.cpp" />
     <ClCompile Include="src\d3d12\D3D12Context.cpp" />
