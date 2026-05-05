@@ -33,8 +33,8 @@ public:
     void InitializeBuiltIns(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
     MeshHandle RegisterMesh(const MeshData& meshData);
     const GpuMesh& Get(MeshHandle handle) const;
-    void SetVertexBuffer(MeshHandle handle, GpuBuffer buffer);
-    void SetIndexBuffer(MeshHandle handle, GpuBuffer buffer);
+    void SetVertexBuffer(MeshHandle handle, const GpuBuffer& buffer);
+    void SetIndexBuffer(MeshHandle handle, const GpuBuffer& buffer);
 private:
     std::vector<GpuMesh> m_meshes;
 };

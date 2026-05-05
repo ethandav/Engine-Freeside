@@ -22,6 +22,8 @@ public:
 	void DrawMesh(Engine::MeshHandle handle) override;
 
 private:
+	void FlushPendingUploads();
+
 	static constexpr UINT NumFramesInFlight = 2;
 
 	D3D12_VIEWPORT m_viewport;

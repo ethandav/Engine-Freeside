@@ -39,6 +39,7 @@ void D3D12DirectCommandContext::CreateCommandList(ID3D12GraphicsCommandList** li
 {
     D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateCommandList(0, type, allocator, nullptr, IID_PPV_ARGS(list)));
     D3D12_THROW_IF_FAILED((*list)->Close());
+    m_directCommandList->SetName(L"Direct Command List");
 }
 
 void D3D12DirectCommandContext::CreateCommandObjects()

@@ -2,7 +2,7 @@
 #include "..\..\include\d3d12\D3D12BufferFactory.h"
 #include "..\..\include\d3d12\D3D12Error.h"
 
-GpuBuffer D3D12BufferFactory::CreateStaticBuffer(ID3D12Device* device, ID3D12GraphicsCommandList* commandList, const void* data, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState)
+GpuBuffer D3D12BufferFactory::CreateStaticBuffer(ID3D12Device* device, const void* data, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState)
 {
     GpuBuffer buffer = {};
     buffer.sizeInBytes = sizeInBytes;

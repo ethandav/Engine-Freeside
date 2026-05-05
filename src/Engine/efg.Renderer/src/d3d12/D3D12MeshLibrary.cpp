@@ -37,13 +37,13 @@ const GpuMesh& D3D12MeshLibrary::Get(MeshHandle handle) const
     return m_meshes[handle.index];
 }
 
-void D3D12MeshLibrary::SetVertexBuffer(MeshHandle handle, GpuBuffer buffer)
+void D3D12MeshLibrary::SetVertexBuffer(MeshHandle handle, const GpuBuffer& buffer)
 {
     m_meshes[handle.index].vertexBufferView.BufferLocation = buffer.resource->GetGPUVirtualAddress();
     m_meshes[handle.index].vertexBuffer.resource = buffer.resource;
 }
 
-void D3D12MeshLibrary::SetIndexBuffer(MeshHandle handle, GpuBuffer buffer)
+void D3D12MeshLibrary::SetIndexBuffer(MeshHandle handle, const GpuBuffer& buffer)
 {
     m_meshes[handle.index].indexBufferView.BufferLocation = buffer.resource->GetGPUVirtualAddress();
     m_meshes[handle.index].indexBuffer.resource = buffer.resource;

@@ -50,6 +50,7 @@ void D3D12UploadContext::CreateCopyCommandList()
 {
 	D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COPY, m_copyCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_copyCommandList)));
 	D3D12_THROW_IF_FAILED(m_copyCommandList.Get()->Close());
+
 }
 
 void D3D12UploadContext::CreateCopyQueueFence()
@@ -67,4 +68,50 @@ void D3D12UploadContext::CopyBufferRegion(ID3D12Resource* dest, ID3D12Resource* 
 		0,
 		sizeInBytes
 	);
+}
+
+void D3D12UploadContext::QueueBufferForUpload(ID3D12Resource* dest, ID3D12Resource* src, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState)
+{
+	PendingBufferUpload request = {};
+	request.destination = dest;
+	request.upload = src;
+	request.sizeInBytes = sizeInBytes;
+
+	m_queuedBufferUploads.push_back(std::move(request));
+	queueSize = m_queuedBufferUploads.size();
+}
+
+UploadTicket D3D12UploadContext::FlushUploads()
+{
+	UploadTicket ticket = {};
+	if (m_queuedBufferUploads.size() > 0)
+	{
+		BeginRecording();
+
+		for (const PendingBufferUpload& upload : m_queuedBufferUploads)
+		{
+			CopyBufferRegion(upload.destination.Get(), upload.upload.Get(), upload.sizeInBytes);
+		}
+
+		EndRecording();
+		Submit();
+		UINT64 copyFenceValue = copyfence.Signal(m_copyQueue.Get());
+		UploadBatch batch = {};
+		batch.copyFenceValue = copyFenceValue;
+		batch.uploads = std::move(m_queuedBufferUploads);
+		ticket.copyFenceValue = copyFenceValue;
+		ticket.resources = batch.uploads;
+		m_pendingBatches.push_back(std::move(batch));
+		pendingBatchesSize = m_pendingBatches.size();
+		m_queuedBufferUploads.clear();
+	}
+
+	return ticket;
+}
+
+void D3D12UploadContext::RetireCompletedUploads()
+{
+	const UINT64 completed = copyfence.GetCompletedValue();
+	std::erase_if(m_pendingBatches, [completed](const UploadBatch& batch){ return completed >= batch.copyFenceValue;});
+	pendingBatchesSize = m_pendingBatches.size();
 }
