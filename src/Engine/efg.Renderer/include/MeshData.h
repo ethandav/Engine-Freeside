@@ -6,7 +6,7 @@
 #include "..\..\efg.Core\include\math\Vec3.h"
 #include "..\..\efg.Core\include\math\Vec4.h"
 
-namespace Engine
+namespace efg
 {
     struct Vertex
     {

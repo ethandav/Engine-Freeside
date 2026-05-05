@@ -14,13 +14,13 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		720
 	};
 
-	Engine::MeshData triangleMeshData;
+	efg::MeshData triangleMeshData;
 
 	triangleMeshData.vertices =
 	{
-		{ Engine::Vec3{  0.0f,  0.5f, 0.0f }, Engine::Vec4{ 1.0f, 0.0f, 0.0f, 1.0f } },
-		{ Engine::Vec3{  0.5f, -0.5f, 0.0f }, Engine::Vec4{ 0.0f, 1.0f, 0.0f, 1.0f } },
-		{ Engine::Vec3{ -0.5f, -0.5f, 0.0f }, Engine::Vec4{ 0.0f, 0.0f, 1.0f, 1.0f } },
+		{ efg::Vec3{  0.0f,  0.5f, 0.0f }, efg::Vec4{ 1.0f, 0.0f, 0.0f, 1.0f } },
+		{ efg::Vec3{  0.5f, -0.5f, 0.0f }, efg::Vec4{ 0.0f, 1.0f, 0.0f, 1.0f } },
+		{ efg::Vec3{ -0.5f, -0.5f, 0.0f }, efg::Vec4{ 0.0f, 0.0f, 1.0f, 1.0f } },
 	};
 
 	triangleMeshData.indices =
@@ -32,7 +32,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	window.Show(nCmdShow);
 	rendererDesc.nativeWindowHandle = window.GetHwnd();
 	renderer.Initialize(rendererDesc);
-	Engine::MeshHandle triangleMeshHandle = renderer.CreateMesh(triangleMeshData);
+	efg::MeshHandle triangleMeshHandle = renderer.CreateMesh(triangleMeshData);
 
 	while (window.IsOpen())
 	{

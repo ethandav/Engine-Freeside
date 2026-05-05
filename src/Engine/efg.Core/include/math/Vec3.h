@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace Engine
+namespace efg
 {
     struct Vec3
     {

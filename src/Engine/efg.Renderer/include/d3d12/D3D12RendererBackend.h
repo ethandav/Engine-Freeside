@@ -18,8 +18,8 @@ public:
 	void Shutdown() override;
 	void BeginFrame() override;
 	void EndFrame() override;
-	Engine::MeshHandle CreateMesh(const Engine::MeshData& mesh) override;
-	void DrawMesh(Engine::MeshHandle handle) override;
+	efg::MeshHandle CreateMesh(const efg::MeshData& mesh) override;
+	void DrawMesh(efg::MeshHandle handle) override;
 
 private:
 	void FlushPendingUploads();

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "..\..\efg.Core\include\math\math.h"
-namespace Engine
+namespace efg
 {
     class Camera
     {

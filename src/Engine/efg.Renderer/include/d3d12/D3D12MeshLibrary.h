@@ -9,7 +9,7 @@
 #include "D3D12BufferData.h"
 
 using Microsoft::WRL::ComPtr;
-using namespace Engine;
+using namespace efg;
 
 struct GpuMesh
 {

@@ -5,7 +5,7 @@
 #include "Vec3.h"
 #include "Vec4.h"
 
-namespace Engine
+namespace efg
 {
     struct Mat4
     {

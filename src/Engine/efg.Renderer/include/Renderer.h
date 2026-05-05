@@ -21,8 +21,8 @@ public:
 	void Shutdown();
 	void BeginFrame();
 	void EndFrame();
-	Engine::MeshHandle CreateMesh(const Engine::MeshData& mesh);
-	void DrawMesh(Engine::MeshHandle handle);
+	efg::MeshHandle CreateMesh(const efg::MeshData& mesh);
+	void DrawMesh(efg::MeshHandle handle);
 private:
 	std::unique_ptr<IRendererBackend> m_backend;
 };

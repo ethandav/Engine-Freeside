@@ -11,6 +11,6 @@ public:
     virtual void Shutdown() = 0;
     virtual void BeginFrame() = 0;
     virtual void EndFrame() = 0;
-    virtual Engine::MeshHandle CreateMesh(const Engine::MeshData& mesh) = 0;
-    virtual void DrawMesh(Engine::MeshHandle handle) = 0;
+    virtual efg::MeshHandle CreateMesh(const efg::MeshData& mesh) = 0;
+    virtual void DrawMesh(efg::MeshHandle handle) = 0;
 };
