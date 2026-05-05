@@ -43,7 +43,7 @@ void D3D12RendererBackend::Shutdown()
     m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
 }
 
-MeshHandle D3D12RendererBackend::UploadMesh(const MeshData& mesh)
+MeshHandle D3D12RendererBackend::CreateMesh(const MeshData& mesh)
 {
     MeshHandle handle = m_meshLibrary.RegisterMesh(mesh);
     GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), mesh.vertices.data(), (mesh.vertices.size() * sizeof(Vertex)), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);

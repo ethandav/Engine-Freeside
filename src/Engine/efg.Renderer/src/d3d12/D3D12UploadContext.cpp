@@ -104,6 +104,7 @@ UploadTicket D3D12UploadContext::FlushUploads()
 		m_pendingBatches.push_back(std::move(batch));
 		pendingBatchesSize = m_pendingBatches.size();
 		m_queuedBufferUploads.clear();
+		queueSize = 0;
 	}
 
 	return ticket;

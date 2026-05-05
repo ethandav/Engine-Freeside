@@ -36,9 +36,9 @@ void Renderer::EndFrame()
     m_backend->EndFrame();
 }
 
-MeshHandle Renderer::UploadMesh(const MeshData& mesh)
+MeshHandle Renderer::CreateMesh(const MeshData& mesh)
 {
-    return m_backend->UploadMesh(mesh);
+    return m_backend->CreateMesh(mesh);
 }
 
 void Renderer::DrawMesh(MeshHandle handle)

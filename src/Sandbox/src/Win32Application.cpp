@@ -32,7 +32,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	window.Show(nCmdShow);
 	rendererDesc.nativeWindowHandle = window.GetHwnd();
 	renderer.Initialize(rendererDesc);
-	Engine::MeshHandle triangleMeshHandle = renderer.UploadMesh(triangleMeshData);
+	Engine::MeshHandle triangleMeshHandle = renderer.CreateMesh(triangleMeshData);
 
 	while (window.IsOpen())
 	{

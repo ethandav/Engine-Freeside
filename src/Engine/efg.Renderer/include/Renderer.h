@@ -21,7 +21,7 @@ public:
 	void Shutdown();
 	void BeginFrame();
 	void EndFrame();
-	Engine::MeshHandle UploadMesh(const Engine::MeshData& mesh);
+	Engine::MeshHandle CreateMesh(const Engine::MeshData& mesh);
 	void DrawMesh(Engine::MeshHandle handle);
 private:
 	std::unique_ptr<IRendererBackend> m_backend;

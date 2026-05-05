@@ -18,7 +18,7 @@ public:
 	void Shutdown() override;
 	void BeginFrame() override;
 	void EndFrame() override;
-	Engine::MeshHandle UploadMesh(const Engine::MeshData& mesh) override;
+	Engine::MeshHandle CreateMesh(const Engine::MeshData& mesh) override;
 	void DrawMesh(Engine::MeshHandle handle) override;
 
 private:
