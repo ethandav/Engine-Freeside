@@ -2,10 +2,8 @@
 #include "../../include/Camera.h"
 #include "..\..\include\ShaderConstants.h"
 
-void D3D12RendererBackend::BeginFrame(efg::Camera* camera)
+void D3D12RendererBackend::BeginFrame(FrameResource& frame)
 {
-    UINT frameIndex = m_swapChain.GetFrameIndex();
-    FrameResource& frame = m_frameResources[frameIndex];
     ID3D12CommandAllocator* allocator = frame.commandAllocator.Get();
     D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChain.GetCurrentRTV();
     ID3D12GraphicsCommandList* commandList = m_commandContext.GetDirectCommandList();
@@ -22,14 +20,6 @@ void D3D12RendererBackend::BeginFrame(efg::Camera* camera)
         m_uploadContext.RetireCompletedUploads();
     }
 
-    CameraConstants cameraConstants = {};
-    DirectionalLightConstants dirLightConstants = {};
-    cameraConstants.viewProjection = efg::Transpose(camera->GetViewProjectionMatrix());
-    dirLightConstants.directionAndIntensity = efg::Vec4(-0.2f, -1.0f, -0.3f, 1.0f);
-    dirLightConstants.colorAndPadding = efg::Vec4(1.0f, 1.0f, 1.0f, 0.0f);
-    m_bufferFactory.UpdateConstantBuffer(frame.cameraConstantBuffer, &cameraConstants, sizeof(CameraConstants));
-    m_bufferFactory.UpdateConstantBuffer(frame.directionalLightConstantBuffer, &dirLightConstants, sizeof(DirectionalLightConstants));
-
     m_commandContext.SetViewportAndScissor(m_viewport, m_scissorRect);
     m_commandContext.ResourceBarrierTransition(m_swapChain.GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     m_commandContext.SetRenderTarget(rtvHandle);
@@ -37,10 +27,9 @@ void D3D12RendererBackend::BeginFrame(efg::Camera* camera)
     DrawAllRenderObjects(commandList);
 }
 
-void D3D12RendererBackend::EndFrame()
+void D3D12RendererBackend::EndFrame(FrameResource& frame)
 {
     ID3D12CommandQueue* queue = m_commandContext.GetDirectCommandQueue();
-    FrameResource& frame = m_frameResources[m_swapChain.GetFrameIndex()];
     m_commandContext.ResourceBarrierTransition(m_swapChain.GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commandContext.EndRecording();
     m_commandContext.ExecuteDirect();
@@ -58,13 +47,13 @@ void D3D12RendererBackend::DrawAllRenderObjects(ID3D12GraphicsCommandList* comma
     commandList->SetGraphicsRootConstantBufferView(0, m_frameResources[m_swapChain.GetFrameIndex()].cameraConstantBuffer.resource->GetGPUVirtualAddress());
     commandList->SetGraphicsRootConstantBufferView(2, m_frameResources[m_swapChain.GetFrameIndex()].directionalLightConstantBuffer.resource->GetGPUVirtualAddress());
 
-    for (const auto& object : m_renderObjects)
+    for (const RenderObject& object : *m_renderObjects)
     {
         ObjectConstants objectConstants = {};
-        objectConstants.world = efg::Transpose(object->world);
+        objectConstants.world = efg::Transpose(object.world);
         D3D12_GPU_VIRTUAL_ADDRESS objectCbAddress = m_bufferFactory.UploadConstantBufferArena(m_frameResources[m_swapChain.GetFrameIndex()].objectConstantArena, &objectConstants, sizeof(ObjectConstants));
         commandList->SetGraphicsRootConstantBufferView(1, objectCbAddress);
-        DrawMesh(commandList, object->mesh);
+        DrawMesh(commandList, object.mesh);
     }
 }
 

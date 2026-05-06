@@ -21,17 +21,24 @@ struct RenderObject
 	efg::Mat4 initialTransform = efg::Mat4::Identity();
 };
 
+struct SceneRenderData
+{
+	const efg::Camera* camera = nullptr;
+	const efg::Lights::Directional* directionalLight = nullptr;
+	const std::vector<RenderObject>* renderObjects = nullptr;
+};
+
 class Renderer
 {
 public:
 	Renderer();
 	~Renderer();
 	void Initialize(const RendererDesc& desc);
+	float GetRendererAspectRatio();
 	void Shutdown();
-	void BeginFrame(efg::Camera* camera);
-	void EndFrame();
-	void AddRenderObjectToRenderQueue(RenderObject& object);
+	void Render(const SceneRenderData& sceneRenderData);
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh);
 private:
 	std::unique_ptr<IRendererBackend> m_backend;
+	RendererDesc m_rendererDesc = {};
 };

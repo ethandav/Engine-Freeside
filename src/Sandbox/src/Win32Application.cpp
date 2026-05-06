@@ -28,15 +28,17 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	renderer.Initialize(rendererDesc);
 	sceneManager.Initialize(&renderer);
 
-	efg::Camera camera;
-	camera.LookAt(efg::Vec3(0.0f, 1.0f, -5.0f), efg::Vec3(0.0f, 0.0f, 0.0f));
-	camera.SetPerspective(0.78539816339f, static_cast<float>(rendererDesc.width) / static_cast<float>(rendererDesc.height), 0.1f, 1000.0f);
-
 	efg::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
 
 	RenderObject object1;
 	RenderObject object2;
 	RenderObject object3;
+	RenderObject* pObject1;
+	RenderObject* pObject2;
+	RenderObject* pObject3;
+	efg::Scene::SceneRenderObjectHandle hObject1;
+	efg::Scene::SceneRenderObjectHandle hObject2;
+	efg::Scene::SceneRenderObjectHandle hObject3;
 	object1.mesh = cubeMeshHandle;
 	object1.world = efg::Translation(-1.0f, 0.0f, 0.0f);
 	object1.initialTransform = efg::Translation(-1.0f, 0.0f, 0.0f);
@@ -48,10 +50,12 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	object3.initialTransform = efg::Translation(0.0f, 1.0f, 0.0f);
 
 	efg::Scene::SceneHandle testSceneHandle = sceneManager.CreateScene(L"Test Scene");
-	sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object1);
-	sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object2);
-	sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object3);
-	sceneManager.AddCamera(testSceneHandle, &camera);
+	hObject1 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object1);
+	hObject2 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object2);
+	hObject3 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object3);
+	pObject1 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject1);
+	pObject2 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject2);
+	pObject3 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject3);
 
 	float angle = 0.0f;
 	while (window.IsOpen())
@@ -61,11 +65,11 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		efg::Mat4 rotation = efg::RotationY(angle);
 
 		efg::Mat4 translation1 = object1.initialTransform;
-		object1.world = translation1 * rotation;
+		pObject1->world = translation1 * rotation;
         efg::Mat4 translation2 = object2.initialTransform;
-        object2.world = translation2 * rotation;
+        pObject2->world = translation2 * rotation;
         efg::Mat4 translation3 = object3.initialTransform;
-        object3.world = translation3 * rotation;
+        pObject3->world = translation3 * rotation;
 
 		window.PollEvents();
 		sceneManager.RenderScene(testSceneHandle);

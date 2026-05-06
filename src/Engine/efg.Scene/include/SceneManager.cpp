@@ -21,6 +21,7 @@ namespace efg
 		SceneHandle SceneManager::CreateScene(std::wstring sceneName)
 		{
 			Scene newScene(sceneName);
+			newScene.CreateScenefromDefault(m_renderer->GetRendererAspectRatio());
 			SceneHandle handle = AddSceneToQueue(newScene);
 			return handle;
 		}
@@ -34,14 +35,19 @@ namespace efg
 			};
 		}
 
-		void SceneManager::AddRenderObjectToRenderQueue(SceneHandle handle, RenderObject& object)
+		SceneRenderObjectHandle SceneManager::AddRenderObjectToRenderQueue(SceneHandle handle, RenderObject& object)
 		{
 			Scene* scene = GetSceneByHandle(handle);
-			scene->AddRenderObjectToRenderQueue(object);
-			m_renderer->AddRenderObjectToRenderQueue(object);
+			return scene->AddRenderObjectToRenderQueue(object);
 		}
 
-		void SceneManager::AddCamera(SceneHandle handle, Camera* camera)
+		RenderObject* SceneManager::GetRenderObjectByHandle(SceneHandle sceneHandle, SceneRenderObjectHandle objectHandle)
+		{
+			Scene* scene = GetSceneByHandle(sceneHandle);
+			return scene->GetRenderObjectByHandle(objectHandle);
+		}
+
+		void SceneManager::AddCamera(SceneHandle handle, Camera camera)
 		{
 			Scene* scene = GetSceneByHandle(handle);
 			scene->AddCamera(camera);

@@ -54,9 +54,20 @@ void D3D12RendererBackend::Shutdown()
     }
 }
 
-void D3D12RendererBackend::AddRenderObjectToRenderQueue(RenderObject& object)
+void D3D12RendererBackend::Render(const SceneRenderData& sceneRenderData)
 {
-    m_renderObjects.push_back(&object);
+    UINT frameIndex = m_swapChain.GetFrameIndex();
+    FrameResource& frame = m_frameResources[frameIndex];
+    CameraConstants cameraConstants = {};
+    DirectionalLightConstants dirLightConstants = {};
+    m_renderObjects = sceneRenderData.renderObjects;
+    cameraConstants.viewProjection = efg::Transpose(sceneRenderData.camera->GetViewProjectionMatrix());
+    dirLightConstants.directionAndIntensity = efg::Vec4(-0.2f, -1.0f, -0.3f, 1.0f);
+    dirLightConstants.colorAndPadding = efg::Vec4(1.0f, 1.0f, 1.0f, 0.0f);
+    m_bufferFactory.UpdateConstantBuffer(frame.cameraConstantBuffer, &cameraConstants, sizeof(CameraConstants));
+    m_bufferFactory.UpdateConstantBuffer(frame.directionalLightConstantBuffer, &dirLightConstants, sizeof(DirectionalLightConstants));
+    BeginFrame(frame);
+    EndFrame(frame);
 }
 
 MeshHandle D3D12RendererBackend::CreateMesh(const MeshData& mesh)

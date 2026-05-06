@@ -11,17 +11,26 @@
 #include "D3D12QueueFence.h"
 #include "D3D12UploadContext.h"
 
+struct FrameResource
+{
+	ComPtr<ID3D12CommandAllocator> commandAllocator;
+	UINT64 fenceValue = 0;
+	GpuConstantBuffer cameraConstantBuffer = {};
+	GpuConstantBuffer directionalLightConstantBuffer = {};
+	GpuConstantBufferArena objectConstantArena = {};
+};
+
 class D3D12RendererBackend final : public IRendererBackend
 {
 public:
 	void Initialize(const RendererDesc& desc) override;
 	void Shutdown() override;
-	void BeginFrame(efg::Camera* camera) override;
-	void EndFrame() override;
-	void AddRenderObjectToRenderQueue(RenderObject& object);
+	void Render(const SceneRenderData& sceneRenderData) override;
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh) override;
 
 private:
+	void BeginFrame(FrameResource& frame);
+	void EndFrame(FrameResource& frame);
 	void DrawMesh(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle);
 	void FlushPendingUploads();
 	void DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList);
@@ -42,15 +51,8 @@ private:
 	D3D12SwapChain m_swapChain = {};
 	D3D12QueueFence m_directFence = {};
 
-	struct FrameResource
-	{
-		ComPtr<ID3D12CommandAllocator> commandAllocator;
-		UINT64 fenceValue = 0;
-		GpuConstantBuffer cameraConstantBuffer = {};
-		GpuConstantBuffer directionalLightConstantBuffer = {};
-		GpuConstantBufferArena objectConstantArena = {};
-	};
+
 
 	std::array<FrameResource, NumFramesInFlight> m_frameResources = {};
-	std::vector<RenderObject*> m_renderObjects = {};
+	const std::vector<RenderObject>* m_renderObjects = nullptr;
 };

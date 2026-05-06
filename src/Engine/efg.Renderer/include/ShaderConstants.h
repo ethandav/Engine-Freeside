@@ -15,4 +15,9 @@ namespace efg
 		Vec4 colorAndPadding;       // rgb = color, w unused
 	};
 
+	struct ConstantBufferUpdatePacket
+	{
+		
+	};
+
 }

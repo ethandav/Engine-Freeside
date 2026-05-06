@@ -14,7 +14,13 @@ Renderer::~Renderer()
 
 void Renderer::Initialize(const RendererDesc& desc)
 {
+    m_rendererDesc = desc;
     m_backend->Initialize(desc);
+}
+
+float Renderer::GetRendererAspectRatio()
+{
+    return static_cast<float>(m_rendererDesc.width) / static_cast<float>(m_rendererDesc.height);
 }
 
 void Renderer::Shutdown()
@@ -26,19 +32,9 @@ void Renderer::Shutdown()
     }
 }
 
-void Renderer::BeginFrame(efg::Camera* camera)
+void Renderer::Render(const SceneRenderData& sceneRenderData)
 {
-    m_backend->BeginFrame(camera);
-}
-
-void Renderer::EndFrame()
-{
-    m_backend->EndFrame();
-}
-
-void Renderer::AddRenderObjectToRenderQueue(RenderObject& object)
-{
-    m_backend->AddRenderObjectToRenderQueue(object);
+    m_backend->Render(sceneRenderData);
 }
 
 MeshHandle Renderer::CreateMesh(const MeshData& mesh)
