@@ -67,9 +67,8 @@ void D3D12GraphicsPipelineLibary::CreateTrianglePipeline(const D3D12ShaderLibrar
         { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
     };
 
-    const ShaderBytecode& vertexShader = shaderLibrary.Get(ShaderId::TriangleVS);
-
-    const ShaderBytecode& pixelShader = shaderLibrary.Get(ShaderId::TrianglePS);
+    const ShaderBytecode& vertexShader = shaderLibrary.Get(ShaderId::GeometryVS);
+    const ShaderBytecode& pixelShader = shaderLibrary.Get(ShaderId::GeometryPS);
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };

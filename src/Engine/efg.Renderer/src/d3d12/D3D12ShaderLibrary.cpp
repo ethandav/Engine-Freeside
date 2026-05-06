@@ -39,6 +39,20 @@ void D3D12ShaderLibrary::CompileAllShaders()
         "PSMain",
         "ps_5_0"
     );
+
+    AddShader(
+        ShaderId::GeometryVS,
+        L"..\\Engine\\efg.Renderer\\assets\\shaders\\geometry.hlsl",
+        "VSMain",
+        "vs_5_0"
+    );
+
+    AddShader(
+        ShaderId::GeometryPS,
+        L"..\\Engine\\efg.Renderer\\assets\\shaders\\geometry.hlsl",
+        "PSMain",
+        "ps_5_0"
+    );
 }
 
 ComPtr<ID3DBlob> D3D12ShaderLibrary::CompileShaderFromFile(const std::wstring& filePath, const std::string& entryPoint, const std::string& target)

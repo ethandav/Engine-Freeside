@@ -14,6 +14,9 @@ enum class ShaderId : uint32_t
     TriangleVS,
     TrianglePS,
 
+    GeometryVS,
+    GeometryPS,
+
     Count
 };
 
