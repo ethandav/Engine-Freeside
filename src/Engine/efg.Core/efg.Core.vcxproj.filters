@@ -27,5 +27,14 @@
     <ClInclude Include="include\math\Mat4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\shapes\shapes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\shapes\cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\Vec2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

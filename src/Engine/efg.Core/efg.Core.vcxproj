@@ -129,8 +129,11 @@
   <ItemGroup>
     <ClInclude Include="include\math\Mat4.h" />
     <ClInclude Include="include\math\math.h" />
+    <ClInclude Include="include\math\Vec2.h" />
     <ClInclude Include="include\math\Vec3.h" />
     <ClInclude Include="include\math\Vec4.h" />
+    <ClInclude Include="include\shapes\cube.h" />
+    <ClInclude Include="include\shapes\shapes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

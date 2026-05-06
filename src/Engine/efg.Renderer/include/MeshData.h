@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "..\..\efg.Core\include\math\Vec2.h"
 #include "..\..\efg.Core\include\math\Vec3.h"
 #include "..\..\efg.Core\include\math\Vec4.h"
 
@@ -11,7 +12,8 @@ namespace efg
     struct Vertex
     {
         Vec3 position;
-        Vec4 color;
+        Vec3 normal;
+        Vec2 uv;
     };
 
     struct MeshData
