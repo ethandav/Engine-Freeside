@@ -140,6 +140,19 @@ namespace efg
         );
     }
 
+    inline Mat4 RotationY(float radians)
+    {
+        const float c = std::cos(radians);
+        const float s = std::sin(radians);
+
+        return Mat4(
+            c, 0.0f, -s, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            s, 0.0f, c, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
+    }
+
     inline Mat4 LookAtLH(const Vec3& eye, const Vec3& target, const Vec3& up)
     {
         const Vec3 zAxis = Normalize(target - eye);        // forward

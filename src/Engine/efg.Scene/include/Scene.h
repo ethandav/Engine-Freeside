@@ -22,7 +22,7 @@ namespace efg
 		{
 		public:
 			Scene(std::wstring name);
-			void AddRenderObjectToRenderQueue(const RenderObject& object);
+			void AddRenderObjectToRenderQueue(RenderObject& object);
 			void AddCamera(Camera* camera);
 			void Render(Renderer* renderer);
 
@@ -30,7 +30,7 @@ namespace efg
 		private:
 			uint32_t handle = 0;
 			Camera* m_camera = nullptr;
-			std::vector<RenderObject> m_renderObjectQueue = {};
+			std::vector<RenderObject*> m_renderObjectQueue = {};
 		};
 	}
 }

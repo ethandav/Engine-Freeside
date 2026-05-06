@@ -17,7 +17,7 @@ namespace efg
 			void Initialize(Renderer* renderer);
 			SceneHandle CreateScene(std::wstring sceneName);
 			SceneHandle AddSceneToQueue(const Scene& scene);
-			void AddRenderObjectToRenderQueue(SceneHandle handle, const RenderObject& object);
+			void AddRenderObjectToRenderQueue(SceneHandle handle, RenderObject& object);
 			void AddCamera(SceneHandle handle, Camera* camera);
 			void RenderScene(SceneHandle handle);
 		private:

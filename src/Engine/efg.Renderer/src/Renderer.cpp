@@ -36,7 +36,7 @@ void Renderer::EndFrame()
     m_backend->EndFrame();
 }
 
-void Renderer::AddRenderObjectToRenderQueue(const RenderObject& object)
+void Renderer::AddRenderObjectToRenderQueue(RenderObject& object)
 {
     m_backend->AddRenderObjectToRenderQueue(object);
 }

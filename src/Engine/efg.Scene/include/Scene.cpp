@@ -7,9 +7,9 @@ namespace efg
 		{
 		}
 
-		void Scene::AddRenderObjectToRenderQueue(const RenderObject& object)
+		void Scene::AddRenderObjectToRenderQueue(RenderObject& object)
 		{
-			m_renderObjectQueue.push_back(object);
+			m_renderObjectQueue.push_back(&object);
 		}
 
 		void Scene::AddCamera(Camera* camera)

@@ -53,10 +53,10 @@ void D3D12RendererBackend::DrawAllRenderObjects(ID3D12GraphicsCommandList* comma
     for (const auto& object : m_renderObjects)
     {
         ObjectConstants objectConstants = {};
-        objectConstants.world = efg::Transpose(object.world);
+        objectConstants.world = efg::Transpose(object->world);
         D3D12_GPU_VIRTUAL_ADDRESS objectCbAddress = m_bufferFactory.UploadConstantBufferArena(m_frameResources[m_swapChain.GetFrameIndex()].objectConstantArena, &objectConstants, sizeof(ObjectConstants));
         commandList->SetGraphicsRootConstantBufferView(1, objectCbAddress);
-        DrawMesh(commandList, object.mesh);
+        DrawMesh(commandList, object->mesh);
     }
 }
 

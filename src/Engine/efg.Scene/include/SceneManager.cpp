@@ -34,7 +34,7 @@ namespace efg
 			};
 		}
 
-		void SceneManager::AddRenderObjectToRenderQueue(SceneHandle handle, const RenderObject& object)
+		void SceneManager::AddRenderObjectToRenderQueue(SceneHandle handle, RenderObject& object)
 		{
 			Scene* scene = GetSceneByHandle(handle);
 			scene->AddRenderObjectToRenderQueue(object);

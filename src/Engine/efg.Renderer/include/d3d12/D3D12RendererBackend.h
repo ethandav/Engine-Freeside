@@ -18,7 +18,7 @@ public:
 	void Shutdown() override;
 	void BeginFrame(efg::Camera* camera) override;
 	void EndFrame() override;
-	void AddRenderObjectToRenderQueue(const RenderObject& object);
+	void AddRenderObjectToRenderQueue(RenderObject& object);
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh) override;
 
 private:
@@ -56,5 +56,5 @@ private:
 	};
 
 	std::array<FrameResource, NumFramesInFlight> m_frameResources = {};
-	std::vector<RenderObject> m_renderObjects = {};
+	std::vector<RenderObject*> m_renderObjects = {};
 };

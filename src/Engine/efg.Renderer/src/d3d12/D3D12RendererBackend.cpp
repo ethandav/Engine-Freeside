@@ -51,9 +51,9 @@ void D3D12RendererBackend::Shutdown()
     }
 }
 
-void D3D12RendererBackend::AddRenderObjectToRenderQueue(const RenderObject& object)
+void D3D12RendererBackend::AddRenderObjectToRenderQueue(RenderObject& object)
 {
-    m_renderObjects.push_back(object);
+    m_renderObjects.push_back(&object);
 }
 
 MeshHandle D3D12RendererBackend::CreateMesh(const MeshData& mesh)
