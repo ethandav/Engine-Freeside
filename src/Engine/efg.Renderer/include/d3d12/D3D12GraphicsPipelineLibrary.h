@@ -15,7 +15,7 @@ using Microsoft::WRL::ComPtr;
 
 enum class PipelineId : uint32_t
 {
-	Triangle,
+	ForwardLitGeometry,
 	Count
 };
 
@@ -37,7 +37,7 @@ private:
 	void CreateRootSignature(ID3D12RootSignature** rootSignature);
 	void CreatePipelineStateObject();
 	void AddGraphicsPipeline(PipelineId id, GraphicsPipelineState pipeline);
-	void CreateTrianglePipeline(const D3D12ShaderLibrary& shaderLibrary);
+	void CreateForwarLitGeometryPipeline(const D3D12ShaderLibrary& shaderLibrary);
 
 	D3D12Context* m_graphicsContext = nullptr;
 	std::array<GraphicsPipelineState, static_cast<size_t>(PipelineId::Count)> m_graphicsPipelines;

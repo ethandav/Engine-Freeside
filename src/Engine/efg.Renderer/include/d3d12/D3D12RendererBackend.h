@@ -47,12 +47,8 @@ private:
 		ComPtr<ID3D12CommandAllocator> commandAllocator;
 		UINT64 fenceValue = 0;
 		GpuConstantBuffer cameraConstantBuffer = {};
+		GpuConstantBuffer directionalLightConstantBuffer = {};
 		GpuConstantBufferArena objectConstantArena = {};
-	};
-
-	struct ObjectConstants
-	{
-		efg::Mat4 world;
 	};
 
 	std::array<FrameResource, NumFramesInFlight> m_frameResources = {};

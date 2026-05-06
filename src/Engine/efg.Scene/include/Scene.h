@@ -30,6 +30,7 @@ namespace efg
 		private:
 			uint32_t handle = 0;
 			Camera* m_camera = nullptr;
+			efg::Lights::Directional dirLight;
 			std::vector<RenderObject*> m_renderObjectQueue = {};
 		};
 	}

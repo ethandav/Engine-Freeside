@@ -141,8 +141,10 @@
     <ClInclude Include="include\d3d12\D3D12SwapChain.h" />
     <ClInclude Include="include\d3d12\D3D12UploadContext.h" />
     <ClInclude Include="include\IRendererBackend.h" />
+    <ClInclude Include="include\Lights.h" />
     <ClInclude Include="include\MeshData.h" />
     <ClInclude Include="include\Renderer.h" />
+    <ClInclude Include="include\ShaderConstants.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\d3d12\D3D12BufferFactory.h" />
@@ -165,6 +167,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="assets\shaders\geometry.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

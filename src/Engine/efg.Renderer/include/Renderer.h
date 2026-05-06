@@ -3,6 +3,7 @@
 
 #include "MeshData.h"
 #include "Camera.h"
+#include "Lights.h"
 
 class IRendererBackend;
 

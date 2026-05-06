@@ -1,5 +1,6 @@
 #include "..\..\include\d3d12\D3D12RendererBackend.h"
 #include "../../include/Camera.h"
+#include "..\..\include\ShaderConstants.h"
 
 void D3D12RendererBackend::BeginFrame(efg::Camera* camera)
 {
@@ -8,7 +9,7 @@ void D3D12RendererBackend::BeginFrame(efg::Camera* camera)
     ID3D12CommandAllocator* allocator = frame.commandAllocator.Get();
     D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChain.GetCurrentRTV();
     ID3D12GraphicsCommandList* commandList = m_commandContext.GetDirectCommandList();
-    const float clearColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
+    const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     m_directFence.WaitForCPU(frame.fenceValue);
     frame.objectConstantArena.Reset();
     m_commandContext.BeginRecording(allocator);
@@ -20,9 +21,15 @@ void D3D12RendererBackend::BeginFrame(efg::Camera* camera)
     {
         m_uploadContext.RetireCompletedUploads();
     }
+
     CameraConstants cameraConstants = {};
+    DirectionalLightConstants dirLightConstants = {};
     cameraConstants.viewProjection = efg::Transpose(camera->GetViewProjectionMatrix());
+    dirLightConstants.directionAndIntensity = efg::Vec4(-0.2f, -1.0f, -0.3f, 1.0f);
+    dirLightConstants.colorAndPadding = efg::Vec4(1.0f, 1.0f, 1.0f, 0.0f);
     m_bufferFactory.UpdateConstantBuffer(frame.cameraConstantBuffer, &cameraConstants, sizeof(CameraConstants));
+    m_bufferFactory.UpdateConstantBuffer(frame.directionalLightConstantBuffer, &dirLightConstants, sizeof(DirectionalLightConstants));
+
     m_commandContext.SetViewportAndScissor(m_viewport, m_scissorRect);
     m_commandContext.ResourceBarrierTransition(m_swapChain.GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     m_commandContext.SetRenderTarget(rtvHandle);
@@ -43,12 +50,13 @@ void D3D12RendererBackend::EndFrame()
 
 void D3D12RendererBackend::DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList)
 {
-    const GraphicsPipelineState& pipeline = m_graphicsPipelineLibrary.Get(PipelineId::Triangle);
+    const GraphicsPipelineState& pipeline = m_graphicsPipelineLibrary.Get(PipelineId::ForwardLitGeometry);
 
     commandList->SetGraphicsRootSignature(pipeline.rootSignature.Get());
     commandList->SetPipelineState(pipeline.pipelineState.Get());
     commandList->IASetPrimitiveTopology(pipeline.primitiveTopology);
     commandList->SetGraphicsRootConstantBufferView(0, m_frameResources[m_swapChain.GetFrameIndex()].cameraConstantBuffer.resource->GetGPUVirtualAddress());
+    commandList->SetGraphicsRootConstantBufferView(2, m_frameResources[m_swapChain.GetFrameIndex()].directionalLightConstantBuffer.resource->GetGPUVirtualAddress());
 
     for (const auto& object : m_renderObjects)
     {

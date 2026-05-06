@@ -4,7 +4,7 @@
 void D3D12GraphicsPipelineLibary::Initialize(D3D12Context* device, const D3D12ShaderLibrary& shaderLibrary)
 {
     m_graphicsContext = device;
-    CreateTrianglePipeline(shaderLibrary);
+    CreateForwarLitGeometryPipeline(shaderLibrary);
 }
 
 const GraphicsPipelineState& D3D12GraphicsPipelineLibary::Get(PipelineId id) const
@@ -22,17 +22,13 @@ const GraphicsPipelineState& D3D12GraphicsPipelineLibary::Get(PipelineId id) con
 void D3D12GraphicsPipelineLibary::CreateRootSignature(ID3D12RootSignature** rootSignature)
 {
     CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-    CD3DX12_ROOT_PARAMETER rootParameters[2] = {};
+    CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
     ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> error;
 
-    // b0: Camera constant buffer
-    rootParameters[0].InitAsConstantBufferView(
-        0, // shader register b0
-        0, // register space
-        D3D12_SHADER_VISIBILITY_VERTEX
-    );
+    rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
     rootParameters[1].InitAsConstantBufferView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+    rootParameters[2].InitAsConstantBufferView(2, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
     rootSignatureDesc.Init(
         _countof(rootParameters),
@@ -58,14 +54,15 @@ void D3D12GraphicsPipelineLibary::AddGraphicsPipeline(PipelineId id, GraphicsPip
     m_graphicsPipelines[index] = std::move(pipeline);
 }
 
-void D3D12GraphicsPipelineLibary::CreateTrianglePipeline(const D3D12ShaderLibrary& shaderLibrary)
+void D3D12GraphicsPipelineLibary::CreateForwarLitGeometryPipeline(const D3D12ShaderLibrary& shaderLibrary)
 {
     GraphicsPipelineState pipeline = {};
     CreateRootSignature(pipeline.rootSignature.GetAddressOf());
     D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+        { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
     };
 
     const ShaderBytecode& vertexShader = shaderLibrary.Get(ShaderId::GeometryVS);
@@ -87,5 +84,5 @@ void D3D12GraphicsPipelineLibary::CreateTrianglePipeline(const D3D12ShaderLibrar
     psoDesc.SampleDesc.Count = 1;
     D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipeline.pipelineState)));
 
-    AddGraphicsPipeline(PipelineId::Triangle, pipeline);
+    AddGraphicsPipeline(PipelineId::ForwardLitGeometry, pipeline);
 }

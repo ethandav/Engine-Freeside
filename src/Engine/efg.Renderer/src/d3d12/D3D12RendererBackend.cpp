@@ -1,5 +1,6 @@
 #include "..\..\include\d3d12\D3D12RendererBackend.h"
 #include "..\..\include\Camera.h"
+#include "..\..\include\ShaderConstants.h"
 
 void D3D12RendererBackend::Initialize(const RendererDesc& desc)
 {
@@ -30,6 +31,7 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
     {
         m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
         m_frameResources[i].cameraConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(CameraConstants));
+        m_frameResources[i].directionalLightConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(DirectionalLightConstants));
         m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ObjectConstantArenaSize);
     }
 
@@ -47,6 +49,7 @@ void D3D12RendererBackend::Shutdown()
     for (UINT i = 0; i < NumFramesInFlight; i++)
     {
         m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].cameraConstantBuffer);
+        m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].directionalLightConstantBuffer);
         m_bufferFactory.DestroyConstantBufferArena(m_frameResources[i].objectConstantArena);
     }
 }
@@ -67,8 +70,6 @@ MeshHandle D3D12RendererBackend::CreateMesh(const MeshData& mesh)
     m_uploadContext.QueueBufferForUpload(indexBuffer.resource.Get(), indexBuffer.uploadResource.Get(), indexBuffer.sizeInBytes, D3D12_RESOURCE_STATE_INDEX_BUFFER);
     return handle;
 }
-
-
 
 void D3D12RendererBackend::FlushPendingUploads()
 {
