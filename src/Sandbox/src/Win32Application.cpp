@@ -4,19 +4,18 @@
 #include "..\..\Engine\efg.Core\include\math\math.h"
 #include "..\..\Engine\efg.Renderer\include\MeshData.h"
 #include "..\..\Engine\efg.Renderer\include\Camera.h"
-#include "..\..\Engine\efg.Renderer\include\SceneManager.h"
+#include "..\..\Engine\efg.Scene\include\SceneManager.h"
 
 void Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
 	Window window;
 	Renderer renderer;
+	efg::Scene::SceneManager sceneManager;
 	RendererDesc rendererDesc = {
 		nullptr,
 		1280,
 		720
 	};
-
-	SceneManager scene;
 
 	efg::MeshData triangleMeshData;
 	efg::MeshData cubeMeshData;
@@ -65,6 +64,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	window.Show(nCmdShow);
 	rendererDesc.nativeWindowHandle = window.GetHwnd();
 	renderer.Initialize(rendererDesc);
+	sceneManager.Initialize(&renderer);
 
 	efg::Camera camera;
 	camera.LookAt(efg::Vec3(0.0f, 1.0f, -5.0f), efg::Vec3(0.0f, 0.0f, 0.0f));
@@ -73,18 +73,26 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	efg::MeshHandle triangleMeshHandle = renderer.CreateMesh(triangleMeshData);
 	efg::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
 
-	RenderObject object;
-	object.mesh = cubeMeshHandle;
-	object.world = efg::Translation(-1.0f, 0.0f, 0.0f);
-	scene.AddRenderObjectToScene(object);
+	RenderObject object1;
+	RenderObject object2;
+	RenderObject object3;
+	object1.mesh = cubeMeshHandle;
+	object1.world = efg::Translation(-1.0f, 0.0f, 0.0f);
+	object2.mesh = cubeMeshHandle;
+	object2.world = efg::Translation(1.0f, 0.0f, 0.0f);
+	object3.mesh = cubeMeshHandle;
+	object3.world = efg::Translation(0.0f, 1.0f, 0.0f);
+
+	efg::Scene::SceneHandle testSceneHandle = sceneManager.CreateScene(L"Test Scene");
+	sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object1);
+	sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object2);
+	sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object3);
+	sceneManager.AddCamera(testSceneHandle, &camera);
 
 	while (window.IsOpen())
 	{
 		window.PollEvents();
-		renderer.BeginFrame(camera);
-		//renderer.DrawMesh(triangleMeshHandle);
-		renderer.DrawMesh(cubeMeshHandle);
-		renderer.EndFrame();
+		sceneManager.RenderScene(testSceneHandle);
 	}
 }
 

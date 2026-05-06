@@ -16,5 +16,6 @@ public:
     void UpdateConstantBuffer(GpuConstantBuffer& buffer, const void* data, UINT64 sizeInBytes);
     D3D12_GPU_VIRTUAL_ADDRESS UploadConstantBufferArena(GpuConstantBufferArena& arena, const void* data, UINT64 sizeInBytes);
     void DestroyConstantBuffer(GpuConstantBuffer& buffer);
+    void DestroyConstantBufferArena(GpuConstantBufferArena& arena);
 private:
 };

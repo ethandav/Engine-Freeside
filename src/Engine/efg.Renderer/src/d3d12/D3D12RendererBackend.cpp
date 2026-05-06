@@ -47,7 +47,13 @@ void D3D12RendererBackend::Shutdown()
     for (UINT i = 0; i < NumFramesInFlight; i++)
     {
         m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].cameraConstantBuffer);
+        m_bufferFactory.DestroyConstantBufferArena(m_frameResources[i].objectConstantArena);
     }
+}
+
+void D3D12RendererBackend::AddRenderObjectToRenderQueue(const RenderObject& object)
+{
+    m_renderObjects.push_back(object);
 }
 
 MeshHandle D3D12RendererBackend::CreateMesh(const MeshData& mesh)
@@ -62,34 +68,7 @@ MeshHandle D3D12RendererBackend::CreateMesh(const MeshData& mesh)
     return handle;
 }
 
-void D3D12RendererBackend::DrawMesh(MeshHandle handle)
-{
-    ID3D12GraphicsCommandList* list = m_commandContext.GetDirectCommandList();
-    const GpuMesh& mesh = m_meshLibrary.Get(handle);
-    const GraphicsPipelineState& pipeline = m_graphicsPipelineLibrary.Get(PipelineId::Triangle);
 
-    list->SetGraphicsRootSignature(pipeline.rootSignature.Get());
-    list->SetPipelineState(pipeline.pipelineState.Get());
-    list->IASetPrimitiveTopology(pipeline.primitiveTopology);
-    list->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);
-    list->SetGraphicsRootConstantBufferView(0, m_frameResources[m_swapChain.GetFrameIndex()].cameraConstantBuffer.resource->GetGPUVirtualAddress());
-    ObjectConstants objectConstants = {};
-    objectConstants.world = efg::Transpose(efg::Translation(-1.0f, 0.0f, 0.0f));
-
-    D3D12_GPU_VIRTUAL_ADDRESS objectCbAddress = m_bufferFactory.UploadConstantBufferArena(m_frameResources[m_swapChain.GetFrameIndex()].objectConstantArena, &objectConstants, sizeof(ObjectConstants));
-    // Object b1 changes per draw.
-    list->SetGraphicsRootConstantBufferView(1, objectCbAddress);
-
-    if (mesh.indexCount > 0)
-    {
-        list->IASetIndexBuffer(&mesh.indexBufferView);
-        list->DrawIndexedInstanced(mesh.indexCount, 1, 0, 0, 0);
-    }
-    else
-    {
-        list->DrawInstanced(mesh.vertexCount, 1, 0, 0);
-    }
-}
 
 void D3D12RendererBackend::FlushPendingUploads()
 {
@@ -104,3 +83,5 @@ void D3D12RendererBackend::FlushPendingUploads()
         m_commandContext.ResourceBarrierTransition(upload.destination.Get(), D3D12_RESOURCE_STATE_COPY_DEST, upload.finalState);
     }
 }
+
+

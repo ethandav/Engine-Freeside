@@ -16,13 +16,15 @@ class D3D12RendererBackend final : public IRendererBackend
 public:
 	void Initialize(const RendererDesc& desc) override;
 	void Shutdown() override;
-	void BeginFrame(efg::Camera camera) override;
+	void BeginFrame(efg::Camera* camera) override;
 	void EndFrame() override;
+	void AddRenderObjectToRenderQueue(const RenderObject& object);
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh) override;
-	void DrawMesh(efg::MeshHandle handle) override;
 
 private:
+	void DrawMesh(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle);
 	void FlushPendingUploads();
+	void DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList);
 
 	static constexpr UINT NumFramesInFlight = 2;
 
@@ -54,4 +56,5 @@ private:
 	};
 
 	std::array<FrameResource, NumFramesInFlight> m_frameResources = {};
+	std::vector<RenderObject> m_renderObjects = {};
 };

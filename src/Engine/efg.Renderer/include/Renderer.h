@@ -26,10 +26,10 @@ public:
 	~Renderer();
 	void Initialize(const RendererDesc& desc);
 	void Shutdown();
-	void BeginFrame(efg::Camera camera);
+	void BeginFrame(efg::Camera* camera);
 	void EndFrame();
+	void AddRenderObjectToRenderQueue(const RenderObject& object);
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh);
-	void DrawMesh(efg::MeshHandle handle);
 private:
 	std::unique_ptr<IRendererBackend> m_backend;
 };

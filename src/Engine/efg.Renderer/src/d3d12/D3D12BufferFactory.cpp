@@ -107,6 +107,19 @@ void D3D12BufferFactory::DestroyConstantBuffer(GpuConstantBuffer& buffer)
     buffer.alignedSizeInBytes = 0;
 }
 
+void D3D12BufferFactory::DestroyConstantBufferArena(GpuConstantBufferArena& arena)
+{
+    if (arena.resource && arena.mappedData)
+    {
+        arena.resource->Unmap(0, nullptr);
+        arena.mappedData = nullptr;
+    }
+
+    arena.resource.Reset();
+    arena.capacityInBytes = 0;
+    arena.currentOffset = 0;
+}
+
 GpuConstantBufferArena D3D12BufferFactory::CreateConstantBufferArena(ID3D12Device* device, UINT64 capacityInBytes)
 {
     GpuConstantBufferArena arena = {};

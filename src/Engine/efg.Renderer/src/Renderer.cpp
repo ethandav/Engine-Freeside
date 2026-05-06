@@ -26,7 +26,7 @@ void Renderer::Shutdown()
     }
 }
 
-void Renderer::BeginFrame(efg::Camera camera)
+void Renderer::BeginFrame(efg::Camera* camera)
 {
     m_backend->BeginFrame(camera);
 }
@@ -36,12 +36,12 @@ void Renderer::EndFrame()
     m_backend->EndFrame();
 }
 
+void Renderer::AddRenderObjectToRenderQueue(const RenderObject& object)
+{
+    m_backend->AddRenderObjectToRenderQueue(object);
+}
+
 MeshHandle Renderer::CreateMesh(const MeshData& mesh)
 {
     return m_backend->CreateMesh(mesh);
-}
-
-void Renderer::DrawMesh(MeshHandle handle)
-{
-    m_backend->DrawMesh(handle);
 }
