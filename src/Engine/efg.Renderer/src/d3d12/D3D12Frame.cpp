@@ -9,6 +9,7 @@ void D3D12RendererBackend::BeginFrame(Camera camera)
     D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChain.GetCurrentRTV();
     const float clearColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
     m_directFence.WaitForCPU(frame.fenceValue);
+    frame.objectConstantArena.Reset();
     m_commandContext.BeginRecording(allocator);
     if (m_uploadContext.queueSize > 0)
     {

@@ -30,6 +30,7 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
     {
         m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
         m_frameResources[i].cameraConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(CameraConstants));
+        m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ObjectConstantArenaSize);
     }
 
     m_directFence.CreateFence(0);
@@ -72,6 +73,12 @@ void D3D12RendererBackend::DrawMesh(MeshHandle handle)
     list->IASetPrimitiveTopology(pipeline.primitiveTopology);
     list->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);
     list->SetGraphicsRootConstantBufferView(0, m_frameResources[m_swapChain.GetFrameIndex()].cameraConstantBuffer.resource->GetGPUVirtualAddress());
+    ObjectConstants objectConstants = {};
+    objectConstants.world = efg::Transpose(efg::Translation(-1.0f, 0.0f, 0.0f));
+
+    D3D12_GPU_VIRTUAL_ADDRESS objectCbAddress = m_bufferFactory.UploadConstantBufferArena(m_frameResources[m_swapChain.GetFrameIndex()].objectConstantArena, &objectConstants, sizeof(ObjectConstants));
+    // Object b1 changes per draw.
+    list->SetGraphicsRootConstantBufferView(1, objectCbAddress);
 
     if (mesh.indexCount > 0)
     {

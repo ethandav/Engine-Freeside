@@ -4,6 +4,7 @@
 #include "..\..\Engine\efg.Core\include\math\math.h"
 #include "..\..\Engine\efg.Renderer\include\MeshData.h"
 #include "..\..\Engine\efg.Renderer\include\Camera.h"
+#include "..\..\Engine\efg.Renderer\include\SceneManager.h"
 
 void Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
@@ -14,6 +15,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		1280,
 		720
 	};
+
+	SceneManager scene;
 
 	efg::MeshData triangleMeshData;
 	efg::MeshData cubeMeshData;
@@ -58,7 +61,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		3, 6, 7
 	};
 
-
 	window.Create(hInstance, rendererDesc.width, rendererDesc.height, L"Ethan's Framework (for) Graphics");
 	window.Show(nCmdShow);
 	rendererDesc.nativeWindowHandle = window.GetHwnd();
@@ -70,6 +72,11 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	efg::MeshHandle triangleMeshHandle = renderer.CreateMesh(triangleMeshData);
 	efg::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
+
+	RenderObject object;
+	object.mesh = cubeMeshHandle;
+	object.world = efg::Translation(-1.0f, 0.0f, 0.0f);
+	scene.AddRenderObjectToScene(object);
 
 	while (window.IsOpen())
 	{

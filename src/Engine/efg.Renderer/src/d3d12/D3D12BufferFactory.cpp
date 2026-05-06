@@ -78,6 +78,22 @@ void D3D12BufferFactory::UpdateConstantBuffer(GpuConstantBuffer& buffer, const v
     memcpy(buffer.mappedData, data, static_cast<size_t>(sizeInBytes));
 }
 
+D3D12_GPU_VIRTUAL_ADDRESS D3D12BufferFactory::UploadConstantBufferArena(GpuConstantBufferArena& arena, const void* data, UINT64 sizeInBytes)
+{
+    const UINT64 alignedSize = AlignConstantBufferSize(sizeInBytes);
+
+    if (arena.currentOffset + alignedSize > arena.capacityInBytes)
+    {
+        throw std::runtime_error("Constant buffer arena out of memory.");
+    }
+
+    const UINT64 offset = arena.currentOffset;
+    std::memcpy(arena.mappedData + offset, data, static_cast<size_t>(sizeInBytes));
+    arena.currentOffset += alignedSize;
+
+    return arena.GetGpuAddress(offset);
+}
+
 void D3D12BufferFactory::DestroyConstantBuffer(GpuConstantBuffer& buffer)
 {
     if (buffer.resource && buffer.mappedData)
@@ -89,4 +105,30 @@ void D3D12BufferFactory::DestroyConstantBuffer(GpuConstantBuffer& buffer)
     buffer.resource.Reset();
     buffer.sizeInBytes = 0;
     buffer.alignedSizeInBytes = 0;
+}
+
+GpuConstantBufferArena D3D12BufferFactory::CreateConstantBufferArena(ID3D12Device* device, UINT64 capacityInBytes)
+{
+    GpuConstantBufferArena arena = {};
+
+    arena.capacityInBytes = AlignConstantBufferSize(capacityInBytes);
+    arena.currentOffset = 0;
+    auto uploadHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+    auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(arena.capacityInBytes);
+
+    D3D12_THROW_IF_FAILED(device->CreateCommittedResource(
+        &uploadHeapProps,
+        D3D12_HEAP_FLAG_NONE,
+        &bufferDesc,
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(arena.resource.GetAddressOf())
+    ));
+
+    CD3DX12_RANGE readRange(0, 0);
+    void* mapped = nullptr;
+    D3D12_THROW_IF_FAILED(arena.resource->Map(0, &readRange, &mapped));
+    arena.mappedData = static_cast<uint8_t*>(mapped);
+
+    return arena;
 }

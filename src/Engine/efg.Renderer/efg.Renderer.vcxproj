@@ -143,8 +143,10 @@
     <ClInclude Include="include\IRendererBackend.h" />
     <ClInclude Include="include\MeshData.h" />
     <ClInclude Include="include\Renderer.h" />
+    <ClInclude Include="include\SceneManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\SceneManager.cpp" />
     <ClInclude Include="include\d3d12\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\D3D12MeshLibrary.h" />
     <ClCompile Include="src\d3d12\Camera.cpp" />

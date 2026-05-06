@@ -13,6 +13,12 @@ struct RendererDesc
 	uint32_t height = 0;
 };
 
+struct RenderObject
+{
+	efg::MeshHandle mesh;
+	efg::Mat4 world = efg::Mat4::Identity();
+};
+
 class Renderer
 {
 public:
