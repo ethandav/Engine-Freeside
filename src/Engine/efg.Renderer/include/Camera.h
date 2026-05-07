@@ -5,6 +5,7 @@ namespace efg
 {
     struct CameraConstants
     {
+        Vec4 viewPosition;
         Mat4 viewProjection;
     };
 

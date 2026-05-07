@@ -32,7 +32,8 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
         m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
         m_frameResources[i].cameraConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(CameraConstants));
         m_frameResources[i].directionalLightConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(DirectionalLightConstants));
-        m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ObjectConstantArenaSize);
+        m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
+        m_frameResources[i].materialConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
     }
 
     m_directFence.CreateFence(0);
@@ -51,6 +52,7 @@ void D3D12RendererBackend::Shutdown()
         m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].cameraConstantBuffer);
         m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].directionalLightConstantBuffer);
         m_bufferFactory.DestroyConstantBufferArena(m_frameResources[i].objectConstantArena);
+        m_bufferFactory.DestroyConstantBufferArena(m_frameResources[i].materialConstantArena);
     }
 }
 
@@ -62,8 +64,20 @@ void D3D12RendererBackend::Render(const SceneRenderData& sceneRenderData)
     DirectionalLightConstants dirLightConstants = {};
     m_renderObjects = sceneRenderData.renderObjects;
     cameraConstants.viewProjection = efg::Transpose(sceneRenderData.camera->GetViewProjectionMatrix());
-    dirLightConstants.directionAndIntensity = efg::Vec4(-0.2f, -1.0f, -0.3f, 1.0f);
-    dirLightConstants.colorAndPadding = efg::Vec4(1.0f, 1.0f, 1.0f, 0.0f);
+    efg::Vec3 camPosition = sceneRenderData.camera->GetPosition();
+    cameraConstants.viewPosition = efg::Vec4(camPosition.x, camPosition.y, camPosition.z, 0.0f);
+    dirLightConstants.directionAndIntensity = {
+        sceneRenderData.directionalLight->direction.x,
+        sceneRenderData.directionalLight->direction.y,
+        sceneRenderData.directionalLight->direction.z,
+        1.0f
+    };
+    dirLightConstants.colorAndPadding = {
+        sceneRenderData.directionalLight->color.x,
+        sceneRenderData.directionalLight->color.y,
+        sceneRenderData.directionalLight->color.z,
+        1.0f
+    };
     m_bufferFactory.UpdateConstantBuffer(frame.cameraConstantBuffer, &cameraConstants, sizeof(CameraConstants));
     m_bufferFactory.UpdateConstantBuffer(frame.directionalLightConstantBuffer, &dirLightConstants, sizeof(DirectionalLightConstants));
     BeginFrame(frame);

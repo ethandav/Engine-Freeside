@@ -2,7 +2,7 @@
 
 using Microsoft::WRL::ComPtr;
 
-static constexpr UINT64 ObjectConstantArenaSize = 1024 * 256;
+static constexpr UINT64 ConstantArenaSize = 1024 * 256;
 
 struct GpuBuffer
 {

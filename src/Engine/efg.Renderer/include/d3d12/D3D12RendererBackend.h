@@ -18,6 +18,7 @@ struct FrameResource
 	GpuConstantBuffer cameraConstantBuffer = {};
 	GpuConstantBuffer directionalLightConstantBuffer = {};
 	GpuConstantBufferArena objectConstantArena = {};
+	GpuConstantBufferArena materialConstantArena = {};
 };
 
 class D3D12RendererBackend final : public IRendererBackend

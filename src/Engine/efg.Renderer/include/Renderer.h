@@ -14,11 +14,18 @@ struct RendererDesc
 	uint32_t height = 0;
 };
 
+struct Material
+{
+	efg::Vec4 baseColor = efg::Vec4(0.8f, 0.8f, 0.8f, 0.0f);
+	efg::Vec4 specular = efg::Vec4(1.0f, 64.0f, 0.0f, 0.0f);
+};
+
 struct RenderObject
 {
 	efg::MeshHandle mesh;
 	efg::Mat4 world = efg::Mat4::Identity();
 	efg::Mat4 initialTransform = efg::Mat4::Identity();
+	Material material = {};
 };
 
 struct SceneRenderData

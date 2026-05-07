@@ -10,6 +10,7 @@ void D3D12RendererBackend::BeginFrame(FrameResource& frame)
     const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     m_directFence.WaitForCPU(frame.fenceValue);
     frame.objectConstantArena.Reset();
+    frame.materialConstantArena.Reset();
     m_commandContext.BeginRecording(allocator);
     if (m_uploadContext.queueSize > 0)
     {
@@ -50,9 +51,14 @@ void D3D12RendererBackend::DrawAllRenderObjects(ID3D12GraphicsCommandList* comma
     for (const RenderObject& object : *m_renderObjects)
     {
         ObjectConstants objectConstants = {};
+        MaterialConstants materialConstants = {};
         objectConstants.world = efg::Transpose(object.world);
+        materialConstants.baseColor = object.material.baseColor;
+        materialConstants.specular = object.material.specular;
         D3D12_GPU_VIRTUAL_ADDRESS objectCbAddress = m_bufferFactory.UploadConstantBufferArena(m_frameResources[m_swapChain.GetFrameIndex()].objectConstantArena, &objectConstants, sizeof(ObjectConstants));
+        D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.UploadConstantBufferArena(m_frameResources[m_swapChain.GetFrameIndex()].materialConstantArena, &materialConstants, sizeof(MaterialConstants));
         commandList->SetGraphicsRootConstantBufferView(1, objectCbAddress);
+        commandList->SetGraphicsRootConstantBufferView(3, materialCbAddress);
         DrawMesh(commandList, object.mesh);
     }
 }

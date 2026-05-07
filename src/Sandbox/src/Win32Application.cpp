@@ -41,12 +41,15 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	efg::Scene::SceneRenderObjectHandle hObject3;
 	object1.mesh = cubeMeshHandle;
 	object1.world = efg::Translation(-1.0f, 0.0f, 0.0f);
+	object1.material.baseColor = efg::Vec4(1.0f, 0.0f, 0.0f, 0.0f);
 	object1.initialTransform = efg::Translation(-1.0f, 0.0f, 0.0f);
 	object2.mesh = cubeMeshHandle;
 	object2.world = efg::Translation(1.0f, 0.0f, 0.0f);
+	object2.material.baseColor = efg::Vec4(0.0f, 1.0f, 0.0f, 0.0f);
 	object2.initialTransform = efg::Translation(1.0f, 0.0f, 0.0f);
 	object3.mesh = cubeMeshHandle;
 	object3.world = efg::Translation(0.0f, 1.0f, 0.0f);
+	object3.material.baseColor = efg::Vec4(0.0f, 0.0f, 1.0f, 0.0f);
 	object3.initialTransform = efg::Translation(0.0f, 1.0f, 0.0f);
 
 	efg::Scene::SceneHandle testSceneHandle = sceneManager.CreateScene(L"Test Scene");
