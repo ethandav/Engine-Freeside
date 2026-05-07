@@ -1,4 +1,4 @@
-#include "..\..\include\Camera.h"
+#include "..\include\Camera.h"
 
 namespace efg
 {
@@ -15,6 +15,15 @@ namespace efg
     void Camera::SetUp(const Vec3& up)
     {
         m_up = up;
+    }
+
+    CameraConstants Camera::BuildCameraConstants() const
+    {
+        CameraConstants constants = {};
+        constants.viewProjection = Transpose(GetViewProjectionMatrix());
+        Vec3 camPosition = GetPosition();
+        constants.viewPosition = Vec4(camPosition.x, camPosition.y, camPosition.z, 0.0f);
+        return constants;
     }
 
     void Camera::LookAt(const Vec3& position, const Vec3& target, const Vec3& up)

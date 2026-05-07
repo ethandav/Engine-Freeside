@@ -19,6 +19,14 @@ enum class PipelineId : uint32_t
 	Count
 };
 
+enum class ForwardLitRootParameter : UINT
+{
+	Camera = 0,
+	Object = 1,
+	DirectionalLight = 2,
+	Material = 3
+};
+
 struct GraphicsPipelineState
 {
 	ComPtr<ID3D12RootSignature> rootSignature;

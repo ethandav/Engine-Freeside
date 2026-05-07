@@ -21,20 +21,34 @@ struct FrameResource
 	GpuConstantBufferArena materialConstantArena = {};
 };
 
+struct FrameContext
+{
+	UINT frameIndex = 0;
+	FrameResource* frame = nullptr;
+	ID3D12GraphicsCommandList* commandList = nullptr;
+	D3D12_CPU_DESCRIPTOR_HANDLE backBufferRTV = {};
+	ID3D12Resource* backBuffer = nullptr;
+};
+
 class D3D12RendererBackend final : public IRendererBackend
 {
 public:
 	void Initialize(const RendererDesc& desc) override;
 	void Shutdown() override;
-	void Render(const SceneRenderData& sceneRenderData) override;
+	void Render(const SceneRenderData& scene) override;
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh) override;
 
 private:
-	void BeginFrame(FrameResource& frame);
-	void EndFrame(FrameResource& frame);
-	void DrawMesh(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle);
+	FrameContext BeginFrame();
+	void UpdateFrameConstants(const FrameContext& ctx, const SceneRenderData& scene);
+	void ProcessUploads();
 	void FlushPendingUploads();
-	void DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList);
+	void EndFrame(const FrameContext& ctx);
+	void RecordBackBufferSetup(const FrameContext& ctx);
+	void RecordForwardLitGeometryPass(const FrameContext& ctx, const SceneRenderData& scene);
+	void BindPipeline(ID3D12GraphicsCommandList* commandList, PipelineId pipelineId);
+	void DrawMesh(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle);
+	void DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList, const SceneRenderData& scene);
 
 	static constexpr UINT NumFramesInFlight = 2;
 
@@ -52,8 +66,5 @@ private:
 	D3D12SwapChain m_swapChain = {};
 	D3D12QueueFence m_directFence = {};
 
-
-
 	std::array<FrameResource, NumFramesInFlight> m_frameResources = {};
-	const std::vector<RenderObject>* m_renderObjects = nullptr;
 };

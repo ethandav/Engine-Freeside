@@ -116,7 +116,10 @@
     <ClCompile Include="src\d3d12\D3D12UploadContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3d12\Camera.cpp">
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lights.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

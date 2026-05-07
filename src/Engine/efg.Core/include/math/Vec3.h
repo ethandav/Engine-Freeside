@@ -12,13 +12,10 @@ namespace efg
 
         constexpr Vec3() = default;
 
-        constexpr Vec3(float xValue, float yValue, float zValue)
-            : x(xValue), y(yValue), z(zValue)
-        {
-        }
+        constexpr Vec3(float xValue, float yValue, float zValue) : x(xValue), y(yValue), z(zValue) { }
     };
 
-        inline Vec3 operator-(const Vec3& a, const Vec3& b)
+    inline Vec3 operator-(const Vec3& a, const Vec3& b)
     {
         return Vec3(a.x - b.x, a.y - b.y, a.z - b.z);
     }
@@ -45,6 +42,16 @@ namespace efg
             a.z * b.x - a.x * b.z,
             a.x * b.y - a.y * b.x
         );
+    }
+
+    inline float LengthSquared(const Vec3& v)
+    {
+        return Dot(v, v);
+    }
+
+    inline float Length(const Vec3& v)
+    {
+        return std::sqrt(LengthSquared(v));
     }
 
     inline Vec3 Normalize(const Vec3& v)

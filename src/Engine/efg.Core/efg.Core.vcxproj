@@ -133,7 +133,9 @@
     <ClInclude Include="include\math\Vec3.h" />
     <ClInclude Include="include\math\Vec4.h" />
     <ClInclude Include="include\shapes\cube.h" />
+    <ClInclude Include="include\shapes\pyramid.h" />
     <ClInclude Include="include\shapes\shapes.h" />
+    <ClInclude Include="include\shapes\sphere.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

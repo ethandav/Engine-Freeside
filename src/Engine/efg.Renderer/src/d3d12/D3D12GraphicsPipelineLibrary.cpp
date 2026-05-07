@@ -26,10 +26,10 @@ void D3D12GraphicsPipelineLibary::CreateRootSignature(ID3D12RootSignature** root
     ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> error;
 
-    rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_ALL);      // Camera
-    rootParameters[1].InitAsConstantBufferView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);   // Object
-    rootParameters[2].InitAsConstantBufferView(2, 0, D3D12_SHADER_VISIBILITY_PIXEL);    // Directional Light
-    rootParameters[3].InitAsConstantBufferView(3, 0, D3D12_SHADER_VISIBILITY_PIXEL);    // Material
+    rootParameters[0].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), 0, D3D12_SHADER_VISIBILITY_ALL);
+    rootParameters[1].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Object), 0, D3D12_SHADER_VISIBILITY_VERTEX);
+    rootParameters[2].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), 0, D3D12_SHADER_VISIBILITY_PIXEL);
+    rootParameters[3].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
     rootSignatureDesc.Init(
         _countof(rootParameters),

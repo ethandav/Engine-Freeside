@@ -17,6 +17,7 @@ namespace efg
         void SetPosition(const Vec3& position);
         void SetTarget(const Vec3& target);
         void SetUp(const Vec3& up);
+        CameraConstants BuildCameraConstants() const;
 
         void LookAt(const Vec3& position, const Vec3& target, const Vec3& up = Vec3(0.0f, 1.0f, 0.0f));
 

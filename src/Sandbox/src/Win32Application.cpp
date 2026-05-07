@@ -21,6 +21,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	};
 
 	efg::MeshData cubeMeshData = efg::Shapes::Cube().mesh;
+	efg::MeshData sphereMeshData = efg::Shapes::Sphere().mesh;
+	efg::MeshData pyramidMeshData = efg::Shapes::Pyramid().mesh;
 
 	window.Create(hInstance, rendererDesc.width, rendererDesc.height, L"Ethan's Framework (for) Graphics");
 	window.Show(nCmdShow);
@@ -29,6 +31,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	sceneManager.Initialize(&renderer);
 
 	efg::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
+	efg::MeshHandle sphereMeshHandle = renderer.CreateMesh(sphereMeshData);
+	efg::MeshHandle pyramidMeshHandle = renderer.CreateMesh(pyramidMeshData);
 
 	RenderObject object1;
 	RenderObject object2;
@@ -43,11 +47,11 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	object1.world = efg::Translation(-1.0f, 0.0f, 0.0f);
 	object1.material.baseColor = efg::Vec4(1.0f, 0.0f, 0.0f, 0.0f);
 	object1.initialTransform = efg::Translation(-1.0f, 0.0f, 0.0f);
-	object2.mesh = cubeMeshHandle;
+	object2.mesh = pyramidMeshHandle;
 	object2.world = efg::Translation(1.0f, 0.0f, 0.0f);
 	object2.material.baseColor = efg::Vec4(0.0f, 1.0f, 0.0f, 0.0f);
 	object2.initialTransform = efg::Translation(1.0f, 0.0f, 0.0f);
-	object3.mesh = cubeMeshHandle;
+	object3.mesh = sphereMeshHandle;
 	object3.world = efg::Translation(0.0f, 1.0f, 0.0f);
 	object3.material.baseColor = efg::Vec4(0.0f, 0.0f, 1.0f, 0.0f);
 	object3.initialTransform = efg::Translation(0.0f, 1.0f, 0.0f);
