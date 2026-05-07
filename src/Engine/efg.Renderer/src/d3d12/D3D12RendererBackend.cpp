@@ -1,6 +1,7 @@
 #include "..\..\include\d3d12\D3D12RendererBackend.h"
 #include "..\..\include\Camera.h"
 #include "..\..\include\ShaderConstants.h"
+#include "..\..\include\d3d12\D3D12Pix.h"
 
 void D3D12RendererBackend::Initialize(const RendererDesc& desc)
 {
@@ -59,11 +60,16 @@ void D3D12RendererBackend::Shutdown()
 void D3D12RendererBackend::Render(const SceneRenderData& scene)
 {
     FrameContext ctx = BeginFrame();
-
+    PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"BeginFrame");
     ProcessUploads();
     UpdateFrameConstants(ctx, scene);
+    PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"BackBufferSetup");
     RecordBackBufferSetup(ctx);
+    PIXEndEvent(ctx.commandList); // BackBufferSetup End
+    PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"ForwardLitGeometryPass");
     RecordForwardLitGeometryPass(ctx, scene);
+    PIXEndEvent(ctx.commandList); // ForwardLitGeometryPass End
+    PIXEndEvent(ctx.commandList); // BeginFrame End
     EndFrame(ctx);
 }
 

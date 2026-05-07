@@ -1,5 +1,6 @@
 #include "..\..\include\d3d12\D3D12UploadContext.h"
 #include "..\..\include\d3d12\D3D12Error.h"
+#include "..\..\include\d3d12\D3D12Pix.h"
 
 void D3D12UploadContext::Initialize(D3D12Context* graphicsContext)
 {
@@ -87,12 +88,12 @@ UploadTicket D3D12UploadContext::FlushUploads()
 	if (m_queuedBufferUploads.size() > 0)
 	{
 		BeginRecording();
-
+		PIXBeginEvent(m_copyCommandList.Get(), PIX_COLOR(100, 100, 255), L"FlushUploads");
 		for (const PendingBufferUpload& upload : m_queuedBufferUploads)
 		{
 			CopyBufferRegion(upload.destination.Get(), upload.upload.Get(), upload.sizeInBytes);
 		}
-
+		PIXEndEvent(m_copyCommandList.Get()); // FlushUploads End
 		EndRecording();
 		Submit();
 		UINT64 copyFenceValue = copyfence.Signal(m_copyQueue.Get());

@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <string>
 
 #include "MeshData.h"
 #include "Camera.h"
@@ -26,6 +27,7 @@ struct RenderObject
 	efg::Mat4 world = efg::Mat4::Identity();
 	efg::Mat4 initialTransform = efg::Mat4::Identity();
 	Material material = {};
+	std::wstring name = L"Render Object";
 };
 
 struct SceneRenderData

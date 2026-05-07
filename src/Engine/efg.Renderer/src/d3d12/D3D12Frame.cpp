@@ -1,6 +1,7 @@
 #include "..\..\include\d3d12\D3D12RendererBackend.h"
-#include "../../include/Camera.h"
+#include "..\..\include\Camera.h"
 #include "..\..\include\ShaderConstants.h"
+#include "..\..\include\d3d12\D3D12Pix.h"
 
 FrameContext D3D12RendererBackend::BeginFrame()
 {
@@ -24,12 +25,14 @@ FrameContext D3D12RendererBackend::BeginFrame()
 
 void D3D12RendererBackend::UpdateFrameConstants(const FrameContext& ctx, const SceneRenderData& scene)
 {
+    PIXBeginEvent(PIX_COLOR(255, 255, 255), L"Update Frame Constants");
     CameraConstants cameraConstants = scene.camera->BuildCameraConstants();
     Lights::DirectionalLightConstants dirLightConstants = scene.directionalLight->BuildDirectionalLightConstants();
     ctx.frame->objectConstantArena.Reset();
     ctx.frame->materialConstantArena.Reset();
     m_bufferFactory.UpdateConstantBuffer(ctx.frame->cameraConstantBuffer, &cameraConstants, sizeof(CameraConstants));
     m_bufferFactory.UpdateConstantBuffer(ctx.frame->directionalLightConstantBuffer, &dirLightConstants, sizeof(Lights::DirectionalLightConstants));
+    PIXEndEvent();
 }
 
 void D3D12RendererBackend::ProcessUploads()

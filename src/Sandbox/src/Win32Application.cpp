@@ -47,14 +47,17 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	object1.world = efg::Translation(-1.0f, 0.0f, 0.0f);
 	object1.material.baseColor = efg::Vec4(1.0f, 0.0f, 0.0f, 0.0f);
 	object1.initialTransform = efg::Translation(-1.0f, 0.0f, 0.0f);
+	object1.name = L"Cube";
 	object2.mesh = pyramidMeshHandle;
 	object2.world = efg::Translation(1.0f, 0.0f, 0.0f);
 	object2.material.baseColor = efg::Vec4(0.0f, 1.0f, 0.0f, 0.0f);
 	object2.initialTransform = efg::Translation(1.0f, 0.0f, 0.0f);
+	object2.name = L"Pyramid";
 	object3.mesh = sphereMeshHandle;
 	object3.world = efg::Translation(0.0f, 1.0f, 0.0f);
 	object3.material.baseColor = efg::Vec4(0.0f, 0.0f, 1.0f, 0.0f);
 	object3.initialTransform = efg::Translation(0.0f, 1.0f, 0.0f);
+	object3.name = L"Sphere";
 
 	efg::Scene::SceneHandle testSceneHandle = sceneManager.CreateScene(L"Test Scene");
 	hObject1 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object1);
