@@ -67,6 +67,14 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	pObject2 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject2);
 	pObject3 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject3);
 
+	efg::Lights::Point pointLight1;
+	pointLight1.color = efg::Vec3(1.0f, 1.0f, 1.0f);
+	pointLight1.intensity = 1.0f;
+	pointLight1.position = efg::Vec3(-1.0f, 0.0f, -2.0f);
+	pointLight1.radius = 1.0f;
+
+	sceneManager.AddPointLightToScene(testSceneHandle, pointLight1);
+
 	float angle = 0.0f;
 	while (window.IsOpen())
 	{

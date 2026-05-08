@@ -41,6 +41,12 @@ namespace efg
 			return scene->AddRenderObjectToRenderQueue(object);
 		}
 
+		void SceneManager::AddPointLightToScene(SceneHandle handle, efg::Lights::Point& light)
+		{
+			Scene* scene = GetSceneByHandle(handle);
+			return scene->AddPointLightToScene(light);
+		}
+
 		RenderObject* SceneManager::GetRenderObjectByHandle(SceneHandle sceneHandle, SceneRenderObjectHandle objectHandle)
 		{
 			Scene* scene = GetSceneByHandle(sceneHandle);

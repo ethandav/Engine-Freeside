@@ -35,6 +35,7 @@ struct SceneRenderData
 	const efg::Camera* camera = nullptr;
 	const efg::Lights::Directional* directionalLight = nullptr;
 	const std::vector<RenderObject>* renderObjects = nullptr;
+	const std::vector<efg::Lights::Point>* pointLights = nullptr;
 };
 
 class Renderer

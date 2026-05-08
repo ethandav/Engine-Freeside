@@ -26,6 +26,11 @@ namespace efg
 			};
 		}
 
+		void Scene::AddPointLightToScene(efg::Lights::Point light)
+		{
+			m_pointLights.push_back(std::move(light));
+		}
+
 		RenderObject* Scene::GetRenderObjectByHandle(SceneRenderObjectHandle handle)
 		{
 			if (!handle.IsValid() || handle.index >= m_renderObjectQueue.size())
@@ -47,6 +52,7 @@ namespace efg
 			renderData.camera = &m_camera;
 			renderData.directionalLight = &m_dirLight;
 			renderData.renderObjects = &m_renderObjectQueue;
+			renderData.pointLights = &m_pointLights;
 
 			renderer->Render(renderData);
 		}

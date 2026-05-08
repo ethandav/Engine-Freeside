@@ -35,6 +35,40 @@ void D3D12RendererBackend::UpdateFrameConstants(const FrameContext& ctx, const S
     PIXEndEvent();
 }
 
+void D3D12RendererBackend::UpdatePointLights(const FrameContext& ctx, const SceneRenderData& scene)
+{
+    Lights::PointLightConstants metadata = {};
+    uint32_t count = 0;
+
+    if (scene.pointLights)
+    {
+        count = static_cast<uint32_t>(std::min<size_t>(scene.pointLights->size(), ctx.frame->pointLightStructuredBuffer.elementCount));
+        Lights::GpuPointLight* dst = reinterpret_cast<Lights::GpuPointLight*>(ctx.frame->pointLightStructuredBuffer.mappedData);
+
+        for (uint32_t i = 0; i < count; ++i)
+        {
+            const Lights::Point& light = (*scene.pointLights)[i];
+
+            dst[i].positionAndRadius = {
+                light.position.x,
+                light.position.y,
+                light.position.z,
+                light.radius
+            };
+
+            dst[i].colorAndIntensity = {
+                light.color.x,
+                light.color.y,
+                light.color.z,
+                light.intensity
+            };
+        }
+    }
+
+    metadata.pointLightCount = count;
+    m_bufferFactory.UpdateConstantBuffer(ctx.frame->pointLightConstantBuffer, &metadata, sizeof(Lights::PointLightConstants));
+}
+
 void D3D12RendererBackend::ProcessUploads()
 {
     if (m_uploadContext.queueSize > 0)

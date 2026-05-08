@@ -33,6 +33,7 @@ namespace efg
 		public:
 			Scene(std::wstring name);
 			SceneRenderObjectHandle AddRenderObjectToRenderQueue(RenderObject object);
+			void AddPointLightToScene(efg::Lights::Point light);
 			RenderObject* GetRenderObjectByHandle(SceneRenderObjectHandle handle);
 			void CreateScenefromDefault(float aspectRatio);
 			void AddCamera(Camera camera);
@@ -44,6 +45,7 @@ namespace efg
 			uint32_t handle = 0;
 			Camera m_camera = {};
 			Lights::Directional m_dirLight = {};
+			std::vector<Lights::Point> m_pointLights = {};
 			std::vector<RenderObject> m_renderObjectQueue = {};
 		};
 	}

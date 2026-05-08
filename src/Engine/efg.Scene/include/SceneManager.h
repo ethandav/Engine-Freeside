@@ -18,6 +18,7 @@ namespace efg
 			SceneHandle CreateScene(std::wstring sceneName);
 			SceneHandle AddSceneToQueue(const Scene& scene);
 			SceneRenderObjectHandle AddRenderObjectToRenderQueue(SceneHandle handle, RenderObject& object);
+			void AddPointLightToScene(SceneHandle handle, efg::Lights::Point& light);
 			RenderObject* GetRenderObjectByHandle(SceneHandle sceneHandle, SceneRenderObjectHandle objectHandle);
 			void AddCamera(SceneHandle handle, Camera camera);
 			void RenderScene(SceneHandle handle);

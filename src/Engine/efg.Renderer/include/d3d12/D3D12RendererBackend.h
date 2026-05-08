@@ -17,7 +17,7 @@ struct FrameResource
 	UINT64 fenceValue = 0;
 	GpuConstantBuffer cameraConstantBuffer = {};
 	GpuConstantBuffer directionalLightConstantBuffer = {};
-	GpuConstantBuffer pointLightMetaDataConstantBuffer = {};
+	GpuConstantBuffer pointLightConstantBuffer = {};
 	GpuConstantBufferArena objectConstantArena = {};
 	GpuConstantBufferArena materialConstantArena = {};
 	GpuStructuredBuffer pointLightStructuredBuffer = {};
@@ -43,6 +43,7 @@ public:
 private:
 	FrameContext BeginFrame();
 	void UpdateFrameConstants(const FrameContext& ctx, const SceneRenderData& scene);
+	void UpdatePointLights(const FrameContext& ctx, const SceneRenderData& scene);
 	void ProcessUploads();
 	void FlushPendingUploads();
 	void EndFrame(const FrameContext& ctx);
