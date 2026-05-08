@@ -105,6 +105,11 @@ void D3D12RendererBackend::RecordForwardLitGeometryPass(const FrameContext& ctx,
     BindPipeline(ctx.commandList, PipelineId::ForwardLitGeometry);
     ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), m_frameResources[m_swapChain.GetFrameIndex()].cameraConstantBuffer.resource->GetGPUVirtualAddress());
     ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), m_frameResources[m_swapChain.GetFrameIndex()].directionalLightConstantBuffer.resource->GetGPUVirtualAddress());
+    ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightConstants), m_frameResources[m_swapChain.GetFrameIndex()].pointLightConstantBuffer.resource->GetGPUVirtualAddress());
+
+    ID3D12DescriptorHeap* heaps[] = { m_descriptorContext.GetShaderVisibleHeap() };
+    ctx.commandList->SetDescriptorHeaps(_countof(heaps), heaps);
+    ctx.commandList->SetGraphicsRootDescriptorTable(static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv), ctx.frame->pointLightStructuredBuffer.gpuSrv);
     DrawAllRenderObjects(ctx.commandList, scene);
 }
 

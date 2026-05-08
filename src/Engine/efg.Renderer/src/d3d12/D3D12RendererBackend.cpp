@@ -37,6 +37,9 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
         m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
         m_frameResources[i].materialConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
         m_frameResources[i].pointLightStructuredBuffer = m_bufferFactory.CreateStructuredBufferUpload(m_graphicsContext.GetDevice(), Lights::MaxPointLights, sizeof(Lights::GpuPointLight));
+        DescriptorAllocation srvAllocation = m_descriptorContext.CreateShaderVisibleView(m_frameResources[i].pointLightStructuredBuffer.resource.Get(), m_frameResources[i].pointLightStructuredBuffer.elementCount, m_frameResources[i].pointLightStructuredBuffer.elementStride);
+        m_frameResources[i].pointLightStructuredBuffer.cpuSrv = srvAllocation.cpu;
+        m_frameResources[i].pointLightStructuredBuffer.gpuSrv = srvAllocation.gpu;
     }
 
     m_directFence.CreateFence(0);
