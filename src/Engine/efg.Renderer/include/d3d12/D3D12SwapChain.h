@@ -3,6 +3,8 @@
 #include "D3D12DescriptorContext.h"
 #include "D3D12CommandContext.h"
 
+#include <array>
+
 class D3D12SwapChain
 {
 public:
@@ -24,5 +26,5 @@ private:
 	D3D12DescriptorContext* m_descriptorContext = nullptr;
 	ComPtr<IDXGISwapChain3> m_swapChain;
 	ComPtr<ID3D12Resource> m_backBuffers[FrameCount];
-	D3D12_CPU_DESCRIPTOR_HANDLE m_backBufferHandles[FrameCount] = {};
+	std::array<DescriptorAllocation, FrameCount> m_backBufferHandles;
 };

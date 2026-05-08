@@ -61,7 +61,7 @@ ID3D12Resource* D3D12SwapChain::GetCurrentBackBuffer() const
 
 D3D12_CPU_DESCRIPTOR_HANDLE D3D12SwapChain::GetCurrentBackBufferHandle() const
 {
-    return m_backBufferHandles[m_frameIndex];
+    return m_backBufferHandles[m_frameIndex].cpu;
 }
 
 void D3D12SwapChain::Present()
