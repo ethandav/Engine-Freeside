@@ -33,8 +33,10 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
         m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
         m_frameResources[i].cameraConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(CameraConstants));
         m_frameResources[i].directionalLightConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(Lights::DirectionalLightConstants));
+        m_frameResources[i].pointLightMetaDataConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(Lights::PointLightConstants));
         m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
         m_frameResources[i].materialConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
+        m_frameResources[i].pointLightStructuredBuffer = m_bufferFactory.CreateStructuredBufferUpload(m_graphicsContext.GetDevice(), Lights::MaxPointLights, sizeof(Lights::GpuPointLight));
     }
 
     m_directFence.CreateFence(0);

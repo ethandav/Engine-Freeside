@@ -13,6 +13,7 @@ public:
     GpuBuffer CreateStaticBuffer(ID3D12Device* device, const void* data, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState);
     GpuConstantBuffer CreateConstantBuffer(ID3D12Device* device, UINT64 sizeInBytes);
     GpuConstantBufferArena CreateConstantBufferArena(ID3D12Device* device, UINT64 capacityInBytes);
+    GpuStructuredBuffer CreateStructuredBufferUpload(ID3D12Device* device, uint32_t elementCount, uint32_t elementStride);
     void UpdateConstantBuffer(GpuConstantBuffer& buffer, const void* data, UINT64 sizeInBytes);
     D3D12_GPU_VIRTUAL_ADDRESS UploadConstantBufferArena(GpuConstantBufferArena& arena, const void* data, UINT64 sizeInBytes);
     void DestroyConstantBuffer(GpuConstantBuffer& buffer);

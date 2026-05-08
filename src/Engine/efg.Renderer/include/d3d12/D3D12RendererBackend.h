@@ -17,8 +17,10 @@ struct FrameResource
 	UINT64 fenceValue = 0;
 	GpuConstantBuffer cameraConstantBuffer = {};
 	GpuConstantBuffer directionalLightConstantBuffer = {};
+	GpuConstantBuffer pointLightMetaDataConstantBuffer = {};
 	GpuConstantBufferArena objectConstantArena = {};
 	GpuConstantBufferArena materialConstantArena = {};
+	GpuStructuredBuffer pointLightStructuredBuffer = {};
 };
 
 struct FrameContext

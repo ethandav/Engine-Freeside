@@ -21,8 +21,9 @@ public:
 	UINT CreateDSVDescriptorHeap(const UINT Count = MaxDSVHeapSize);
 	UINT CreateSamplerDescriptorHeap(const UINT Count = MaxSamplerHeapSize);
 	DescriptorAllocation AllocateRTV();
-	DescriptorAllocation AllocateshaderVisible();
+	DescriptorAllocation AllocateShaderVisible();
 	DescriptorAllocation CreateRTV(ID3D12Resource* resource, const D3D12_RENDER_TARGET_VIEW_DESC* desc);
+	DescriptorAllocation CreateShaderVisibleView(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride);
 	ID3D12DescriptorHeap* GetShaderVisibleHeap();
 
 private:

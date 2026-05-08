@@ -89,13 +89,33 @@ DescriptorAllocation D3D12DescriptorContext::AllocateRTV()
 DescriptorAllocation D3D12DescriptorContext::CreateRTV(ID3D12Resource* resource, const D3D12_RENDER_TARGET_VIEW_DESC* desc)
 {
     DescriptorAllocation allocation = AllocateRTV();
-
     m_graphicsContext->GetDevice()->CreateRenderTargetView(resource, desc, allocation.cpu);
 
     return allocation;
 }
 
-DescriptorAllocation D3D12DescriptorContext::AllocateshaderVisible()
+DescriptorAllocation D3D12DescriptorContext::CreateShaderVisibleView(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride)
+{
+    DescriptorAllocation allocation = AllocateShaderVisible();
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+    srvDesc.Buffer.FirstElement = 0;
+    srvDesc.Buffer.NumElements = elementCount;
+    srvDesc.Buffer.StructureByteStride = elementStride;
+    srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+
+    m_graphicsContext->GetDevice()->CreateShaderResourceView(
+        resource,
+        &srvDesc,
+        allocation.cpu
+    );
+
+    return allocation;
+}
+
+DescriptorAllocation D3D12DescriptorContext::AllocateShaderVisible()
 {
     if (m_shaderVisibleUsed >= m_shaderVisibleCapacity)
     {

@@ -21,5 +21,9 @@ namespace efg
             };
             return constants;
         }
+
+        void Point::BuildGpuPointLights()
+        {
+        }
     }
 }

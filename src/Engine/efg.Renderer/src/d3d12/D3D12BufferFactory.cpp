@@ -145,3 +145,28 @@ GpuConstantBufferArena D3D12BufferFactory::CreateConstantBufferArena(ID3D12Devic
 
     return arena;
 }
+
+GpuStructuredBuffer D3D12BufferFactory::CreateStructuredBufferUpload(ID3D12Device* device, uint32_t elementCount, uint32_t elementStride)
+{
+    GpuStructuredBuffer buffer = {};
+
+    buffer.elementCount = elementCount;
+    buffer.elementStride = elementStride;
+    buffer.sizeInBytes = static_cast<uint64_t>(elementCount) * elementStride;
+    auto heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+    auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(buffer.sizeInBytes);
+
+    D3D12_THROW_IF_FAILED(device->CreateCommittedResource(
+        &heapProps,
+        D3D12_HEAP_FLAG_NONE,
+        &resourceDesc,
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(buffer.resource.GetAddressOf())
+    ));
+
+    CD3DX12_RANGE readRange(0, 0);
+    D3D12_THROW_IF_FAILED(buffer.resource->Map(0, &readRange, reinterpret_cast<void**>(&buffer.mappedData)));
+
+    return buffer;
+}

@@ -4,6 +4,16 @@ using Microsoft::WRL::ComPtr;
 
 static constexpr UINT64 ConstantArenaSize = 1024 * 256;
 
+inline UINT64 AlignUp(UINT64 value, UINT64 alignment)
+{
+    return (value + alignment - 1) & ~(alignment - 1);
+}
+
+inline UINT64 AlignConstantBufferSize(UINT64 size)
+{
+    return AlignUp(size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+}
+
 struct GpuBuffer
 {
     UINT64 sizeInBytes = 0;
@@ -19,16 +29,6 @@ struct GpuConstantBuffer
     UINT64 sizeInBytes = 0;
     UINT64 alignedSizeInBytes = 0;
 };
-
-inline UINT64 AlignUp(UINT64 value, UINT64 alignment)
-{
-    return (value + alignment - 1) & ~(alignment - 1);
-}
-
-inline UINT64 AlignConstantBufferSize(UINT64 size)
-{
-    return AlignUp(size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-}
 
 struct GpuConstantBufferArena
 {
@@ -48,4 +48,17 @@ struct GpuConstantBufferArena
     {
         return resource->GetGPUVirtualAddress() + offset;
     }
+};
+
+struct GpuStructuredBuffer
+{
+    Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+    uint8_t* mappedData = nullptr;
+
+    uint32_t elementCount = 0;
+    uint32_t elementStride = 0;
+    uint64_t sizeInBytes = 0;
+
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
+    D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
 };
