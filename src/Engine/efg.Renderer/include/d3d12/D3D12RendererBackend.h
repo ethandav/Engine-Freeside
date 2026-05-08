@@ -26,7 +26,7 @@ struct FrameContext
 	UINT frameIndex = 0;
 	FrameResource* frame = nullptr;
 	ID3D12GraphicsCommandList* commandList = nullptr;
-	D3D12_CPU_DESCRIPTOR_HANDLE backBufferRTV = {};
+	D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = {};
 	ID3D12Resource* backBuffer = nullptr;
 };
 

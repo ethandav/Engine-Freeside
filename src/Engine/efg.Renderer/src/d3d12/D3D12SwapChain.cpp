@@ -40,12 +40,12 @@ void D3D12SwapChain::CreateSwapChain(void* nativeWindowHandle, uint32_t width, u
     m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 }
 
-void D3D12SwapChain::CreateRenderTargetViews()
+void D3D12SwapChain::CreateBackBufferViews()
 {
     for (uint32_t i = 0; i < FrameCount; ++i)
     {
-        D3D12_THROW_IF_FAILED(m_swapChain->GetBuffer(i, IID_PPV_ARGS(m_renderTargets[i].GetAddressOf())));
-        m_rtvHandles[i] = m_descriptorContext->CreateRTV(m_renderTargets[i].Get(), nullptr);
+        D3D12_THROW_IF_FAILED(m_swapChain->GetBuffer(i, IID_PPV_ARGS(m_backBuffers[i].GetAddressOf())));
+        m_backBufferHandles[i] = m_descriptorContext->CreateRTV(m_backBuffers[i].Get(), nullptr);
     }
 }
 
@@ -56,12 +56,12 @@ UINT D3D12SwapChain::GetFrameIndex()
 
 ID3D12Resource* D3D12SwapChain::GetCurrentBackBuffer() const
 {
-    return m_renderTargets[m_frameIndex].Get();
+    return m_backBuffers[m_frameIndex].Get();
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE D3D12SwapChain::GetCurrentRTV() const
+D3D12_CPU_DESCRIPTOR_HANDLE D3D12SwapChain::GetCurrentBackBufferHandle() const
 {
-    return m_rtvHandles[m_frameIndex];
+    return m_backBufferHandles[m_frameIndex];
 }
 
 void D3D12SwapChain::Present()

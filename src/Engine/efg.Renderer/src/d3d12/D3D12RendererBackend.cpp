@@ -25,8 +25,8 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
     m_directFence.Initialize(&m_graphicsContext);
 
     m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
-    m_descriptorContext.CreateRTVDescriptorHeap(NumFramesInFlight);
-    m_swapChain.CreateRenderTargetViews();
+    m_descriptorContext.CreateAllHeaps();
+    m_swapChain.CreateBackBufferViews();
 
     for (UINT i = 0; i < NumFramesInFlight; i++)
     {

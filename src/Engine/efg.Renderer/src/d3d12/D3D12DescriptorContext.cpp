@@ -7,6 +7,11 @@ void D3D12DescriptorContext::Initialize(D3D12Context* graphicsContext)
     m_graphicsContext = graphicsContext;
 }
 
+void D3D12DescriptorContext::CreateAllHeaps()
+{
+    CreateRTVDescriptorHeap();
+}
+
 UINT D3D12DescriptorContext::CreateRTVDescriptorHeap(const UINT Count)
 {
     D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};

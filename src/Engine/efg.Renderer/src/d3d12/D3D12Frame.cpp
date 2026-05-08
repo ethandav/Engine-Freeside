@@ -8,7 +8,7 @@ FrameContext D3D12RendererBackend::BeginFrame()
     UINT frameIndex = m_swapChain.GetFrameIndex();
     FrameResource& frame = m_frameResources[frameIndex];
     ID3D12CommandAllocator* allocator = frame.commandAllocator.Get();
-    D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChain.GetCurrentRTV();
+    D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChain.GetCurrentBackBufferHandle();
 
     m_directFence.WaitForCPU(frame.fenceValue);
     m_commandContext.BeginRecording(allocator);
@@ -18,7 +18,7 @@ FrameContext D3D12RendererBackend::BeginFrame()
     ctx.frame = &frame;
     ctx.commandList = m_commandContext.GetDirectCommandList();
     ctx.backBuffer = m_swapChain.GetCurrentBackBuffer();
-    ctx.backBufferRTV = m_swapChain.GetCurrentRTV();
+    ctx.backBufferHandle = m_swapChain.GetCurrentBackBufferHandle();
 
     return ctx;
 }
@@ -62,8 +62,8 @@ void D3D12RendererBackend::RecordBackBufferSetup(const FrameContext& ctx)
     const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     m_commandContext.SetViewportAndScissor(m_viewport, m_scissorRect);
     m_commandContext.ResourceBarrierTransition(ctx.backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    m_commandContext.SetRenderTarget(ctx.backBufferRTV);
-    m_commandContext.ClearRenderTarget(ctx.backBufferRTV, clearColor);
+    m_commandContext.SetRenderTarget(ctx.backBufferHandle);
+    m_commandContext.ClearRenderTarget(ctx.backBufferHandle, clearColor);
 }
 
 void D3D12RendererBackend::RecordForwardLitGeometryPass(const FrameContext& ctx, const SceneRenderData& scene)

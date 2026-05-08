@@ -10,10 +10,10 @@ public:
 	void CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height);
 	UINT GetFrameIndex();
 	ID3D12Resource* GetCurrentBackBuffer() const;
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRTV() const;
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferHandle() const;
 	void UpdateFrameIndex();
 	void Present();
-	void CreateRenderTargetViews();
+	void CreateBackBufferViews();
 
 	static constexpr uint32_t FrameCount = 2;
 private:
@@ -23,6 +23,6 @@ private:
 	D3D12DirectCommandContext* m_commandContext = nullptr;
 	D3D12DescriptorContext* m_descriptorContext = nullptr;
 	ComPtr<IDXGISwapChain3> m_swapChain;
-	ComPtr<ID3D12Resource> m_renderTargets[FrameCount];
-	D3D12_CPU_DESCRIPTOR_HANDLE m_rtvHandles[FrameCount] = {};
+	ComPtr<ID3D12Resource> m_backBuffers[FrameCount];
+	D3D12_CPU_DESCRIPTOR_HANDLE m_backBufferHandles[FrameCount] = {};
 };
