@@ -9,6 +9,10 @@
 #include "..\..\Engine\efg.Scene\include\SceneManager.h"
 #include "..\..\Engine\efg.Renderer\include\Materials.h"
 
+#include <random>
+
+constexpr uint32_t ObjectCount = 1000;
+
 void Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
 	Window window;
@@ -30,6 +34,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	rendererDesc.nativeWindowHandle = window.GetHwnd();
 	renderer.Initialize(rendererDesc);
 	sceneManager.Initialize(&renderer);
+	efg::Scene::SceneHandle testSceneHandle = sceneManager.CreateScene(L"Test Scene");
 
 	efg::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
 	efg::MeshHandle sphereMeshHandle = renderer.CreateMesh(sphereMeshData);
@@ -49,6 +54,29 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	greenMaterial.baseColor = efg::Vec3(0.0f, 1.0f, 0.0f);
 	greenMaterial.specular = efg::Vec2(1.0f, 64.0f);
 	efg::MaterialHandle greenMaterialHandle = renderer.RegisterMaterial(greenMaterial);
+
+
+	std::mt19937 rng{ std::random_device{}() };
+
+	std::uniform_real_distribution<float> posDist(-50.0f, 50.0f);
+	std::uniform_real_distribution<float> heightDist(-50.0f, 50.0f);
+
+	for (uint32_t i = 0; i < ObjectCount; ++i)
+	{
+		RenderObject object = {};
+
+		const float x = posDist(rng);
+		const float y = heightDist(rng);
+		const float z = posDist(rng);
+
+		efg::Mat4 transform = efg::Translation(x, y, z);
+
+		object.mesh = sphereMeshHandle;
+		object.material = blueMaterialHandle;
+		object.world = transform;
+		object.initialTransform = transform;
+		sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object);
+	}
 
 	RenderObject object1;
 	RenderObject object2;
@@ -75,13 +103,14 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	object3.initialTransform = efg::Translation(0.0f, 1.0f, 0.0f);
 	object3.name = L"Sphere";
 
-	efg::Scene::SceneHandle testSceneHandle = sceneManager.CreateScene(L"Test Scene");
+
 	hObject1 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object1);
 	hObject2 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object2);
 	hObject3 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object3);
 	pObject1 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject1);
 	pObject2 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject2);
 	pObject3 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject3);
+
 
 	efg::Lights::Point pointLight1;
 	pointLight1.color = efg::Vec3(1.0f, 1.0f, 1.0f);

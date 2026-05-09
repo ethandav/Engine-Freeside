@@ -56,7 +56,7 @@ private:
 	void DrawMesh(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle);
 	void DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle, uint32_t instanceCount);
 	void DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene);
-	void Batch(std::vector<uint32_t>& sortedIndices, const FramePacket& scene);
+	void SortRenderObjectsForInstancing(std::vector<uint32_t>& sortedIndices, const FramePacket& scene);
 	void DrawInstancedBatch(const FrameContext& ctx, const FramePacket& scene, const std::vector<uint32_t>& sortedIndices, uint32_t begin, uint32_t end);
 
 

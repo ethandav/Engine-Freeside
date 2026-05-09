@@ -125,11 +125,9 @@ void D3D12RendererBackend::BindPipeline(ID3D12GraphicsCommandList* commandList, 
 
 void D3D12RendererBackend::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
 {
-    MeshHandle currentMesh = {};
-    MaterialHandle currentMaterial = {};
     std::vector<uint32_t> sortedIndices(scene.renderObjects.size());
 
-    Batch(sortedIndices, scene);
+    SortRenderObjectsForInstancing(sortedIndices, scene);
     uint32_t begin = 0;
 
     while (begin < sortedIndices.size())
@@ -158,7 +156,7 @@ void D3D12RendererBackend::DrawAllRenderObjects(const FrameContext& ctx, const F
     }
 }
 
-void D3D12RendererBackend::Batch(std::vector<uint32_t>& sortedIndices, const FramePacket& scene)
+void D3D12RendererBackend::SortRenderObjectsForInstancing(std::vector<uint32_t>& sortedIndices, const FramePacket& scene)
 {
     for (uint32_t i = 0; i < sortedIndices.size(); ++i)
     {
