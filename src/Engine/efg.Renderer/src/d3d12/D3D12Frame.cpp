@@ -2,6 +2,7 @@
 #include "..\..\include\Camera.h"
 #include "..\..\include\ShaderConstants.h"
 #include "..\..\include\d3d12\D3D12Pix.h"
+#include <algorithm>
 
 FrameContext D3D12RendererBackend::BeginFrame()
 {
@@ -123,18 +124,49 @@ void D3D12RendererBackend::BindPipeline(ID3D12GraphicsCommandList* commandList, 
 
 void D3D12RendererBackend::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
 {
-    for (const RenderObject& object : scene.renderObjects)
+    MeshHandle currentMesh = {};
+    MaterialHandle currentMaterial = {};
+    std::vector<uint32_t> sortedIndices(scene.renderObjects.size());
+
+    for (uint32_t i = 0; i < sortedIndices.size(); ++i)
     {
-        ObjectConstants objectConstants = {};
-        const GpuMaterial& material = object.material.IsValid() ? m_materialLibrary.GetMaterialByHandle(object.material) : m_materialLibrary.GetDefaultMaterial();
-        objectConstants.world = efg::Transpose(object.world);
-        D3D12_GPU_VIRTUAL_ADDRESS objectCbAddress = m_bufferFactory.UploadConstantBufferArena(ctx.frame->objectConstantArena, &objectConstants, sizeof(ObjectConstants));
-        D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.UploadConstantBufferArena(ctx.frame->materialConstantArena, &material, sizeof(GpuMaterial));
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Object), objectCbAddress);
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
+        sortedIndices[i] = i;
+    }
+
+    std::sort(sortedIndices.begin(), sortedIndices.end(),
+        [&](uint32_t lhs, uint32_t rhs)
+        {
+            const RenderObject& a = scene.renderObjects[lhs];
+            const RenderObject& b = scene.renderObjects[rhs];
+
+            if (a.material.index != b.material.index)
+                return a.material.index < b.material.index;
+
+            return a.mesh.index < b.mesh.index;
+        });
+
+    for (uint32_t sortedIndex : sortedIndices)
+    {
+        const RenderObject& object = scene.renderObjects[sortedIndex];
+        if (object.material.index != currentMaterial.index)
+        {
+            currentMaterial = object.material;
+            const GpuMaterial& material = object.material.IsValid() ? m_materialLibrary.GetMaterialByHandle(object.material) : m_materialLibrary.GetDefaultMaterial();
+            D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.UploadConstantBufferArena(ctx.frame->materialConstantArena, &material, sizeof(GpuMaterial));
+            ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
+        }
+        if (object.mesh.index != currentMesh.index)
+        {
+            currentMesh = object.mesh;
+            ObjectConstants objectConstants = {};
+            objectConstants.world = efg::Transpose(object.world);
+            D3D12_GPU_VIRTUAL_ADDRESS objectCbAddress = m_bufferFactory.UploadConstantBufferArena(ctx.frame->objectConstantArena, &objectConstants, sizeof(ObjectConstants));
+            ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Object), objectCbAddress);
+        }
         DrawMesh(ctx.commandList, object.mesh);
     }
 }
+
 
 void D3D12RendererBackend::DrawMesh(ID3D12GraphicsCommandList* commandList, MeshHandle handle)
 {

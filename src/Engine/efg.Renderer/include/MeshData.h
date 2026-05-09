@@ -30,5 +30,15 @@ namespace efg
         {
             return index != UINT32_MAX;
         }
+
+        bool operator==(const MeshHandle& other) const
+        {
+            return index == other.index;
+        }
+
+        bool operator!=(const MeshHandle& other) const
+        {
+            return !(*this == other);
+        }
     };
 }

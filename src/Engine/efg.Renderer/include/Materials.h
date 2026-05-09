@@ -14,6 +14,16 @@ namespace efg
         {
             return index != UINT32_MAX;
         }
+
+        bool operator==(const MaterialHandle& other) const
+        {
+            return index == other.index;
+        }
+
+        bool operator!=(const MaterialHandle& other) const
+        {
+            return !(*this == other);
+        }
     };
 
     struct MaterialDesc
