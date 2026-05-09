@@ -12,6 +12,6 @@ public:
     virtual void Shutdown() = 0;
     virtual void Render(const FramePacket& sceneRenderData) = 0;
     virtual efg::MeshHandle CreateMesh(const efg::MeshData& mesh) = 0;
-    virtual efg::MaterialHandle RegisterMaterial(const efg::MaterialDesc mat) = 0;
+    virtual efg::MaterialHandle RegisterMaterial(const efg::MaterialDesc& mat) = 0;
 
 };

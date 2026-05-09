@@ -38,17 +38,17 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	efg::MaterialDesc blueMaterial;
 	blueMaterial.baseColor = efg::Vec3(0.0f, 0.0f, 1.0f);
 	blueMaterial.specular = efg::Vec2(1.0f, 64.0f);
-	efg::MaterialHandle blueMaterialHandle = renderer.RegisterMatieral(blueMaterial);
+	efg::MaterialHandle blueMaterialHandle = renderer.RegisterMaterial(blueMaterial);
 
 	efg::MaterialDesc redMaterial;
 	redMaterial.baseColor = efg::Vec3(1.0f, 0.0f, 0.0f);
 	redMaterial.specular = efg::Vec2(1.0f, 64.0f);
-	efg::MaterialHandle redMaterialHandle = renderer.RegisterMatieral(redMaterial);
+	efg::MaterialHandle redMaterialHandle = renderer.RegisterMaterial(redMaterial);
 
 	efg::MaterialDesc greenMaterial;
 	greenMaterial.baseColor = efg::Vec3(0.0f, 1.0f, 0.0f);
 	greenMaterial.specular = efg::Vec2(1.0f, 64.0f);
-	efg::MaterialHandle greenMaterialHandle = renderer.RegisterMatieral(greenMaterial);
+	efg::MaterialHandle greenMaterialHandle = renderer.RegisterMaterial(greenMaterial);
 
 	RenderObject object1;
 	RenderObject object2;

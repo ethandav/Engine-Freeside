@@ -45,7 +45,7 @@ public:
 	void Shutdown();
 	void SubmitFrame(FramePacket sceneRenderData);
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh);
-	efg::MaterialHandle RegisterMatieral(const efg::MaterialDesc& mat);
+	efg::MaterialHandle RegisterMaterial(const efg::MaterialDesc& mat);
 private:
 	std::unique_ptr<IRendererBackend> m_backend;
 	std::unique_ptr<RenderThread> m_renderThread;

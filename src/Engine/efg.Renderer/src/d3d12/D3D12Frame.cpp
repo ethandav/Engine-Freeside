@@ -110,7 +110,7 @@ void D3D12RendererBackend::RecordForwardLitGeometryPass(const FrameContext& ctx,
     ID3D12DescriptorHeap* heaps[] = { m_descriptorContext.GetShaderVisibleHeap() };
     ctx.commandList->SetDescriptorHeaps(_countof(heaps), heaps);
     ctx.commandList->SetGraphicsRootDescriptorTable(static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv), ctx.frame->pointLightStructuredBuffer.gpuSrv);
-    DrawAllRenderObjects(ctx.commandList, scene);
+    DrawAllRenderObjects(ctx, scene);
 }
 
 void D3D12RendererBackend::BindPipeline(ID3D12GraphicsCommandList* commandList, PipelineId pipelineId)
@@ -121,23 +121,18 @@ void D3D12RendererBackend::BindPipeline(ID3D12GraphicsCommandList* commandList, 
     commandList->IASetPrimitiveTopology(pipeline.primitiveTopology);
 }
 
-void D3D12RendererBackend::DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList, const FramePacket& scene)
+void D3D12RendererBackend::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
 {
     for (const RenderObject& object : scene.renderObjects)
     {
         ObjectConstants objectConstants = {};
-        GpuMaterial material = {};
-        if (object.material.IsValid())
-        {
-            material = m_materialLibrary.GetMaterialByHandle(object.material);
-
-        }
+        const GpuMaterial& material = object.material.IsValid() ? m_materialLibrary.GetMaterialByHandle(object.material) : m_materialLibrary.GetDefaultMaterial();
         objectConstants.world = efg::Transpose(object.world);
-        D3D12_GPU_VIRTUAL_ADDRESS objectCbAddress = m_bufferFactory.UploadConstantBufferArena(m_frameResources[m_swapChain.GetFrameIndex()].objectConstantArena, &objectConstants, sizeof(ObjectConstants));
-        D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.UploadConstantBufferArena(m_frameResources[m_swapChain.GetFrameIndex()].materialConstantArena, &material, sizeof(GpuMaterial));
-        commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Object), objectCbAddress);
-        commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
-        DrawMesh(commandList, object.mesh);
+        D3D12_GPU_VIRTUAL_ADDRESS objectCbAddress = m_bufferFactory.UploadConstantBufferArena(ctx.frame->objectConstantArena, &objectConstants, sizeof(ObjectConstants));
+        D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.UploadConstantBufferArena(ctx.frame->materialConstantArena, &material, sizeof(GpuMaterial));
+        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Object), objectCbAddress);
+        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
+        DrawMesh(ctx.commandList, object.mesh);
     }
 }
 

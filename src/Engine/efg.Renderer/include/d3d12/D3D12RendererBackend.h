@@ -40,7 +40,7 @@ public:
 	void Shutdown() override;
 	void Render(const FramePacket& scene) override;
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh) override;
-	efg::MaterialHandle RegisterMaterial(const efg::MaterialDesc mat) override;
+	efg::MaterialHandle RegisterMaterial(const efg::MaterialDesc& mat) override;
 
 private:
 	FrameContext BeginFrame();
@@ -53,7 +53,7 @@ private:
 	void RecordForwardLitGeometryPass(const FrameContext& ctx, const FramePacket& scene);
 	void BindPipeline(ID3D12GraphicsCommandList* commandList, PipelineId pipelineId);
 	void DrawMesh(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle);
-	void DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList, const FramePacket& scene);
+	void DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene);
 
 	static constexpr UINT NumFramesInFlight = 2;
 
