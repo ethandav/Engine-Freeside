@@ -62,7 +62,7 @@ void D3D12RendererBackend::Shutdown()
     }
 }
 
-void D3D12RendererBackend::Render(const SceneRenderData& scene)
+void D3D12RendererBackend::Render(const FramePacket& scene)
 {
     FrameContext ctx = BeginFrame();
     PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"BeginFrame");

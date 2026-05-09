@@ -31,8 +31,9 @@ struct RenderObject
 	std::wstring name = L"Render Object";
 };
 
-struct SceneRenderData
+struct FramePacket
 {
+	uint64_t frameId = 0;
 	efg::Camera camera = {};
 	efg::Lights::Directional directionalLight = {};
 	std::vector<RenderObject> renderObjects = {};
@@ -47,7 +48,7 @@ public:
 	void Initialize(const RendererDesc& desc);
 	float GetRendererAspectRatio();
 	void Shutdown();
-	void SubmitFrame(SceneRenderData sceneRenderData);
+	void SubmitFrame(FramePacket sceneRenderData);
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh);
 private:
 	std::unique_ptr<IRendererBackend> m_backend;

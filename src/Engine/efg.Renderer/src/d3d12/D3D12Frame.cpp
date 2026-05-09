@@ -23,7 +23,7 @@ FrameContext D3D12RendererBackend::BeginFrame()
     return ctx;
 }
 
-void D3D12RendererBackend::UpdateFrameConstants(const FrameContext& ctx, const SceneRenderData& scene)
+void D3D12RendererBackend::UpdateFrameConstants(const FrameContext& ctx, const FramePacket& scene)
 {
     PIXBeginEvent(PIX_COLOR(255, 255, 255), L"Update Frame Constants");
     CameraConstants cameraConstants = scene.camera.BuildCameraConstants();
@@ -35,7 +35,7 @@ void D3D12RendererBackend::UpdateFrameConstants(const FrameContext& ctx, const S
     PIXEndEvent();
 }
 
-void D3D12RendererBackend::UpdatePointLights(const FrameContext& ctx, const SceneRenderData& scene)
+void D3D12RendererBackend::UpdatePointLights(const FrameContext& ctx, const FramePacket& scene)
 {
     Lights::PointLightConstants metadata = {};
     uint32_t count = 0;
@@ -100,7 +100,7 @@ void D3D12RendererBackend::RecordBackBufferSetup(const FrameContext& ctx)
     m_commandContext.ClearRenderTarget(ctx.backBufferHandle, clearColor);
 }
 
-void D3D12RendererBackend::RecordForwardLitGeometryPass(const FrameContext& ctx, const SceneRenderData& scene)
+void D3D12RendererBackend::RecordForwardLitGeometryPass(const FrameContext& ctx, const FramePacket& scene)
 {
     BindPipeline(ctx.commandList, PipelineId::ForwardLitGeometry);
     ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), m_frameResources[m_swapChain.GetFrameIndex()].cameraConstantBuffer.resource->GetGPUVirtualAddress());
@@ -121,7 +121,7 @@ void D3D12RendererBackend::BindPipeline(ID3D12GraphicsCommandList* commandList, 
     commandList->IASetPrimitiveTopology(pipeline.primitiveTopology);
 }
 
-void D3D12RendererBackend::DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList, const SceneRenderData& scene)
+void D3D12RendererBackend::DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList, const FramePacket& scene)
 {
     for (const RenderObject& object : scene.renderObjects)
     {

@@ -37,21 +37,21 @@ class D3D12RendererBackend final : public IRendererBackend
 public:
 	void Initialize(const RendererDesc& desc) override;
 	void Shutdown() override;
-	void Render(const SceneRenderData& scene) override;
+	void Render(const FramePacket& scene) override;
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh) override;
 
 private:
 	FrameContext BeginFrame();
-	void UpdateFrameConstants(const FrameContext& ctx, const SceneRenderData& scene);
-	void UpdatePointLights(const FrameContext& ctx, const SceneRenderData& scene);
+	void UpdateFrameConstants(const FrameContext& ctx, const FramePacket& scene);
+	void UpdatePointLights(const FrameContext& ctx, const FramePacket& scene);
 	void ProcessUploads();
 	void FlushPendingUploads();
 	void EndFrame(const FrameContext& ctx);
 	void RecordBackBufferSetup(const FrameContext& ctx);
-	void RecordForwardLitGeometryPass(const FrameContext& ctx, const SceneRenderData& scene);
+	void RecordForwardLitGeometryPass(const FrameContext& ctx, const FramePacket& scene);
 	void BindPipeline(ID3D12GraphicsCommandList* commandList, PipelineId pipelineId);
 	void DrawMesh(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle);
-	void DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList, const SceneRenderData& scene);
+	void DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList, const FramePacket& scene);
 
 	static constexpr UINT NumFramesInFlight = 2;
 

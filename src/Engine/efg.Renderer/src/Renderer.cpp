@@ -42,7 +42,7 @@ void Renderer::Shutdown()
     }
 }
 
-void Renderer::SubmitFrame(SceneRenderData sceneRenderData)
+void Renderer::SubmitFrame(FramePacket sceneRenderData)
 {
     m_renderThread->Submit(std::move(sceneRenderData));
 }

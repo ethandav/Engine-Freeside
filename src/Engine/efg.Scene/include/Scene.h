@@ -43,6 +43,8 @@ namespace efg
 		private:
 
 			uint32_t handle = 0;
+			uint32_t pointLightCount = 0;
+			uint32_t objectCount = 0;
 			Camera m_camera = {};
 			Lights::Directional m_dirLight = {};
 			std::vector<Lights::Point> m_pointLights = {};

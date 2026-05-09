@@ -8,7 +8,6 @@ void RenderThread::Start(IRendererBackend* backend)
     m_backend = backend;
     m_running = true;
     m_thread = std::thread(&RenderThread::ThreadMain, this);
-    SetThreadDescription(GetCurrentThread(), L"Render Thread");
 }
 
 void RenderThread::Stop()
@@ -18,6 +17,7 @@ void RenderThread::Stop()
         m_running = false;
     }
 
+    m_hasWorkCv.notify_one();
     m_hasSpaceCv.notify_one();
 
     if (m_thread.joinable())
@@ -28,9 +28,10 @@ void RenderThread::Stop()
 
 void RenderThread::ThreadMain()
 {
+    SetThreadDescription(GetCurrentThread(), L"Render Thread");
     while (true)
     {
-        SceneRenderData sceneData;
+        FramePacket sceneData;
 
         {
             std::unique_lock<std::mutex> lock(m_mutex);
@@ -43,8 +44,8 @@ void RenderThread::ThreadMain()
             if (!m_running && m_frameQueue.empty())
                 break;
 
-            sceneData = std::move(m_frameQueue.front());
-            m_frameQueue.pop_front();
+            sceneData = std::move(m_frameQueue.back());
+            m_frameQueue.clear();
 
             lock.unlock();
             m_hasSpaceCv.notify_one();
@@ -56,7 +57,7 @@ void RenderThread::ThreadMain()
     //m_backend->WaitForGPU();
 }
 
-void RenderThread::Submit(SceneRenderData sceneData)
+void RenderThread::Submit(FramePacket sceneData)
 {
     std::unique_lock<std::mutex> lock(m_mutex);
 

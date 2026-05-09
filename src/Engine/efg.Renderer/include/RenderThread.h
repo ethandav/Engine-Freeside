@@ -11,7 +11,7 @@ class RenderThread
 public:
     void Start(IRendererBackend* backend);
     void Stop();
-    void Submit(SceneRenderData sceneData);
+    void Submit(FramePacket sceneData);
 
 private:
     void ThreadMain();
@@ -26,7 +26,7 @@ private:
     std::condition_variable m_hasWorkCv;
     std::condition_variable m_hasSpaceCv;
 
-    std::deque<SceneRenderData> m_frameQueue;
+    std::deque<FramePacket> m_frameQueue;
 
     bool m_running = false;
 };
