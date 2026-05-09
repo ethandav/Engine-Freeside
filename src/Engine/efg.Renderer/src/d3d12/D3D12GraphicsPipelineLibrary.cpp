@@ -22,7 +22,7 @@ const GraphicsPipelineState& D3D12GraphicsPipelineLibary::Get(PipelineId id) con
 void D3D12GraphicsPipelineLibary::CreateRootSignature(ID3D12RootSignature** rootSignature)
 {
     CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-    CD3DX12_ROOT_PARAMETER rootParameters[6] = {};
+    CD3DX12_ROOT_PARAMETER rootParameters[7] = {};
     ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> error;
 
@@ -35,6 +35,7 @@ void D3D12GraphicsPipelineLibary::CreateRootSignature(ID3D12RootSignature** root
     CD3DX12_DESCRIPTOR_RANGE pointLightSrvRange;
     pointLightSrvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,1,0);
     rootParameters[5].InitAsDescriptorTable(1,&pointLightSrvRange,D3D12_SHADER_VISIBILITY_PIXEL);
+    rootParameters[6].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
     rootSignatureDesc.Init(
         _countof(rootParameters),

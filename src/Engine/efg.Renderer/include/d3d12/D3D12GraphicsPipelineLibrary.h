@@ -26,7 +26,8 @@ enum class ForwardLitRootParameter : UINT
 	DirectionalLight = 2,
 	Material = 3,
 	PointLightConstants = 4,
-	PointLightsSrv = 5
+	PointLightsSrv = 5,
+	InstanceData = 6
 };
 
 struct GraphicsPipelineState

@@ -18,5 +18,7 @@ public:
     D3D12_GPU_VIRTUAL_ADDRESS UploadConstantBufferArena(GpuConstantBufferArena& arena, const void* data, UINT64 sizeInBytes);
     void DestroyConstantBuffer(GpuConstantBuffer& buffer);
     void DestroyConstantBufferArena(GpuConstantBufferArena& arena);
+    GpuUploadBufferArena CreateUploadBufferArena(ID3D12Device* device, UINT64 capacityInBytes);
+    D3D12_GPU_VIRTUAL_ADDRESS UploadBufferArena(GpuUploadBufferArena& arena, const void* data, UINT64 sizeInBytes, UINT64 alignment = 16);
 private:
 };

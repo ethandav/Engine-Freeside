@@ -170,3 +170,43 @@ GpuStructuredBuffer D3D12BufferFactory::CreateStructuredBufferUpload(ID3D12Devic
 
     return buffer;
 }
+
+GpuUploadBufferArena D3D12BufferFactory::CreateUploadBufferArena(ID3D12Device* device, UINT64 capacityInBytes)
+{
+    GpuUploadBufferArena arena = {};
+    arena.capacityInBytes = capacityInBytes;
+    arena.currentOffset = 0;
+    auto uploadHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+    auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(arena.capacityInBytes);
+
+    D3D12_THROW_IF_FAILED(device->CreateCommittedResource(
+        &uploadHeapProps,
+        D3D12_HEAP_FLAG_NONE,
+        &bufferDesc,
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(arena.resource.GetAddressOf())
+    ));
+
+    CD3DX12_RANGE readRange(0, 0);
+    void* mapped = nullptr;
+    D3D12_THROW_IF_FAILED(arena.resource->Map(0, &readRange, &mapped));
+    arena.mappedData = static_cast<uint8_t*>(mapped);
+
+    return arena;
+}
+
+D3D12_GPU_VIRTUAL_ADDRESS D3D12BufferFactory::UploadBufferArena(GpuUploadBufferArena& arena, const void* data, UINT64 sizeInBytes, UINT64 alignment)
+{
+    const UINT64 alignedOffset = AlignUp(arena.currentOffset, alignment);
+
+    if (alignedOffset + sizeInBytes > arena.capacityInBytes)
+    {
+        throw std::runtime_error("Upload buffer arena out of memory.");
+    }
+
+    std::memcpy(arena.mappedData + alignedOffset, data, static_cast<size_t>(sizeInBytes));
+    arena.currentOffset = alignedOffset + sizeInBytes;
+
+    return arena.GetGpuAddress(alignedOffset);
+}

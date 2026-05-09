@@ -29,7 +29,13 @@ struct PointLight
     float4 colorAndIntensity; // rgb = color, w = intensity
 };
 
+struct InstanceData
+{
+    float4x4 World;
+};
+
 StructuredBuffer<PointLight> gPointLights : register(t0);
+StructuredBuffer<InstanceData> Instances : register(t1);
 
 cbuffer PointLightMetadata : register(b4)
 {
@@ -52,14 +58,16 @@ struct VSOutput
     float2 uv : TEXCOORD2;
 };
 
-VSOutput VSMain(VSInput input)
+VSOutput VSMain(VSInput input, uint instanceId : SV_InstanceID)
 {
     VSOutput output;
-    float4 worldPosition = mul(World, float4(input.position, 1.0f));
+    InstanceData instance = Instances[instanceId];
+
+    float4 worldPosition = mul(instance.World, float4(input.position, 1.0f));
     
     output.position = mul(ViewProjection, worldPosition);
     output.worldPosition = worldPosition.xyz;
-    output.normalWS = normalize(mul((float3x3) World, input.normal));
+    output.normalWS = normalize(mul((float3x3) instance.World, input.normal));
     output.uv = input.uv;
     
     return output;

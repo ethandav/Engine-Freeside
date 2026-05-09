@@ -1,5 +1,7 @@
 #pragma once
 
+#include "..\..\..\efg.Core\include\math\Mat4.h"
+
 using Microsoft::WRL::ComPtr;
 
 static constexpr UINT64 ConstantArenaSize = 1024 * 256;
@@ -61,4 +63,28 @@ struct GpuStructuredBuffer
 
     D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
     D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
+};
+
+struct InstanceData
+{
+    efg::Mat4 world;
+};
+
+struct GpuUploadBufferArena
+{
+    Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+    uint8_t* mappedData = nullptr;
+
+    UINT64 capacityInBytes = 0;
+    UINT64 currentOffset = 0;
+
+    D3D12_GPU_VIRTUAL_ADDRESS GetGpuAddress(UINT64 offset) const
+    {
+        return resource->GetGPUVirtualAddress() + offset;
+    }
+
+    void Reset()
+    {
+        currentOffset = 0;
+    }
 };

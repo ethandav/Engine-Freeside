@@ -31,6 +31,7 @@ void D3D12RendererBackend::UpdateFrameConstants(const FrameContext& ctx, const F
     Lights::DirectionalLightConstants dirLightConstants = scene.directionalLight.BuildDirectionalLightConstants();
     ctx.frame->objectConstantArena.Reset();
     ctx.frame->materialConstantArena.Reset();
+    ctx.frame->gpuUploadBufferArena.Reset();
     m_bufferFactory.UpdateConstantBuffer(ctx.frame->cameraConstantBuffer, &cameraConstants, sizeof(CameraConstants));
     m_bufferFactory.UpdateConstantBuffer(ctx.frame->directionalLightConstantBuffer, &dirLightConstants, sizeof(Lights::DirectionalLightConstants));
     PIXEndEvent();
@@ -128,6 +129,37 @@ void D3D12RendererBackend::DrawAllRenderObjects(const FrameContext& ctx, const F
     MaterialHandle currentMaterial = {};
     std::vector<uint32_t> sortedIndices(scene.renderObjects.size());
 
+    Batch(sortedIndices, scene);
+    uint32_t begin = 0;
+
+    while (begin < sortedIndices.size())
+    {
+        const RenderObject& first = scene.renderObjects[sortedIndices[begin]];
+
+        uint32_t end = begin + 1;
+
+        while (end < sortedIndices.size())
+        {
+            const RenderObject& candidate = scene.renderObjects[sortedIndices[end]];
+
+            if (candidate.mesh != first.mesh ||
+                candidate.material != first.material)
+            {
+                break;
+            }
+
+            ++end;
+        }
+
+        // Objects in [begin, end) are one batch.
+        DrawInstancedBatch(ctx, scene, sortedIndices, begin, end);
+
+        begin = end;
+    }
+}
+
+void D3D12RendererBackend::Batch(std::vector<uint32_t>& sortedIndices, const FramePacket& scene)
+{
     for (uint32_t i = 0; i < sortedIndices.size(); ++i)
     {
         sortedIndices[i] = i;
@@ -144,41 +176,42 @@ void D3D12RendererBackend::DrawAllRenderObjects(const FrameContext& ctx, const F
 
             return a.mesh.index < b.mesh.index;
         });
-
-    for (uint32_t sortedIndex : sortedIndices)
-    {
-        const RenderObject& object = scene.renderObjects[sortedIndex];
-        if (object.material.index != currentMaterial.index)
-        {
-            currentMaterial = object.material;
-            const GpuMaterial& material = object.material.IsValid() ? m_materialLibrary.GetMaterialByHandle(object.material) : m_materialLibrary.GetDefaultMaterial();
-            D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.UploadConstantBufferArena(ctx.frame->materialConstantArena, &material, sizeof(GpuMaterial));
-            ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
-        }
-        if (object.mesh.index != currentMesh.index)
-        {
-            currentMesh = object.mesh;
-            ObjectConstants objectConstants = {};
-            objectConstants.world = efg::Transpose(object.world);
-            D3D12_GPU_VIRTUAL_ADDRESS objectCbAddress = m_bufferFactory.UploadConstantBufferArena(ctx.frame->objectConstantArena, &objectConstants, sizeof(ObjectConstants));
-            ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Object), objectCbAddress);
-        }
-        DrawMesh(ctx.commandList, object.mesh);
-    }
 }
 
+void D3D12RendererBackend::DrawInstancedBatch(const FrameContext& ctx, const FramePacket& scene, const std::vector<uint32_t>& sortedIndices, uint32_t begin, uint32_t end)
+{
+    const RenderObject& first = scene.renderObjects[sortedIndices[begin]];
+    const GpuMaterial& material = first.material.IsValid() ? m_materialLibrary.GetMaterialByHandle(first.material) : m_materialLibrary.GetDefaultMaterial();
+    D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.UploadConstantBufferArena(ctx.frame->materialConstantArena, &material, sizeof(GpuMaterial));
+    ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
+    std::vector<InstanceData> instances;
+    instances.reserve(end - begin);
 
-void D3D12RendererBackend::DrawMesh(ID3D12GraphicsCommandList* commandList, MeshHandle handle)
+    for (uint32_t i = begin; i < end; ++i)
+    {
+        const RenderObject& object = scene.renderObjects[sortedIndices[i]];
+        InstanceData instance = {};
+        instance.world = efg::Transpose(object.world);
+        instances.push_back(instance);
+    }
+
+    D3D12_GPU_VIRTUAL_ADDRESS instanceBufferAddress = m_bufferFactory.UploadBufferArena(ctx.frame->gpuUploadBufferArena, instances.data(), instances.size() * sizeof(InstanceData));
+    ctx.commandList->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::InstanceData), instanceBufferAddress);
+    DrawMeshInstanced(ctx.commandList, first.mesh, static_cast<uint32_t>(instances.size()));
+}
+
+void D3D12RendererBackend::DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle, uint32_t instanceCount)
 {
     const GpuMesh& mesh = m_meshLibrary.Get(handle);
     commandList->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);
     if (mesh.indexCount > 0)
     {
         commandList->IASetIndexBuffer(&mesh.indexBufferView);
-        commandList->DrawIndexedInstanced(mesh.indexCount, 1, 0, 0, 0);
+        commandList->DrawIndexedInstanced(mesh.indexCount, instanceCount, 0, 0, 0);
+
     }
     else
     {
-        commandList->DrawInstanced(mesh.vertexCount, 1, 0, 0);
+        commandList->DrawInstanced(mesh.vertexCount, instanceCount, 0, 0);
     }
 }
