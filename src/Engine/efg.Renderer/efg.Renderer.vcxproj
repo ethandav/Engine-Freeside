@@ -145,11 +145,13 @@
     <ClInclude Include="include\Lights.h" />
     <ClInclude Include="include\MeshData.h" />
     <ClInclude Include="include\Renderer.h" />
+    <ClInclude Include="include\RenderThread.h" />
     <ClInclude Include="include\ShaderConstants.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\d3d12\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\D3D12MeshLibrary.h" />
+    <ClCompile Include="src\d3d12\RenderThread.cpp" />
     <ClCompile Include="src\Lights.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\d3d12\D3D12BufferFactory.cpp" />

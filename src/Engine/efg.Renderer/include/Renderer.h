@@ -7,6 +7,7 @@
 #include "Lights.h"
 
 class IRendererBackend;
+class RenderThread; 
 
 struct RendererDesc
 {
@@ -32,10 +33,10 @@ struct RenderObject
 
 struct SceneRenderData
 {
-	const efg::Camera* camera = nullptr;
-	const efg::Lights::Directional* directionalLight = nullptr;
-	const std::vector<RenderObject>* renderObjects = nullptr;
-	const std::vector<efg::Lights::Point>* pointLights = nullptr;
+	efg::Camera camera = {};
+	efg::Lights::Directional directionalLight = {};
+	std::vector<RenderObject> renderObjects = {};
+	std::vector<efg::Lights::Point> pointLights = {};
 };
 
 class Renderer
@@ -46,9 +47,10 @@ public:
 	void Initialize(const RendererDesc& desc);
 	float GetRendererAspectRatio();
 	void Shutdown();
-	void Render(const SceneRenderData& sceneRenderData);
+	void SubmitFrame(SceneRenderData sceneRenderData);
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh);
 private:
 	std::unique_ptr<IRendererBackend> m_backend;
+	std::unique_ptr<RenderThread> m_renderThread;
 	RendererDesc m_rendererDesc = {};
 };

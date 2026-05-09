@@ -26,8 +26,8 @@ FrameContext D3D12RendererBackend::BeginFrame()
 void D3D12RendererBackend::UpdateFrameConstants(const FrameContext& ctx, const SceneRenderData& scene)
 {
     PIXBeginEvent(PIX_COLOR(255, 255, 255), L"Update Frame Constants");
-    CameraConstants cameraConstants = scene.camera->BuildCameraConstants();
-    Lights::DirectionalLightConstants dirLightConstants = scene.directionalLight->BuildDirectionalLightConstants();
+    CameraConstants cameraConstants = scene.camera.BuildCameraConstants();
+    Lights::DirectionalLightConstants dirLightConstants = scene.directionalLight.BuildDirectionalLightConstants();
     ctx.frame->objectConstantArena.Reset();
     ctx.frame->materialConstantArena.Reset();
     m_bufferFactory.UpdateConstantBuffer(ctx.frame->cameraConstantBuffer, &cameraConstants, sizeof(CameraConstants));
@@ -40,14 +40,14 @@ void D3D12RendererBackend::UpdatePointLights(const FrameContext& ctx, const Scen
     Lights::PointLightConstants metadata = {};
     uint32_t count = 0;
 
-    if (scene.pointLights)
+    if (!scene.pointLights.empty())
     {
-        count = static_cast<uint32_t>(std::min<size_t>(scene.pointLights->size(), ctx.frame->pointLightStructuredBuffer.elementCount));
+        count = static_cast<uint32_t>(std::min<size_t>(scene.pointLights.size(), ctx.frame->pointLightStructuredBuffer.elementCount));
         Lights::GpuPointLight* dst = reinterpret_cast<Lights::GpuPointLight*>(ctx.frame->pointLightStructuredBuffer.mappedData);
 
         for (uint32_t i = 0; i < count; ++i)
         {
-            const Lights::Point& light = (*scene.pointLights)[i];
+            const Lights::Point& light = (scene.pointLights)[i];
 
             dst[i].positionAndRadius = {
                 light.position.x,
@@ -123,7 +123,7 @@ void D3D12RendererBackend::BindPipeline(ID3D12GraphicsCommandList* commandList, 
 
 void D3D12RendererBackend::DrawAllRenderObjects(ID3D12GraphicsCommandList* commandList, const SceneRenderData& scene)
 {
-    for (const RenderObject& object : *scene.renderObjects)
+    for (const RenderObject& object : scene.renderObjects)
     {
         ObjectConstants objectConstants = {};
         MaterialConstants materialConstants = {};

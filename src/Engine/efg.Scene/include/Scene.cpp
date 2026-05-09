@@ -49,12 +49,12 @@ namespace efg
 		void Scene::Render(Renderer* renderer)
 		{
 			SceneRenderData renderData = {};
-			renderData.camera = &m_camera;
-			renderData.directionalLight = &m_dirLight;
-			renderData.renderObjects = &m_renderObjectQueue;
-			renderData.pointLights = &m_pointLights;
+			renderData.camera = m_camera;
+			renderData.directionalLight = m_dirLight;
+			renderData.renderObjects = m_renderObjectQueue;
+			renderData.pointLights = m_pointLights;
 
-			renderer->Render(renderData);
+			renderer->SubmitFrame(std::move(renderData));
 		}
 	}
 }
