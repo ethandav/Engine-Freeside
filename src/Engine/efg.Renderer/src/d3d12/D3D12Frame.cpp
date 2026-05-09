@@ -126,12 +126,15 @@ void D3D12RendererBackend::DrawAllRenderObjects(ID3D12GraphicsCommandList* comma
     for (const RenderObject& object : scene.renderObjects)
     {
         ObjectConstants objectConstants = {};
-        MaterialConstants materialConstants = {};
+        GpuMaterial material = {};
+        if (object.material.IsValid())
+        {
+            material = m_materialLibrary.GetMaterialByHandle(object.material);
+
+        }
         objectConstants.world = efg::Transpose(object.world);
-        materialConstants.baseColor = object.material.baseColor;
-        materialConstants.specular = object.material.specular;
         D3D12_GPU_VIRTUAL_ADDRESS objectCbAddress = m_bufferFactory.UploadConstantBufferArena(m_frameResources[m_swapChain.GetFrameIndex()].objectConstantArena, &objectConstants, sizeof(ObjectConstants));
-        D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.UploadConstantBufferArena(m_frameResources[m_swapChain.GetFrameIndex()].materialConstantArena, &materialConstants, sizeof(MaterialConstants));
+        D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.UploadConstantBufferArena(m_frameResources[m_swapChain.GetFrameIndex()].materialConstantArena, &material, sizeof(GpuMaterial));
         commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Object), objectCbAddress);
         commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
         DrawMesh(commandList, object.mesh);

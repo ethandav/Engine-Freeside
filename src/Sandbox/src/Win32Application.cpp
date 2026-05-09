@@ -7,6 +7,7 @@
 #include "..\..\Engine\efg.Renderer\include\MeshData.h"
 #include "..\..\Engine\efg.Renderer\include\Camera.h"
 #include "..\..\Engine\efg.Scene\include\SceneManager.h"
+#include "..\..\Engine\efg.Renderer\include\Materials.h"
 
 void Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
@@ -34,6 +35,21 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	efg::MeshHandle sphereMeshHandle = renderer.CreateMesh(sphereMeshData);
 	efg::MeshHandle pyramidMeshHandle = renderer.CreateMesh(pyramidMeshData);
 
+	efg::MaterialDesc blueMaterial;
+	blueMaterial.baseColor = efg::Vec3(0.0f, 0.0f, 1.0f);
+	blueMaterial.specular = efg::Vec2(1.0f, 64.0f);
+	efg::MaterialHandle blueMaterialHandle = renderer.RegisterMatieral(blueMaterial);
+
+	efg::MaterialDesc redMaterial;
+	redMaterial.baseColor = efg::Vec3(1.0f, 0.0f, 0.0f);
+	redMaterial.specular = efg::Vec2(1.0f, 64.0f);
+	efg::MaterialHandle redMaterialHandle = renderer.RegisterMatieral(redMaterial);
+
+	efg::MaterialDesc greenMaterial;
+	greenMaterial.baseColor = efg::Vec3(0.0f, 1.0f, 0.0f);
+	greenMaterial.specular = efg::Vec2(1.0f, 64.0f);
+	efg::MaterialHandle greenMaterialHandle = renderer.RegisterMatieral(greenMaterial);
+
 	RenderObject object1;
 	RenderObject object2;
 	RenderObject object3;
@@ -44,18 +60,18 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	efg::Scene::SceneRenderObjectHandle hObject2;
 	efg::Scene::SceneRenderObjectHandle hObject3;
 	object1.mesh = cubeMeshHandle;
+	object1.material = blueMaterialHandle;
 	object1.world = efg::Translation(-1.0f, 0.0f, 0.0f);
-	object1.material.baseColor = efg::Vec4(1.0f, 0.0f, 0.0f, 0.0f);
 	object1.initialTransform = efg::Translation(-1.0f, 0.0f, 0.0f);
 	object1.name = L"Cube";
 	object2.mesh = pyramidMeshHandle;
+	object2.material = redMaterialHandle;
 	object2.world = efg::Translation(1.0f, 0.0f, 0.0f);
-	object2.material.baseColor = efg::Vec4(0.0f, 1.0f, 0.0f, 0.0f);
 	object2.initialTransform = efg::Translation(1.0f, 0.0f, 0.0f);
 	object2.name = L"Pyramid";
 	object3.mesh = sphereMeshHandle;
+	object3.material = greenMaterialHandle;
 	object3.world = efg::Translation(0.0f, 1.0f, 0.0f);
-	object3.material.baseColor = efg::Vec4(0.0f, 0.0f, 1.0f, 0.0f);
 	object3.initialTransform = efg::Translation(0.0f, 1.0f, 0.0f);
 	object3.name = L"Sphere";
 

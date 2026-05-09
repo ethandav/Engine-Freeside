@@ -51,3 +51,8 @@ MeshHandle Renderer::CreateMesh(const MeshData& mesh)
 {
     return m_backend->CreateMesh(mesh);
 }
+
+efg::MaterialHandle Renderer::RegisterMatieral(const efg::MaterialDesc& mat)
+{
+    return m_backend->RegisterMaterial(mat);
+}

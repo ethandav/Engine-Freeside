@@ -3,6 +3,7 @@
 #include <string>
 
 #include "MeshData.h"
+#include "Materials.h"
 #include "Camera.h"
 #include "Lights.h"
 
@@ -16,18 +17,12 @@ struct RendererDesc
 	uint32_t height = 0;
 };
 
-struct Material
-{
-	efg::Vec4 baseColor = efg::Vec4(0.8f, 0.8f, 0.8f, 0.0f);
-	efg::Vec4 specular = efg::Vec4(1.0f, 64.0f, 0.0f, 0.0f);
-};
-
 struct RenderObject
 {
 	efg::MeshHandle mesh;
+	efg::MaterialHandle material;
 	efg::Mat4 world = efg::Mat4::Identity();
 	efg::Mat4 initialTransform = efg::Mat4::Identity();
-	Material material = {};
 	std::wstring name = L"Render Object";
 };
 
@@ -50,6 +45,7 @@ public:
 	void Shutdown();
 	void SubmitFrame(FramePacket sceneRenderData);
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh);
+	efg::MaterialHandle RegisterMatieral(const efg::MaterialDesc& mat);
 private:
 	std::unique_ptr<IRendererBackend> m_backend;
 	std::unique_ptr<RenderThread> m_renderThread;

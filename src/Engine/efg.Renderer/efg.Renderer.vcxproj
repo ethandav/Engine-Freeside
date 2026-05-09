@@ -134,6 +134,7 @@
     <ClInclude Include="include\d3d12\D3D12Context.h" />
     <ClInclude Include="include\d3d12\D3D12DescriptorContext.h" />
     <ClInclude Include="include\d3d12\D3D12Error.h" />
+    <ClInclude Include="include\d3d12\D3D12MaterialLibrary.h" />
     <ClInclude Include="include\d3d12\D3D12Pix.h" />
     <ClInclude Include="include\d3d12\D3D12QueueFence.h" />
     <ClInclude Include="include\d3d12\D3D12GraphicsPipelineLibrary.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="include\d3d12\D3D12UploadContext.h" />
     <ClInclude Include="include\IRendererBackend.h" />
     <ClInclude Include="include\Lights.h" />
+    <ClInclude Include="include\Materials.h" />
     <ClInclude Include="include\MeshData.h" />
     <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\RenderThread.h" />
@@ -151,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="include\d3d12\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\D3D12MeshLibrary.h" />
+    <ClCompile Include="src\d3d12\D3D12MaterialLibrary.cpp" />
     <ClCompile Include="src\d3d12\RenderThread.cpp" />
     <ClCompile Include="src\Lights.cpp" />
     <ClCompile Include="src\Camera.cpp" />

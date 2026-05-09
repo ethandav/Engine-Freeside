@@ -10,6 +10,7 @@
 #include "D3D12SwapChain.h"
 #include "D3D12QueueFence.h"
 #include "D3D12UploadContext.h"
+#include "D3D12MaterialLibrary.h"
 
 struct FrameResource
 {
@@ -39,6 +40,7 @@ public:
 	void Shutdown() override;
 	void Render(const FramePacket& scene) override;
 	efg::MeshHandle CreateMesh(const efg::MeshData& mesh) override;
+	efg::MaterialHandle RegisterMaterial(const efg::MaterialDesc mat) override;
 
 private:
 	FrameContext BeginFrame();
@@ -62,9 +64,10 @@ private:
 	D3D12DirectCommandContext m_commandContext = {};
 	D3D12DescriptorContext m_descriptorContext = {};
 	D3D12UploadContext m_uploadContext = {};
-	D3D12GraphicsPipelineLibary m_graphicsPipelineLibrary;
-	D3D12ShaderLibrary m_shaderLibrary;
-	D3D12BufferFactory m_bufferFactory;
+	D3D12GraphicsPipelineLibary m_graphicsPipelineLibrary = {};
+	D3D12ShaderLibrary m_shaderLibrary = {};
+	D3D12MaterialLibrary m_materialLibrary = {};
+	D3D12BufferFactory m_bufferFactory = {};
 	D3D12MeshLibrary m_meshLibrary;
 	D3D12SwapChain m_swapChain = {};
 	D3D12QueueFence m_directFence = {};

@@ -91,6 +91,12 @@ MeshHandle D3D12RendererBackend::CreateMesh(const MeshData& mesh)
     return handle;
 }
 
+efg::MaterialHandle D3D12RendererBackend::RegisterMaterial(const efg::MaterialDesc mat)
+{
+    MaterialHandle handle = m_materialLibrary.RegisterMaterial(mat);
+    return handle;
+}
+
 void D3D12RendererBackend::FlushPendingUploads()
 {
     UploadTicket uploadTicket = m_uploadContext.FlushUploads();
