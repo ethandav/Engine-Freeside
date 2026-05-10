@@ -21,7 +21,7 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
     m_commandContext.Initialize(&m_graphicsContext);
     m_uploadContext.Initialize(&m_graphicsContext);
     m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorContext);
-    m_descriptorContext.Initialize(&m_graphicsContext);
+    m_descriptorContext.Initialize(m_graphicsContext.GetDevice());
     m_directFence.Initialize(&m_graphicsContext);
 
     m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
@@ -37,7 +37,7 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
         m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
         m_frameResources[i].materialConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
         m_frameResources[i].pointLightStructuredBuffer = m_bufferFactory.CreateStructuredBufferUpload(m_graphicsContext.GetDevice(), Lights::MaxPointLights, sizeof(Lights::GpuPointLight));
-        DescriptorAllocation srvAllocation = m_descriptorContext.CreateShaderVisibleView(m_frameResources[i].pointLightStructuredBuffer.resource.Get(), m_frameResources[i].pointLightStructuredBuffer.elementCount, m_frameResources[i].pointLightStructuredBuffer.elementStride);
+        DescriptorAllocation srvAllocation = m_descriptorContext.CreateStructuredBufferSRV(m_frameResources[i].pointLightStructuredBuffer.resource.Get(), m_frameResources[i].pointLightStructuredBuffer.elementCount, m_frameResources[i].pointLightStructuredBuffer.elementStride);
         m_frameResources[i].pointLightStructuredBuffer.cpuSrv = srvAllocation.cpu;
         m_frameResources[i].pointLightStructuredBuffer.gpuSrv = srvAllocation.gpu;
         m_frameResources[i].gpuUploadBufferArena = m_bufferFactory.CreateUploadBufferArena(m_graphicsContext.GetDevice(), 10000 * sizeof(InstanceData));

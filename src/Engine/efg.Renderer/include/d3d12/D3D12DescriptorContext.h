@@ -8,23 +8,36 @@ struct DescriptorAllocation
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE cpu = {};
 	D3D12_GPU_DESCRIPTOR_HANDLE gpu = {};
-	uint32_t index = 0;
+	uint32_t index = UINT32_MAX;
+
+	bool IsValid() const
+	{
+		return index != UINT32_MAX;
+	}
 };
 
 class D3D12DescriptorContext
 {
 public:
-	void Initialize(D3D12Context* graphicsContext);
+	void Initialize(ID3D12Device* device);
 	void CreateAllHeaps();
 	UINT CreateRTVDescriptorHeap(const UINT Count = MaxRTVHeapSize);
-	UINT CreateShaderResourceDescriptorHeap(const UINT Count = MaxShaderVisibleHeapSize);
 	UINT CreateDSVDescriptorHeap(const UINT Count = MaxDSVHeapSize);
+	UINT CreateCBVSRVUAVDescriptorHeap(const UINT Count = MaxShaderVisibleHeapSize);
 	UINT CreateSamplerDescriptorHeap(const UINT Count = MaxSamplerHeapSize);
 	DescriptorAllocation AllocateRTV();
-	DescriptorAllocation AllocateShaderVisible();
+	DescriptorAllocation AllocateDSV();
+	DescriptorAllocation AllocateCBVSRVUAV();
+	DescriptorAllocation AllocateSampler();
 	DescriptorAllocation CreateRTV(ID3D12Resource* resource, const D3D12_RENDER_TARGET_VIEW_DESC* desc);
-	DescriptorAllocation CreateShaderVisibleView(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride);
-	ID3D12DescriptorHeap* GetShaderVisibleHeap();
+	DescriptorAllocation CreateDSV(ID3D12Resource* resource, const D3D12_DEPTH_STENCIL_VIEW_DESC* desc);
+	DescriptorAllocation CreateCBV(ID3D12Resource* resource, uint32_t sizeInBytes);
+	DescriptorAllocation CreateUAV(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride, ID3D12Resource* counterResource);
+	DescriptorAllocation CreateStructuredBufferSRV(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride);
+	DescriptorAllocation CreateTexture2DSRV(ID3D12Resource* resource, DXGI_FORMAT format, uint32_t mipLevels);
+	DescriptorAllocation CreateSampler(const D3D12_SAMPLER_DESC& samplerDesc);
+	ID3D12DescriptorHeap* GetCBVSRVUAVHeap() const;
+	ID3D12DescriptorHeap* GetSamplerHeap() const;
 
 private:
 	static constexpr UINT MaxRTVHeapSize = 32;
@@ -62,5 +75,5 @@ private:
 	UINT m_samplerUsed = 0;
 	UINT m_samplerCapacity = 0;
 
-	D3D12Context* m_graphicsContext = nullptr;
+	ID3D12Device* m_device = nullptr;
 };
