@@ -32,6 +32,14 @@ struct GpuConstantBuffer
     UINT64 alignedSizeInBytes = 0;
 };
 
+struct GpuDepthBuffer
+{
+    ComPtr<ID3D12Resource> resource;
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
+    D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
+    DXGI_FORMAT format = DXGI_FORMAT_D32_FLOAT;
+};
+
 struct GpuConstantBufferArena
 {
     ComPtr<ID3D12Resource> resource;

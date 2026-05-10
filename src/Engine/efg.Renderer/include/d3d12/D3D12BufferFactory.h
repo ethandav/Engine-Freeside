@@ -12,6 +12,7 @@ class D3D12BufferFactory
 public:
     GpuBuffer CreateStaticBuffer(ID3D12Device* device, const void* data, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState);
     GpuConstantBuffer CreateConstantBuffer(ID3D12Device* device, UINT64 sizeInBytes);
+    GpuDepthBuffer CreateDepthBuffer(ID3D12Device* device, uint32_t width, uint32_t height);
     GpuConstantBufferArena CreateConstantBufferArena(ID3D12Device* device, UINT64 capacityInBytes);
     GpuStructuredBuffer CreateStructuredBufferUpload(ID3D12Device* device, uint32_t elementCount, uint32_t elementStride);
     void UpdateConstantBuffer(GpuConstantBuffer& buffer, const void* data, UINT64 sizeInBytes);

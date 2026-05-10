@@ -79,12 +79,17 @@ void D3D12DirectCommandContext::SetViewportAndScissor(const D3D12_VIEWPORT& m_vi
     m_directCommandList->RSSetScissorRects(1, &m_scissorRect);
 }
 
-void D3D12DirectCommandContext::SetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& renderTargetDescriptorHandle)
+void D3D12DirectCommandContext::SetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& renderTargetDescriptorHandle, const D3D12_CPU_DESCRIPTOR_HANDLE& dsvHandle)
 {
-    m_directCommandList->OMSetRenderTargets(1, &renderTargetDescriptorHandle, FALSE, nullptr);
+    m_directCommandList->OMSetRenderTargets(1, &renderTargetDescriptorHandle, FALSE, &dsvHandle);
 }
 
 void D3D12DirectCommandContext::ClearRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, const float clearColor[])
 {
     m_directCommandList->ClearRenderTargetView(handle, clearColor, 0, nullptr);
+}
+
+void D3D12DirectCommandContext::ClearDepthStencil(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, float depth, uint8_t stencil)
+{
+    m_directCommandList->ClearDepthStencilView(handle, D3D12_CLEAR_FLAG_DEPTH, depth, stencil, 0, nullptr);
 }

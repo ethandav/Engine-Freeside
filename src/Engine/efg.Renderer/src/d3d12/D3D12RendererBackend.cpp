@@ -41,6 +41,10 @@ void D3D12RendererBackend::Initialize(const RendererDesc& desc)
         m_frameResources[i].pointLightStructuredBuffer.cpuSrv = srvAllocation.cpu;
         m_frameResources[i].pointLightStructuredBuffer.gpuSrv = srvAllocation.gpu;
         m_frameResources[i].gpuUploadBufferArena = m_bufferFactory.CreateUploadBufferArena(m_graphicsContext.GetDevice(), 10000 * sizeof(InstanceData));
+        m_frameResources[i].depthBuffer = m_bufferFactory.CreateDepthBuffer(m_graphicsContext.GetDevice(), desc.width, desc.height);
+        DescriptorAllocation dsvAllocation = m_descriptorContext.CreateDSV(m_frameResources[i].depthBuffer.resource.Get(), nullptr);
+        m_frameResources[i].depthBuffer.cpuSrv = dsvAllocation.cpu;
+        m_frameResources[i].depthBuffer.gpuSrv = dsvAllocation.gpu;
     }
 
     m_directFence.CreateFence(0);

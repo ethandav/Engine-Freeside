@@ -1,6 +1,8 @@
 #pragma once
 #include "D3D12Context.h"
 
+#include <stdint.h>
+
 class D3D12DirectCommandContext
 {
 public:
@@ -14,8 +16,9 @@ public:
 	void ExecuteDirect();
 	void ExecuteCopy();
 	void SetViewportAndScissor(const D3D12_VIEWPORT& m_viewport, const D3D12_RECT& m_scissorRect);
-	void SetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& handle);
+	void SetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, const D3D12_CPU_DESCRIPTOR_HANDLE& dsvHandle);
 	void ClearRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, const float clearColor[]);
+	void ClearDepthStencil(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, float depth, uint8_t stencil);
 private:
 	void CreateCommandObjects();
 	void CreateCommandList(ID3D12GraphicsCommandList** list, ID3D12CommandAllocator*, D3D12_COMMAND_LIST_TYPE type);

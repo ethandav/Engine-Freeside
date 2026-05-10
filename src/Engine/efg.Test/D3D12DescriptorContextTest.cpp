@@ -2,6 +2,26 @@
 #include "..\efg.Renderer\include\d3d12\D3D12Context.h"
 #include "..\efg.Renderer\include\d3d12\D3D12DescriptorContext.h"
 
+
+class D3D12DescriptorTests : public ::testing::Test
+{
+protected:
+    void SetUp() override
+    {
+        ctx.Initialize(false);
+        descriptors.Initialize(ctx.GetDevice());
+    }
+
+    void TearDown() override
+    {
+        // Usually nothing needed.
+        // ComPtr members clean themselves up.
+    }
+
+    D3D12Context ctx = {};
+    D3D12DescriptorContext descriptors = {};
+};
+
 namespace
 {
     static constexpr UINT64 TestBufferSize = 1024;
@@ -181,12 +201,9 @@ namespace
     }
 }
 
-TEST(D3D12DescriptorTests, CreateValidRTV)
+TEST_F(D3D12DescriptorTests, CreateValidRTV)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
 
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateRTVDescriptorHeap(1);
 
     ComPtr<ID3D12Resource> resource =
@@ -200,12 +217,8 @@ TEST(D3D12DescriptorTests, CreateValidRTV)
     EXPECT_EQ(allocation.gpu.ptr, 0);
 }
 
-TEST(D3D12DescriptorTests, RTVHeapThrowsWhenFull)
+TEST_F(D3D12DescriptorTests, RTVHeapThrowsWhenFull)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateRTVDescriptorHeap(1);
 
     ComPtr<ID3D12Resource> resource =
@@ -218,12 +231,8 @@ TEST(D3D12DescriptorTests, RTVHeapThrowsWhenFull)
         std::runtime_error);
 }
 
-TEST(D3D12DescriptorTests, CreateValidDSV)
+TEST_F(D3D12DescriptorTests, CreateValidDSV)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateDSVDescriptorHeap(1);
 
     ComPtr<ID3D12Resource> resource =
@@ -237,12 +246,8 @@ TEST(D3D12DescriptorTests, CreateValidDSV)
     EXPECT_EQ(allocation.gpu.ptr, 0);
 }
 
-TEST(D3D12DescriptorTests, DSVHeapThrowsWhenFull)
+TEST_F(D3D12DescriptorTests, DSVHeapThrowsWhenFull)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateDSVDescriptorHeap(1);
 
     ComPtr<ID3D12Resource> resource =
@@ -255,12 +260,8 @@ TEST(D3D12DescriptorTests, DSVHeapThrowsWhenFull)
         std::runtime_error);
 }
 
-TEST(D3D12DescriptorTests, CreateValidCBV)
+TEST_F(D3D12DescriptorTests, CreateValidCBV)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateCBVSRVUAVDescriptorHeap(1);
 
     ComPtr<ID3D12Resource> buffer =
@@ -276,12 +277,8 @@ TEST(D3D12DescriptorTests, CreateValidCBV)
     EXPECT_NE(allocation.gpu.ptr, 0);
 }
 
-TEST(D3D12DescriptorTests, CreateValidStructuredBufferSRV)
+TEST_F(D3D12DescriptorTests, CreateValidStructuredBufferSRV)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateCBVSRVUAVDescriptorHeap(1);
 
     struct TestElement
@@ -308,12 +305,8 @@ TEST(D3D12DescriptorTests, CreateValidStructuredBufferSRV)
     EXPECT_NE(allocation.gpu.ptr, 0);
 }
 
-TEST(D3D12DescriptorTests, CreateValidTexture2DSRV)
+TEST_F(D3D12DescriptorTests, CreateValidTexture2DSRV)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateCBVSRVUAVDescriptorHeap(1);
 
     ComPtr<ID3D12Resource> texture =
@@ -330,12 +323,8 @@ TEST(D3D12DescriptorTests, CreateValidTexture2DSRV)
     EXPECT_NE(allocation.gpu.ptr, 0);
 }
 
-TEST(D3D12DescriptorTests, CreateValidStructuredBufferUAV)
+TEST_F(D3D12DescriptorTests, CreateValidStructuredBufferUAV)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateCBVSRVUAVDescriptorHeap(1);
 
     struct TestElement
@@ -364,12 +353,8 @@ TEST(D3D12DescriptorTests, CreateValidStructuredBufferUAV)
     EXPECT_NE(allocation.gpu.ptr, 0);
 }
 
-TEST(D3D12DescriptorTests, CBVSRVUAVHeapThrowsWhenFull)
+TEST_F(D3D12DescriptorTests, CBVSRVUAVHeapThrowsWhenFull)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateCBVSRVUAVDescriptorHeap(1);
 
     ComPtr<ID3D12Resource> buffer =
@@ -384,12 +369,8 @@ TEST(D3D12DescriptorTests, CBVSRVUAVHeapThrowsWhenFull)
         std::runtime_error);
 }
 
-TEST(D3D12DescriptorTests, CreateValidSampler)
+TEST_F(D3D12DescriptorTests, CreateValidSampler)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateSamplerDescriptorHeap(1);
 
     D3D12_SAMPLER_DESC samplerDesc = {};
@@ -411,12 +392,8 @@ TEST(D3D12DescriptorTests, CreateValidSampler)
     EXPECT_NE(allocation.gpu.ptr, 0);
 }
 
-TEST(D3D12DescriptorTests, SamplerHeapThrowsWhenFull)
+TEST_F(D3D12DescriptorTests, SamplerHeapThrowsWhenFull)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateSamplerDescriptorHeap(1);
 
     D3D12_SAMPLER_DESC samplerDesc = {};
@@ -434,23 +411,15 @@ TEST(D3D12DescriptorTests, SamplerHeapThrowsWhenFull)
         std::runtime_error);
 }
 
-TEST(D3D12DescriptorTests, ShaderVisibleHeapGetterReturnsHeap)
+TEST_F(D3D12DescriptorTests, ShaderVisibleHeapGetterReturnsHeap)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateCBVSRVUAVDescriptorHeap(4);
 
     EXPECT_NE(descriptors.GetCBVSRVUAVHeap(), nullptr);
 }
 
-TEST(D3D12DescriptorTests, SamplerHeapGetterReturnsHeap)
+TEST_F(D3D12DescriptorTests, SamplerHeapGetterReturnsHeap)
 {
-    D3D12Context ctx = {};
-    ctx.Initialize(false);
-
-    D3D12DescriptorContext descriptors = CreateDescriptorContext(ctx);
     descriptors.CreateSamplerDescriptorHeap(4);
 
     EXPECT_NE(descriptors.GetSamplerHeap(), nullptr);

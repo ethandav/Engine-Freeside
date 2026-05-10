@@ -98,8 +98,9 @@ void D3D12RendererBackend::RecordBackBufferSetup(const FrameContext& ctx)
     const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     m_commandContext.SetViewportAndScissor(m_viewport, m_scissorRect);
     m_commandContext.ResourceBarrierTransition(ctx.backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    m_commandContext.SetRenderTarget(ctx.backBufferHandle);
+    m_commandContext.SetRenderTarget(ctx.backBufferHandle, ctx.frame->depthBuffer.cpuSrv);
     m_commandContext.ClearRenderTarget(ctx.backBufferHandle, clearColor);
+    m_commandContext.ClearDepthStencil(ctx.frame->depthBuffer.cpuSrv, 1.0f, 0);
 }
 
 void D3D12RendererBackend::RecordForwardLitGeometryPass(const FrameContext& ctx, const FramePacket& scene)

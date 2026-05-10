@@ -23,6 +23,7 @@ struct FrameResource
 	GpuConstantBufferArena materialConstantArena = {};
 	GpuStructuredBuffer pointLightStructuredBuffer = {};
 	GpuUploadBufferArena gpuUploadBufferArena = {};
+	GpuDepthBuffer depthBuffer = {};
 };
 
 struct FrameContext
