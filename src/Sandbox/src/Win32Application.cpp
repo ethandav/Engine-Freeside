@@ -19,7 +19,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Timer timer;
 	Renderer renderer;
 	efg::Scene::SceneManager sceneManager;
-	RendererDesc rendererDesc = {
+	efg::RendererDesc rendererDesc = {
 		nullptr,
 		1280,
 		720
@@ -63,7 +63,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	for (uint32_t i = 0; i < ObjectCount; ++i)
 	{
-		RenderObject object = {};
+		efg::RenderObject object = {};
 
 		const float x = posDist(rng);
 		const float y = heightDist(rng);
@@ -78,12 +78,12 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object);
 	}
 
-	RenderObject object1;
-	RenderObject object2;
-	RenderObject object3;
-	RenderObject* pObject1;
-	RenderObject* pObject2;
-	RenderObject* pObject3;
+	efg::RenderObject object1;
+	efg::RenderObject object2;
+	efg::RenderObject object3;
+	efg::RenderObject* pObject1;
+	efg::RenderObject* pObject2;
+	efg::RenderObject* pObject3;
 	efg::Scene::SceneRenderObjectHandle hObject1;
 	efg::Scene::SceneRenderObjectHandle hObject2;
 	efg::Scene::SceneRenderObjectHandle hObject3;

@@ -1,8 +1,9 @@
 #pragma once
+
 #include <thread>
 #include <mutex>
-#include "Renderer.h"
 #include <deque>
+#include "RenderTypes.h"
 
 class IRendererBackend;
 
@@ -11,7 +12,7 @@ class RenderThread
 public:
     void Start(IRendererBackend* backend);
     void Stop();
-    void Submit(FramePacket sceneData);
+    void Submit(efg::FramePacket sceneData);
 
 private:
     void ThreadMain();
@@ -26,7 +27,7 @@ private:
     std::condition_variable m_hasWorkCv;
     std::condition_variable m_hasSpaceCv;
 
-    std::deque<FramePacket> m_frameQueue;
+    std::deque<efg::FramePacket> m_frameQueue;
 
     bool m_running = false;
 };

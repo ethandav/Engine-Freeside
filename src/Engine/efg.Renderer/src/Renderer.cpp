@@ -13,7 +13,7 @@ Renderer::~Renderer()
     Shutdown();
 }
 
-void Renderer::Initialize(const RendererDesc& desc)
+void Renderer::Initialize(const efg::RendererDesc& desc)
 {
     m_rendererDesc = desc;
     m_backend->Initialize(desc);

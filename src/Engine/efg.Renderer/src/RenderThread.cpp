@@ -31,7 +31,7 @@ void RenderThread::ThreadMain()
     SetThreadDescription(GetCurrentThread(), L"Render Thread");
     while (true)
     {
-        FramePacket sceneData;
+        efg::FramePacket sceneData;
 
         {
             std::unique_lock<std::mutex> lock(m_mutex);
@@ -57,7 +57,7 @@ void RenderThread::ThreadMain()
     //m_backend->WaitForGPU();
 }
 
-void RenderThread::Submit(FramePacket sceneData)
+void RenderThread::Submit(efg::FramePacket sceneData)
 {
     std::unique_lock<std::mutex> lock(m_mutex);
 

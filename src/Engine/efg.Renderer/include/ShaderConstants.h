@@ -4,16 +4,5 @@
 
 namespace efg
 {
-	struct ObjectConstants
-	{
-		Mat4 world;
-	};
-
-	struct MaterialConstants
-	{
-		Vec4 baseColor;
-		Vec4 specular;
-	};
-
 
 }
