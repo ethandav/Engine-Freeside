@@ -24,8 +24,8 @@ namespace efg
                 const size_t verticalSegments = tessellation;
                 const size_t horizontalSegments = tessellation * 2;
 
-                vertexCount = (verticalSegments + 1) * (horizontalSegments + 1);
-                indexCount = verticalSegments * horizontalSegments * 6;
+                vertexCount = static_cast<uint32_t>((verticalSegments + 1) * (horizontalSegments + 1));
+                indexCount = static_cast<uint32_t>(verticalSegments * horizontalSegments * 6);
 
                 mesh.vertices.reserve(vertexCount);
                 mesh.indices.reserve(indexCount);
@@ -76,13 +76,13 @@ namespace efg
                         const size_t nextI = i + 1;
                         const size_t nextJ = (j + 1) % stride;
 
-                        mesh.indices.push_back(i * stride + j);
-                        mesh.indices.push_back(i * stride + nextJ);
-                        mesh.indices.push_back(nextI * stride + j);
+                        mesh.indices.push_back(static_cast<uint32_t>(i * stride + j));
+                        mesh.indices.push_back(static_cast<uint32_t>(i * stride + nextJ));
+                        mesh.indices.push_back(static_cast<uint32_t>(nextI * stride + j));
 
-                        mesh.indices.push_back(i * stride + nextJ);
-                        mesh.indices.push_back(nextI * stride + nextJ);
-                        mesh.indices.push_back(nextI * stride + j);
+                        mesh.indices.push_back(static_cast<uint32_t>(i * stride + nextJ));
+                        mesh.indices.push_back(static_cast<uint32_t>(nextI * stride + nextJ));
+                        mesh.indices.push_back(static_cast<uint32_t>(nextI * stride + j));
                     }
                 }
             }
