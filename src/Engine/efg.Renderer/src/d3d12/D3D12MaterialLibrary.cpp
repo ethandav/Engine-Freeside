@@ -26,7 +26,7 @@ const GpuMaterial& D3D12MaterialLibrary::GetMaterialByHandle(efg::MaterialHandle
 	return m_materials[handle.index];
 }
 
-const GpuMaterial& D3D12MaterialLibrary::GetDefaultMaterial() const
+GpuMaterial D3D12MaterialLibrary::GetDefaultMaterial()
 {
 	return GpuMaterial {
 		efg::Vec4(0.8f, 0.8f, 0.8f, 1.0f),

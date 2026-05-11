@@ -15,7 +15,7 @@ class D3D12MaterialLibrary
 public:
     efg::MaterialHandle RegisterMaterial(const efg::MaterialDesc& desc);
     const GpuMaterial& GetMaterialByHandle(efg::MaterialHandle handle) const;
-    const GpuMaterial& GetDefaultMaterial() const;
+    GpuMaterial GetDefaultMaterial();
 private:
     std::vector<GpuMaterial> m_materials = {};
 };
