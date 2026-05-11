@@ -1,5 +1,5 @@
-#include "..\..\include\RenderThread.h"
-#include "..\..\include\IRendererBackend.h"
+#include "..\include\RenderThread.h"
+#include "..\include\IRendererBackend.h"
 
 #include <windows.h>
 

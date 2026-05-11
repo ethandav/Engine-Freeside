@@ -134,7 +134,7 @@
     <ClCompile Include="src\Lights.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3d12\RenderThread.cpp">
+    <ClCompile Include="src\RenderThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\d3d12\D3D12MaterialLibrary.cpp">

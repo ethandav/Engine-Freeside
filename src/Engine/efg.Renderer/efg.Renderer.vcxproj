@@ -154,7 +154,7 @@
     <ClInclude Include="include\d3d12\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\D3D12MeshLibrary.h" />
     <ClCompile Include="src\d3d12\D3D12MaterialLibrary.cpp" />
-    <ClCompile Include="src\d3d12\RenderThread.cpp" />
+    <ClCompile Include="src\RenderThread.cpp" />
     <ClCompile Include="src\Lights.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\d3d12\D3D12BufferFactory.cpp" />
