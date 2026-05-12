@@ -1,6 +1,7 @@
 #pragma once
 
-#include "..\..\efg.Core\include\math\math.h"
+#include "..\..\..\efg.Core\include\math\math.h"
+
 namespace efg
 {
     struct CameraConstants

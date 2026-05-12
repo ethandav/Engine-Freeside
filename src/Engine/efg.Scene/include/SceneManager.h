@@ -1,6 +1,6 @@
 #pragma once
 #include "..\include\Scene.h"
-#include "..\..\efg.Renderer\include\Renderer.h"
+#include "..\..\efg.Renderer\include\render\Renderer.h"
 
 #include <vector>
 

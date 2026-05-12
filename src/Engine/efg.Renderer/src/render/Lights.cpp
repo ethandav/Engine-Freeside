@@ -1,4 +1,4 @@
-#include "..\include\lights.h"
+#include "..\..\include\render\lights.h"
 
 namespace efg
 {

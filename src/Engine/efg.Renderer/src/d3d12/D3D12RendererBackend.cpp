@@ -1,6 +1,6 @@
 #include "..\..\include\d3d12\D3D12RendererBackend.h"
-#include "..\..\include\Camera.h"
-#include "..\..\include\ShaderConstants.h"
+#include "..\..\include\render\Camera.h"
+#include "..\..\include\render\RenderTypes.h"
 #include "..\..\include\d3d12\D3D12Pix.h"
 
 void D3D12RendererBackend::Initialize(const RendererDesc& desc)

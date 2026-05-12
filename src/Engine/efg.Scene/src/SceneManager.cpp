@@ -1,4 +1,5 @@
-#include "SceneManager.h"
+#include "..\include\SceneManager.h"
+
 #include <stdexcept>
 
 namespace efg

@@ -128,7 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\render\Camera.h" />
     <ClInclude Include="include\d3d12\D3D12BufferData.h" />
     <ClInclude Include="include\d3d12\D3D12CommandContext.h" />
     <ClInclude Include="include\d3d12\D3D12Context.h" />
@@ -142,22 +142,21 @@
     <ClInclude Include="include\d3d12\D3D12ShaderLibrary.h" />
     <ClInclude Include="include\d3d12\D3D12SwapChain.h" />
     <ClInclude Include="include\d3d12\D3D12UploadContext.h" />
-    <ClInclude Include="include\IRendererBackend.h" />
-    <ClInclude Include="include\Lights.h" />
-    <ClInclude Include="include\Materials.h" />
-    <ClInclude Include="include\MeshData.h" />
-    <ClInclude Include="include\Renderer.h" />
-    <ClInclude Include="include\RenderThread.h" />
-    <ClInclude Include="include\RenderTypes.h" />
-    <ClInclude Include="include\ShaderConstants.h" />
+    <ClInclude Include="include\render\IRendererBackend.h" />
+    <ClInclude Include="include\render\Lights.h" />
+    <ClInclude Include="include\render\Materials.h" />
+    <ClInclude Include="include\render\MeshData.h" />
+    <ClInclude Include="include\render\Renderer.h" />
+    <ClInclude Include="include\render\RenderThread.h" />
+    <ClInclude Include="include\render\RenderTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\d3d12\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\D3D12MeshLibrary.h" />
     <ClCompile Include="src\d3d12\D3D12MaterialLibrary.cpp" />
-    <ClCompile Include="src\RenderThread.cpp" />
-    <ClCompile Include="src\Lights.cpp" />
-    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\render\RenderThread.cpp" />
+    <ClCompile Include="src\render\Lights.cpp" />
+    <ClCompile Include="src\render\Camera.cpp" />
     <ClCompile Include="src\d3d12\D3D12BufferFactory.cpp" />
     <ClCompile Include="src\d3d12\D3D12CommandContext.cpp" />
     <ClCompile Include="src\d3d12\D3D12Context.cpp" />
@@ -171,7 +170,7 @@
     <ClCompile Include="src\d3d12\D3D12ShaderLibrary.cpp" />
     <ClCompile Include="src\d3d12\D3D12SwapChain.cpp" />
     <ClCompile Include="src\d3d12\D3D12UploadContext.cpp" />
-    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\render\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

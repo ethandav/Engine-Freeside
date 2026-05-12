@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "..\MeshData.h"
+#include "..\render\MeshData.h"
 #include "D3D12BufferData.h"
 
 using Microsoft::WRL::ComPtr;

@@ -1,7 +1,7 @@
-#include "..\include\Renderer.h"
-#include "..\include\IRendererBackend.h"
-#include "..\include\d3d12\D3D12RendererBackend.h"
-#include "..\include\RenderThread.h"
+#include "..\..\include\render\Renderer.h"
+#include "..\..\include\render\IRendererBackend.h"
+#include "..\..\include\d3d12\D3D12RendererBackend.h"
+#include "..\..\include\render\RenderThread.h"
 
 Renderer::Renderer()
 {

@@ -1,4 +1,4 @@
-#include "..\include\Camera.h"
+#include "..\..\include\render\Camera.h"
 
 namespace efg
 {

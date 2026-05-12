@@ -1,5 +1,7 @@
-#include "Scene.h"
+#include "..\include\Scene.h"
+
 #include <stdexcept>
+
 namespace efg
 {
 	namespace Scene

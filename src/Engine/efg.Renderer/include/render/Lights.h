@@ -1,6 +1,6 @@
 #pragma once
-#include "..\..\efg.Core\include\math\Vec3.h"
-#include "..\..\efg.Core\include\math\Vec4.h"
+#include "..\..\..\efg.Core\include\math\Vec3.h"
+#include "..\..\..\efg.Core\include\math\Vec4.h"
 
 #include <cstdint>
 
