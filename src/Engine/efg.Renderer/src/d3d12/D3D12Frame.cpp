@@ -25,53 +25,6 @@ namespace efg::d3d12
         return ctx;
     }
 
-    void D3D12RendererBackend::UpdateFrameConstants(const FrameContext& ctx, const FramePacket& scene)
-    {
-        PIXBeginEvent(PIX_COLOR(255, 255, 255), L"Update Frame Constants");
-        CameraConstants cameraConstants = scene.camera.BuildCameraConstants();
-        Lights::DirectionalLightConstants dirLightConstants = scene.directionalLight.BuildDirectionalLightConstants();
-        ctx.frame->objectConstantArena.Reset();
-        ctx.frame->materialConstantArena.Reset();
-        ctx.frame->gpuUploadBufferArena.Reset();
-        m_bufferFactory.UpdateConstantBuffer(ctx.frame->cameraConstantBuffer, &cameraConstants, sizeof(CameraConstants));
-        m_bufferFactory.UpdateConstantBuffer(ctx.frame->directionalLightConstantBuffer, &dirLightConstants, sizeof(Lights::DirectionalLightConstants));
-        PIXEndEvent();
-    }
-
-    void D3D12RendererBackend::UpdatePointLights(const FrameContext& ctx, const FramePacket& scene)
-    {
-        Lights::PointLightConstants metadata = {};
-        uint32_t count = 0;
-
-        if (!scene.pointLights.empty())
-        {
-            count = static_cast<uint32_t>(std::min<size_t>(scene.pointLights.size(), ctx.frame->pointLightStructuredBuffer.elementCount));
-            Lights::GpuPointLight* dst = reinterpret_cast<Lights::GpuPointLight*>(ctx.frame->pointLightStructuredBuffer.mappedData);
-
-            for (uint32_t i = 0; i < count; ++i)
-            {
-                const Lights::Point& light = (scene.pointLights)[i];
-
-                dst[i].positionAndRadius = {
-                    light.position.x,
-                    light.position.y,
-                    light.position.z,
-                    light.radius
-                };
-
-                dst[i].colorAndIntensity = {
-                    light.color.x,
-                    light.color.y,
-                    light.color.z,
-                    light.intensity
-                };
-            }
-        }
-
-        metadata.pointLightCount = count;
-        m_bufferFactory.UpdateConstantBuffer(ctx.frame->pointLightConstantBuffer, &metadata, sizeof(Lights::PointLightConstants));
-    }
-
     void D3D12RendererBackend::EndFrame(const FrameContext& ctx)
     {
         ID3D12CommandQueue* queue = m_commandContext.GetDirectCommandQueue();

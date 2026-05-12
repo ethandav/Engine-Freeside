@@ -14,6 +14,8 @@ namespace efg::d3d12
 
     void D3D12ForwardLitGeometryRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene)
 	{
+        UpdatePointLights(ctx, scene);
+        UpdateFrameConstants(ctx, scene);
         m_pipelineLibrary->BindPipeline(ctx.commandList, PipelineId::ForwardLitGeometry);
         ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), ctx.frame->cameraConstantBuffer.resource->GetGPUVirtualAddress());
         ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), ctx.frame->directionalLightConstantBuffer.resource->GetGPUVirtualAddress());
@@ -24,6 +26,51 @@ namespace efg::d3d12
         ctx.commandList->SetGraphicsRootDescriptorTable(static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv), ctx.frame->pointLightStructuredBuffer.gpuSrv);
         DrawAllRenderObjects(ctx, scene);
 	}
+
+    void D3D12ForwardLitGeometryRenderPass::UpdateFrameConstants(const FrameContext& ctx, const FramePacket& scene)
+    {
+        CameraConstants cameraConstants = scene.camera.BuildCameraConstants();
+        Lights::DirectionalLightConstants dirLightConstants = scene.directionalLight.BuildDirectionalLightConstants();
+        ctx.frame->objectConstantArena.Reset();
+        ctx.frame->materialConstantArena.Reset();
+        ctx.frame->gpuUploadBufferArena.Reset();
+        m_bufferFactory->UpdateConstantBuffer(ctx.frame->cameraConstantBuffer, &cameraConstants, sizeof(CameraConstants));
+        m_bufferFactory->UpdateConstantBuffer(ctx.frame->directionalLightConstantBuffer, &dirLightConstants, sizeof(Lights::DirectionalLightConstants));
+    }
+
+    void D3D12ForwardLitGeometryRenderPass::UpdatePointLights(const FrameContext& ctx, const FramePacket& scene)
+    {
+        Lights::PointLightConstants metadata = {};
+        uint32_t count = 0;
+
+        if (!scene.pointLights.empty())
+        {
+            count = static_cast<uint32_t>(std::min<size_t>(scene.pointLights.size(), ctx.frame->pointLightStructuredBuffer.elementCount));
+            Lights::GpuPointLight* dst = reinterpret_cast<Lights::GpuPointLight*>(ctx.frame->pointLightStructuredBuffer.mappedData);
+
+            for (uint32_t i = 0; i < count; ++i)
+            {
+                const Lights::Point& light = (scene.pointLights)[i];
+
+                dst[i].positionAndRadius = {
+                    light.position.x,
+                    light.position.y,
+                    light.position.z,
+                    light.radius
+                };
+
+                dst[i].colorAndIntensity = {
+                    light.color.x,
+                    light.color.y,
+                    light.color.z,
+                    light.intensity
+                };
+            }
+        }
+
+        metadata.pointLightCount = count;
+        m_bufferFactory->UpdateConstantBuffer(ctx.frame->pointLightConstantBuffer, &metadata, sizeof(Lights::PointLightConstants));
+    }
 
     void D3D12ForwardLitGeometryRenderPass::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
     {

@@ -15,6 +15,8 @@ namespace efg::d3d12
 		void Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12BufferFactory* bufferFactory);
 		void Execute(const FrameContext& ctx, const FramePacket& scene);
 	private:
+		void UpdatePointLights(const FrameContext& ctx, const FramePacket& scene);
+		void UpdateFrameConstants(const FrameContext& ctx, const FramePacket& scene);
 		void DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene);
 		void SortRenderObjectsForInstancing(std::vector<uint32_t>& sortedIndices, const FramePacket& scene);
 		void DrawInstancedBatch(const FrameContext& ctx, const FramePacket& scene, const std::vector<uint32_t>& sortedIndices, uint32_t begin, uint32_t end);

@@ -131,6 +131,7 @@
     <ClInclude Include="efg.h" />
     <ClInclude Include="include\d3d12\D3D12RenderData.h" />
     <ClInclude Include="include\d3d12\D3D12ResourceFactory.h" />
+    <ClInclude Include="include\d3d12\passes\D3D12BackBufferSetup.h" />
     <ClInclude Include="include\d3d12\passes\D3D12ForwardLitGeometryRenderPass.h" />
     <ClInclude Include="include\render\Camera.h" />
     <ClInclude Include="include\d3d12\D3D12BufferData.h" />

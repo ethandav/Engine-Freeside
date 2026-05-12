@@ -32,19 +32,10 @@ namespace efg::d3d12
 		void CreateFrameResources(uint32_t width, uint32_t height);
 		void DestroyFrameResources();
 		FrameContext BeginFrame();
-		void UpdateFrameConstants(const FrameContext& ctx, const FramePacket& scene);
-		void UpdatePointLights(const FrameContext& ctx, const FramePacket& scene);
 		void ProcessUploads();
 		void RecordUploadedResourceTransitions(const UploadTicket& ticket);
 		void EndFrame(const FrameContext& ctx);
 		void RecordBackBufferSetup(const FrameContext& ctx);
-		void BindPipeline(ID3D12GraphicsCommandList* commandList, PipelineId pipelineId);
-		void DrawMesh(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle);
-		void DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle, uint32_t instanceCount);
-		void DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene);
-		void SortRenderObjectsForInstancing(std::vector<uint32_t>& sortedIndices, const FramePacket& scene);
-		void DrawInstancedBatch(const FrameContext& ctx, const FramePacket& scene, const std::vector<uint32_t>& sortedIndices, uint32_t begin, uint32_t end);
-
 
 		static constexpr UINT NumFramesInFlight = 2;
 

@@ -99,8 +99,6 @@ namespace efg::d3d12
         FrameContext ctx = BeginFrame();
         PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"BeginFrame");
         ProcessUploads();
-        UpdateFrameConstants(ctx, scene);
-        UpdatePointLights(ctx, scene);
         PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"BackBufferSetup");
         RecordBackBufferSetup(ctx);
         PIXEndEvent(ctx.commandList); // BackBufferSetup End
