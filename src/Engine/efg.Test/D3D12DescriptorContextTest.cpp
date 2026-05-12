@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+#include "gtest\gtest.h"
 #include "..\efg.Renderer\include\d3d12\D3D12Context.h"
 #include "..\efg.Renderer\include\d3d12\D3D12DescriptorContext.h"
 
@@ -18,8 +18,8 @@ protected:
         // ComPtr members clean themselves up.
     }
 
-    D3D12Context ctx = {};
-    D3D12DescriptorContext descriptors = {};
+    efg::d3d12::D3D12Context ctx = {};
+    efg::d3d12::D3D12DescriptorContext descriptors = {};
 };
 
 namespace
@@ -192,10 +192,10 @@ namespace
         return resource;
     }
 
-    D3D12DescriptorContext CreateDescriptorContext(
-        D3D12Context& ctx)
+    efg::d3d12::D3D12DescriptorContext CreateDescriptorContext(
+        efg::d3d12::D3D12Context& ctx)
     {
-        D3D12DescriptorContext descriptorContext = {};
+        efg::d3d12::D3D12DescriptorContext descriptorContext = {};
         descriptorContext.Initialize(ctx.GetDevice());
         return descriptorContext;
     }
@@ -209,7 +209,7 @@ TEST_F(D3D12DescriptorTests, CreateValidRTV)
     ComPtr<ID3D12Resource> resource =
         CreateTestRenderTarget(ctx.GetDevice());
 
-    DescriptorAllocation allocation =
+    efg::d3d12::DescriptorAllocation allocation =
         descriptors.CreateRTV(resource.Get(), nullptr);
 
     EXPECT_TRUE(allocation.IsValid());
@@ -238,7 +238,7 @@ TEST_F(D3D12DescriptorTests, CreateValidDSV)
     ComPtr<ID3D12Resource> resource =
         CreateTestDepthStencil(ctx.GetDevice());
 
-    DescriptorAllocation allocation =
+    efg::d3d12::DescriptorAllocation allocation =
         descriptors.CreateDSV(resource.Get(), nullptr);
 
     EXPECT_TRUE(allocation.IsValid());
@@ -267,7 +267,7 @@ TEST_F(D3D12DescriptorTests, CreateValidCBV)
     ComPtr<ID3D12Resource> buffer =
         CreateTestBuffer(ctx.GetDevice(), TestBufferSize);
 
-    DescriptorAllocation allocation =
+    efg::d3d12::DescriptorAllocation allocation =
         descriptors.CreateCBV(
             buffer.Get(),
             64);
@@ -294,7 +294,7 @@ TEST_F(D3D12DescriptorTests, CreateValidStructuredBufferSRV)
             ctx.GetDevice(),
             elementCount * elementStride);
 
-    DescriptorAllocation allocation =
+    efg::d3d12::DescriptorAllocation allocation =
         descriptors.CreateStructuredBufferSRV(
             buffer.Get(),
             elementCount,
@@ -312,7 +312,7 @@ TEST_F(D3D12DescriptorTests, CreateValidTexture2DSRV)
     ComPtr<ID3D12Resource> texture =
         CreateTestTexture2D(ctx.GetDevice());
 
-    DescriptorAllocation allocation =
+    efg::d3d12::DescriptorAllocation allocation =
         descriptors.CreateTexture2DSRV(
             texture.Get(),
             DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -341,7 +341,7 @@ TEST_F(D3D12DescriptorTests, CreateValidStructuredBufferUAV)
             elementCount * elementStride,
             D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
 
-    DescriptorAllocation allocation =
+    efg::d3d12::DescriptorAllocation allocation =
         descriptors.CreateUAV(
             buffer.Get(),
             elementCount,
@@ -384,7 +384,7 @@ TEST_F(D3D12DescriptorTests, CreateValidSampler)
     samplerDesc.MinLOD = 0.0f;
     samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
 
-    DescriptorAllocation allocation =
+    efg::d3d12::DescriptorAllocation allocation =
         descriptors.CreateSampler(samplerDesc);
 
     EXPECT_TRUE(allocation.IsValid());
