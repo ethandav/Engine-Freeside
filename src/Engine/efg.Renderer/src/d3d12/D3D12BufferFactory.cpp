@@ -18,12 +18,7 @@ namespace efg::d3d12
         buffer.uploadResource = m_resourceFactory->CreateUploadBuffer(sizeInBytes);
         void* mappedData = nullptr;
         CD3DX12_RANGE readRange(0, 0);
-        D3D12_THROW_IF_FAILED(buffer.uploadResource->Map(
-            0,
-            &readRange,
-            &mappedData
-        ));
-
+        D3D12_THROW_IF_FAILED(buffer.uploadResource->Map(0, &readRange, &mappedData));
         memcpy(mappedData, data, static_cast<size_t>(sizeInBytes));
         buffer.uploadResource->Unmap(0, nullptr);
 
@@ -37,11 +32,7 @@ namespace efg::d3d12
         buffer.alignedSizeInBytes = AlignConstantBufferSize(sizeInBytes);
         buffer.resource = m_resourceFactory->CreateUploadBuffer(sizeInBytes);
         CD3DX12_RANGE readRange(0, 0);
-        D3D12_THROW_IF_FAILED(buffer.resource->Map(
-            0,
-            &readRange,
-            &buffer.mappedData
-        ));
+        D3D12_THROW_IF_FAILED(buffer.resource->Map(0, &readRange, &buffer.mappedData));
 
         return buffer;
     }
