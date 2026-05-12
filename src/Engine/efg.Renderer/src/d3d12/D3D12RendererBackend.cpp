@@ -57,19 +57,8 @@ namespace efg::d3d12
         for (UINT i = 0; i < NumFramesInFlight; i++)
         {
             m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
-
-            m_frameResources[i].cameraConstantBuffer = m_bufferFactory.CreateConstantBuffer(sizeof(CameraConstants));
-            m_frameResources[i].directionalLightConstantBuffer = m_bufferFactory.CreateConstantBuffer(sizeof(Lights::DirectionalLightConstants));
-            m_frameResources[i].pointLightConstantBuffer = m_bufferFactory.CreateConstantBuffer(sizeof(Lights::PointLightConstants));
-
-            m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(ConstantArenaSize);
-            m_frameResources[i].materialConstantArena = m_bufferFactory.CreateConstantBufferArena(ConstantArenaSize);
-            m_frameResources[i].gpuUploadBufferArena = m_bufferFactory.CreateUploadBufferArena(100000 * sizeof(InstanceData));
-
-            m_frameResources[i].pointLightStructuredBuffer = m_bufferFactory.CreateStructuredBufferUpload(Lights::MaxPointLights, sizeof(Lights::GpuPointLight));
-            DescriptorAllocation srvAllocation = m_descriptorContext.CreateStructuredBufferSRV(m_frameResources[i].pointLightStructuredBuffer.resource.Get(), m_frameResources[i].pointLightStructuredBuffer.elementCount, m_frameResources[i].pointLightStructuredBuffer.elementStride);
-            m_frameResources[i].pointLightStructuredBuffer.cpuSrv = srvAllocation.cpu;
-            m_frameResources[i].pointLightStructuredBuffer.gpuSrv = srvAllocation.gpu;
+            m_frameResources[i].uploadBufferArena = m_bufferFactory.CreateUploadBufferArena(100000 * sizeof(InstanceData));
+            m_frameResources[i].constantBufferArena = m_bufferFactory.CreateConstantBufferArena(ConstantArenaSize);
             m_frameResources[i].depthBuffer = m_bufferFactory.CreateDepthBuffer(width, height);
             m_frameResources[i].depthBuffer.dsv = m_descriptorContext.CreateDSV(m_frameResources[i].depthBuffer.resource.Get(), nullptr).cpu;
         }
@@ -77,21 +66,13 @@ namespace efg::d3d12
 
     void D3D12RendererBackend::DestroyFrameResources()
     {
-        for (UINT i = 0; i < NumFramesInFlight; i++)
-        {
-            m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].cameraConstantBuffer);
-            m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].directionalLightConstantBuffer);
-            m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].pointLightConstantBuffer);
-            m_bufferFactory.DestroyConstantBufferArena(m_frameResources[i].objectConstantArena);
-            m_bufferFactory.DestroyConstantBufferArena(m_frameResources[i].materialConstantArena);
-        }
+
     }
 
     void D3D12RendererBackend::Shutdown()
     {
         m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
         DestroyFrameResources();
-
     }
 
     void D3D12RendererBackend::Render(const FramePacket& scene)

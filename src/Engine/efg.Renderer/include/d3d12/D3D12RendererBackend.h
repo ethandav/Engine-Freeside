@@ -37,8 +37,6 @@ namespace efg::d3d12
 		void EndFrame(const FrameContext& ctx);
 		void RecordBackBufferSetup(const FrameContext& ctx);
 
-		static constexpr UINT NumFramesInFlight = 2;
-
 		D3D12_VIEWPORT m_viewport;
 		D3D12_RECT m_scissorRect;
 

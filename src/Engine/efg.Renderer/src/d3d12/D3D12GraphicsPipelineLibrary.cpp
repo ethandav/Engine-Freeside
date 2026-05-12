@@ -34,9 +34,7 @@ namespace efg::d3d12
         rootParameters[3].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), 0, D3D12_SHADER_VISIBILITY_PIXEL);
         rootParameters[4].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightConstants), 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
-        CD3DX12_DESCRIPTOR_RANGE pointLightSrvRange;
-        pointLightSrvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-        rootParameters[5].InitAsDescriptorTable(1, &pointLightSrvRange, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[5].InitAsShaderResourceView(0, 0, D3D12_SHADER_VISIBILITY_PIXEL);
         rootParameters[6].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
         rootSignatureDesc.Init(

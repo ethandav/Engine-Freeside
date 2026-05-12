@@ -8,18 +8,22 @@
 
 namespace efg::d3d12
 {
+	static constexpr UINT NumFramesInFlight = 2;
+
 	struct FrameResource
 	{
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator;
 		UINT64 fenceValue = 0;
-		GpuConstantBuffer cameraConstantBuffer = {};
-		GpuConstantBuffer directionalLightConstantBuffer = {};
-		GpuConstantBuffer pointLightConstantBuffer = {};
-		GpuConstantBufferArena objectConstantArena = {};
-		GpuConstantBufferArena materialConstantArena = {};
-		GpuStructuredBuffer pointLightStructuredBuffer = {};
-		GpuUploadBufferArena gpuUploadBufferArena = {};
+
+		GpuUploadBufferArena uploadBufferArena = {};
+		GpuConstantBufferArena constantBufferArena = {};
 		GpuDepthBuffer depthBuffer = {};
+
+		void ResetTransientAllocators()
+		{
+			uploadBufferArena.Reset();
+			constantBufferArena.Reset();
+		}
 	};
 
 	struct FrameContext
