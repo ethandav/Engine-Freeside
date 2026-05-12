@@ -22,8 +22,8 @@ namespace efg
 	{
 		MeshHandle mesh;
 		MaterialHandle material;
-		Mat4 world = efg::Mat4::Identity();
-		Mat4 initialTransform = efg::Mat4::Identity();
+		Math::Mat4 world = efg::Math::Mat4::Identity();
+		Math::Mat4 initialTransform = efg::Math::Mat4::Identity();
 		std::wstring name = L"Render Object";
 	};
 
@@ -38,12 +38,12 @@ namespace efg
 
 	struct ObjectConstants
 	{
-		Mat4 world;
+		Math::Mat4 world;
 	};
 
 	struct MaterialConstants
 	{
-		Vec4 baseColor;
-		Vec4 specular;
+		Math::Vec4 baseColor;
+		Math::Vec4 specular;
 	};
 }

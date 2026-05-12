@@ -17,30 +17,30 @@ namespace efg
             MeshData mesh =
             {
                 std::vector<efg::Vertex>(vertexCount) = {
-                    {Vec3(-0.5f, 0.5f, -0.5f),Vec3(0.0f, 1.0f, 0.0f),Vec2(0.0f, 0.0f)},//Top
-                    {Vec3(0.5f, 0.5f, -0.5f),Vec3(0.0f, 1.0f, 0.0f),Vec2(1.0f, 0.0f)},
-                    {Vec3(-0.5f, 0.5f, 0.5f),Vec3(0.0f, 1.0f, 0.0f),Vec2(0.0f, 1.0f)},
-                    {Vec3(0.5f, 0.5f, 0.5f),Vec3(0.0f, 1.0f, 0.0f),Vec2(1.0f, 1.0f)},
-                    {Vec3(-0.5f, 0.5f, 0.5f),Vec3(0.0f, 0.0f, 1.0f),Vec2(0.0f, 0.0f)}, //Front
-                    {Vec3(0.5f, 0.5f, 0.5f),Vec3(0.0f, 0.0f, 1.0f),Vec2(1.0f, 0.0f)},
-                    {Vec3(-0.5f, -0.5f, 0.5f),Vec3(0.0f, 0.0f, 1.0f),Vec2(0.0f, 1.0f)},
-                    {Vec3(0.5f, -0.5f, 0.5f),Vec3(0.0f, 0.0f, 1.0f),Vec2(1.0f, 1.0f)},
-                    {Vec3(0.5f, 0.5f, 0.5f),Vec3(1.0f, 0.0f, 0.0f),Vec2(0.0f, 0.0f)}, //Right
-                    {Vec3(0.5f, 0.5f, -0.5f),Vec3(1.0f, 0.0f, 0.0f),Vec2(1.0f, 0.0f)},
-                    {Vec3(0.5f, -0.5f, 0.5f),Vec3(1.0f, 0.0f, 0.0f),Vec2(0.0f, 1.0f)},
-                    {Vec3(0.5f, -0.5f, -0.5f),Vec3(1.0f, 0.0f, 0.0f),Vec2(1.0f, 1.0f)},
-                    {Vec3(0.5f, 0.5f, -0.5f),Vec3(0.0f, 0.0f, -1.0f),Vec2(0.0f, 0.0f)}, //Back
-                    {Vec3(-0.5f, 0.5f, -0.5f),Vec3(0.0f, 0.0f, -1.0f),Vec2(1.0f, 0.0f)},
-                    {Vec3(0.5f, -0.5f, -0.5f),Vec3(0.0f, 0.0f, -1.0f),Vec2(0.0f, 1.0f)},
-                    {Vec3(-0.5f, -0.5f, -0.5f),Vec3(0.0f, 0.0f, -1.0f),Vec2(1.0f, 1.0f)},
-                    {Vec3(-0.5f, 0.5f, -0.5f),Vec3(-1.0f, 0.0f, 0.0f),Vec2(0.0f, 0.0f)}, //Left
-                    {Vec3(-0.5f, 0.5f, 0.5f),Vec3(-1.0f, 0.0f, 0.0f),Vec2(1.0f, 0.0f)},
-                    {Vec3(-0.5f, -0.5f, -0.5f),Vec3(-1.0f, 0.0f, 0.0f),Vec2(0.0f, 1.0f)},
-                    {Vec3(-0.5f, -0.5f, 0.5f),Vec3(-1.0f, 0.0f, 0.0f),Vec2(1.0f, 1.0f)},
-                    {Vec3(-0.5f, -0.5f, 0.5f),Vec3(0.0f, -1.0f, 0.0f),Vec2(0.0f, 0.0f)}, //Bottom
-                    {Vec3(0.5f, -0.5f, 0.5f),Vec3(0.0f, -1.0f, 0.0f),Vec2(1.0f, 0.0f)},
-                    {Vec3(-0.5f, -0.5f, -0.5f),Vec3(0.0f, -1.0f, 0.0f),Vec2(0.0f, 1.0f)},
-                    {Vec3(0.5f, -0.5f, -0.5f),Vec3(0.0f, -1.0f, 0.0f),Vec2(1.0f, 1.0f)}
+                    {Math::Vec3(-0.5f, 0.5f, -0.5f),Math::Vec3(0.0f, 1.0f, 0.0f),Math::Vec2(0.0f, 0.0f)},//Top
+                    {Math::Vec3(0.5f, 0.5f, -0.5f),Math::Vec3(0.0f, 1.0f, 0.0f),Math::Vec2(1.0f, 0.0f)},
+                    {Math::Vec3(-0.5f, 0.5f, 0.5f),Math::Vec3(0.0f, 1.0f, 0.0f),Math::Vec2(0.0f, 1.0f)},
+                    {Math::Vec3(0.5f, 0.5f, 0.5f),Math::Vec3(0.0f, 1.0f, 0.0f),Math::Vec2(1.0f, 1.0f)},
+                    {Math::Vec3(-0.5f, 0.5f, 0.5f),Math::Vec3(0.0f, 0.0f, 1.0f),Math::Vec2(0.0f, 0.0f)}, //Front
+                    {Math::Vec3(0.5f, 0.5f, 0.5f),Math::Vec3(0.0f, 0.0f, 1.0f),Math::Vec2(1.0f, 0.0f)},
+                    {Math::Vec3(-0.5f, -0.5f, 0.5f),Math::Vec3(0.0f, 0.0f, 1.0f),Math::Vec2(0.0f, 1.0f)},
+                    {Math::Vec3(0.5f, -0.5f, 0.5f),Math::Vec3(0.0f, 0.0f, 1.0f),Math::Vec2(1.0f, 1.0f)},
+                    {Math::Vec3(0.5f, 0.5f, 0.5f),Math::Vec3(1.0f, 0.0f, 0.0f),Math::Vec2(0.0f, 0.0f)}, //Right
+                    {Math::Vec3(0.5f, 0.5f, -0.5f),Math::Vec3(1.0f, 0.0f, 0.0f),Math::Vec2(1.0f, 0.0f)},
+                    {Math::Vec3(0.5f, -0.5f, 0.5f),Math::Vec3(1.0f, 0.0f, 0.0f),Math::Vec2(0.0f, 1.0f)},
+                    {Math::Vec3(0.5f, -0.5f, -0.5f),Math::Vec3(1.0f, 0.0f, 0.0f),Math::Vec2(1.0f, 1.0f)},
+                    {Math::Vec3(0.5f, 0.5f, -0.5f),Math::Vec3(0.0f, 0.0f, -1.0f),Math::Vec2(0.0f, 0.0f)}, //Back
+                    {Math::Vec3(-0.5f, 0.5f, -0.5f),Math::Vec3(0.0f, 0.0f, -1.0f),Math::Vec2(1.0f, 0.0f)},
+                    {Math::Vec3(0.5f, -0.5f, -0.5f),Math::Vec3(0.0f, 0.0f, -1.0f),Math::Vec2(0.0f, 1.0f)},
+                    {Math::Vec3(-0.5f, -0.5f, -0.5f),Math::Vec3(0.0f, 0.0f, -1.0f),Math::Vec2(1.0f, 1.0f)},
+                    {Math::Vec3(-0.5f, 0.5f, -0.5f),Math::Vec3(-1.0f, 0.0f, 0.0f),Math::Vec2(0.0f, 0.0f)}, //Left
+                    {Math::Vec3(-0.5f, 0.5f, 0.5f),Math::Vec3(-1.0f, 0.0f, 0.0f),Math::Vec2(1.0f, 0.0f)},
+                    {Math::Vec3(-0.5f, -0.5f, -0.5f),Math::Vec3(-1.0f, 0.0f, 0.0f),Math::Vec2(0.0f, 1.0f)},
+                    {Math::Vec3(-0.5f, -0.5f, 0.5f),Math::Vec3(-1.0f, 0.0f, 0.0f),Math::Vec2(1.0f, 1.0f)},
+                    {Math::Vec3(-0.5f, -0.5f, 0.5f),Math::Vec3(0.0f, -1.0f, 0.0f),Math::Vec2(0.0f, 0.0f)}, //Bottom
+                    {Math::Vec3(0.5f, -0.5f, 0.5f),Math::Vec3(0.0f, -1.0f, 0.0f),Math::Vec2(1.0f, 0.0f)},
+                    {Math::Vec3(-0.5f, -0.5f, -0.5f),Math::Vec3(0.0f, -1.0f, 0.0f),Math::Vec2(0.0f, 1.0f)},
+                    {Math::Vec3(0.5f, -0.5f, -0.5f),Math::Vec3(0.0f, -1.0f, 0.0f),Math::Vec2(1.0f, 1.0f)}
                 },
                 std::vector<uint32_t>(indexCount) = {
                      2,  1,  0, // Top

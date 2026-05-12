@@ -11,9 +11,9 @@ namespace efg
 {
     struct Vertex
     {
-        Vec3 position;
-        Vec3 normal;
-        Vec2 uv;
+        Math::Vec3 position;
+        Math::Vec3 normal;
+        Math::Vec2 uv;
     };
 
     struct MeshData

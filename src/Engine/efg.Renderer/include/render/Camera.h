@@ -6,8 +6,8 @@ namespace efg
 {
     struct CameraConstants
     {
-        Vec4 viewPosition;
-        Mat4 viewProjection;
+        Math::Vec4 viewPosition;
+        Math::Mat4 viewProjection;
     };
 
     class Camera
@@ -15,12 +15,12 @@ namespace efg
     public:
         Camera() = default;
 
-        void SetPosition(const Vec3& position);
-        void SetTarget(const Vec3& target);
-        void SetUp(const Vec3& up);
+        void SetPosition(const Math::Vec3& position);
+        void SetTarget(const Math::Vec3& target);
+        void SetUp(const Math::Vec3& up);
         CameraConstants BuildCameraConstants() const;
 
-        void LookAt(const Vec3& position, const Vec3& target, const Vec3& up = Vec3(0.0f, 1.0f, 0.0f));
+        void LookAt(const Math::Vec3& position, const Math::Vec3& target, const Math::Vec3& up = Math::Vec3(0.0f, 1.0f, 0.0f));
 
         void SetPerspective(
             float fovYRadians,
@@ -28,23 +28,23 @@ namespace efg
             float nearZ,
             float farZ);
 
-        const Vec3& GetPosition() const;
-        const Vec3& GetTarget() const;
-        const Vec3& GetUp() const;
+        const Math::Vec3& GetPosition() const;
+        const Math::Vec3& GetTarget() const;
+        const Math::Vec3& GetUp() const;
 
         float GetFovYRadians() const;
         float GetAspectRatio() const;
         float GetNearZ() const;
         float GetFarZ() const;
 
-        Mat4 GetViewMatrix() const;
-        Mat4 GetProjectionMatrix() const;
-        Mat4 GetViewProjectionMatrix() const;
+        Math::Mat4 GetViewMatrix() const;
+        Math::Mat4 GetProjectionMatrix() const;
+        Math::Mat4 GetViewProjectionMatrix() const;
 
     private:
-        Vec3 m_position = Vec3(0.0f, 0.0f, -5.0f);
-        Vec3 m_target = Vec3(0.0f, 0.0f, 0.0f);
-        Vec3 m_up = Vec3(0.0f, 1.0f, 0.0f);
+        Math::Vec3 m_position = Math::Vec3(0.0f, 0.0f, -5.0f);
+        Math::Vec3 m_target = Math::Vec3(0.0f, 0.0f, 0.0f);
+        Math::Vec3 m_up = Math::Vec3(0.0f, 1.0f, 0.0f);
 
         float m_fovYRadians = 0.78539816339f; // 45 degrees
         float m_aspectRatio = 16.0f / 9.0f;

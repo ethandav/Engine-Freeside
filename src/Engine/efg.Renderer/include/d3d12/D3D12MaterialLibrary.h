@@ -6,8 +6,8 @@
 
 struct GpuMaterial
 {
-    efg::Vec4 baseColor = efg::Vec4(0.8f, 0.8f, 0.8f, 0.0f);
-    efg::Vec4 specular = efg::Vec4(1.0f, 64.0f, 0.0f, 0.0f);
+    efg::Math::Vec4 baseColor = efg::Math::Vec4(0.8f, 0.8f, 0.8f, 0.0f);
+    efg::Math::Vec4 specular = efg::Math::Vec4(1.0f, 64.0f, 0.0f, 0.0f);
 };
 
 class D3D12MaterialLibrary

@@ -12,14 +12,14 @@ namespace efg
 
 		struct DirectionalLightConstants
 		{
-			Vec4 directionAndIntensity; // xyz = direction, w = intensity
-			Vec4 colorAndPadding;       // rgb = color, w unused
+			Math::Vec4 directionAndIntensity; // xyz = direction, w = intensity
+			Math::Vec4 colorAndPadding;       // rgb = color, w unused
 		};
 
 		struct GpuPointLight
 		{
-			Vec4 positionAndRadius;
-			Vec4 colorAndIntensity;
+			Math::Vec4 positionAndRadius;
+			Math::Vec4 colorAndIntensity;
 		};
 
 		struct PointLightConstants
@@ -34,8 +34,8 @@ namespace efg
 			Directional() = default;
 			DirectionalLightConstants BuildDirectionalLightConstants() const;
 
-			Vec3 direction = Vec3(0.0f, 01.0f, 0.0f);
-			Vec3 color = Vec3(1.0f, 1.0f, 1.0f);
+			Math::Vec3 direction = Math::Vec3(0.0f, 01.0f, 0.0f);
+			Math::Vec3 color = Math::Vec3(1.0f, 1.0f, 1.0f);
 		};
 
 		class Point
@@ -44,9 +44,9 @@ namespace efg
 			Point() = default;
 			void BuildGpuPointLights();
 
-			Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
+			Math::Vec3 position = Math::Vec3(0.0f, 0.0f, 0.0f);
 			float radius = 0.0f;
-			Vec3 color = Vec3(1.0f, 1.0f, 1.0f);
+			Math::Vec3 color = Math::Vec3(1.0f, 1.0f, 1.0f);
 			float intensity = 1.0f;
 		};
 	}

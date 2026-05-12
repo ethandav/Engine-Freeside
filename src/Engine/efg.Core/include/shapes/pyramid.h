@@ -14,22 +14,22 @@ namespace efg
             MeshData mesh =
             {
                 std::vector<efg::Vertex>(vertexCount) = {
-                    {Vec3(0.5f, -0.5f, -0.5f) ,Vec3(0.0f, 0.0f, -1.0f), Vec2(1.0f, 0.0f)},
-                    {Vec3(0.0f, 0.5f, 0.0f)   ,Vec3(0.0f, 0.0f, -1.0f),Vec2(0.5f, 1.0f) },
-                    {Vec3(-0.5f, -0.5f, -0.5f),Vec3(0.0f, 0.0f, -1.0f),Vec2(0.0f, 0.0f) },
-                    {Vec3(0.5f, -0.5f, 0.5f)  ,Vec3(0.0f, 0.0f, 1.0f) ,Vec2(1.0f, 0.0f) },
-                    {Vec3(0.0f, 0.5f, 0.0f)   ,Vec3(0.0f, 0.0f, 1.0f) ,Vec2(0.5f, 1.0f) },
-                    {Vec3(-0.5f, -0.5f, 0.5f) ,Vec3(0.0f, 0.0f, 1.0f) ,Vec2(0.0f, 0.0f) },
-                    {Vec3(-0.5f, -0.5f, -0.5f),Vec3(-1.0f, 0.0f, 0.0f),Vec2(1.0f, 0.0f) },
-                    {Vec3(0.0f, 0.5f, 0.0f)   ,Vec3(-1.0f, 0.0f, 0.0f),Vec2(0.5f, 1.0f) },
-                    {Vec3(-0.5f, -0.5f, 0.5f) ,Vec3(-1.0f, 0.0f, 0.0f),Vec2(0.0f, 0.0f) },
-                    {Vec3(0.5f, -0.5f, -0.5f) ,Vec3(1.0f, 0.0f, 0.0f) ,Vec2(1.0f, 0.0f) },
-                    {Vec3(0.0f, 0.5f, 0.0f)   ,Vec3(1.0f, 0.0f, 0.0f) ,Vec2(0.5f, 1.0f) },
-                    {Vec3(0.5f, -0.5f, 0.5f)  ,Vec3(1.0f, 0.0f, 0.0f) ,Vec2(0.0f, 0.0f) },
-                    {Vec3(0.5f, -0.5f, 0.5f)  ,Vec3(0.0f, -1.0f, 0.0f),Vec2(0.0f, 0.0f) },
-                    {Vec3(0.5f, -0.5f, -0.5f) ,Vec3(0.0f, -1.0f, 0.0f),Vec2(1.0f, 0.0f) },
-                    {Vec3(-0.5f, -0.5f, -0.5f),Vec3(0.0f, -1.0f, 0.0f),Vec2(0.0f, 1.0f) },
-                    {Vec3(-0.5f, -0.5f, 0.5f) ,Vec3(0.0f, -1.0f, 0.0f),Vec2(1.0f, 1.0f) }
+                    {Math::Vec3(0.5f, -0.5f, -0.5f) ,Math::Vec3(0.0f, 0.0f, -1.0f), Math::Vec2(1.0f, 0.0f)},
+                    {Math::Vec3(0.0f, 0.5f, 0.0f)   ,Math::Vec3(0.0f, 0.0f, -1.0f),Math::Vec2(0.5f, 1.0f) },
+                    {Math::Vec3(-0.5f, -0.5f, -0.5f),Math::Vec3(0.0f, 0.0f, -1.0f),Math::Vec2(0.0f, 0.0f) },
+                    {Math::Vec3(0.5f, -0.5f, 0.5f)  ,Math::Vec3(0.0f, 0.0f, 1.0f) ,Math::Vec2(1.0f, 0.0f) },
+                    {Math::Vec3(0.0f, 0.5f, 0.0f)   ,Math::Vec3(0.0f, 0.0f, 1.0f) ,Math::Vec2(0.5f, 1.0f) },
+                    {Math::Vec3(-0.5f, -0.5f, 0.5f) ,Math::Vec3(0.0f, 0.0f, 1.0f) ,Math::Vec2(0.0f, 0.0f) },
+                    {Math::Vec3(-0.5f, -0.5f, -0.5f),Math::Vec3(-1.0f, 0.0f, 0.0f),Math::Vec2(1.0f, 0.0f) },
+                    {Math::Vec3(0.0f, 0.5f, 0.0f)   ,Math::Vec3(-1.0f, 0.0f, 0.0f),Math::Vec2(0.5f, 1.0f) },
+                    {Math::Vec3(-0.5f, -0.5f, 0.5f) ,Math::Vec3(-1.0f, 0.0f, 0.0f),Math::Vec2(0.0f, 0.0f) },
+                    {Math::Vec3(0.5f, -0.5f, -0.5f) ,Math::Vec3(1.0f, 0.0f, 0.0f) ,Math::Vec2(1.0f, 0.0f) },
+                    {Math::Vec3(0.0f, 0.5f, 0.0f)   ,Math::Vec3(1.0f, 0.0f, 0.0f) ,Math::Vec2(0.5f, 1.0f) },
+                    {Math::Vec3(0.5f, -0.5f, 0.5f)  ,Math::Vec3(1.0f, 0.0f, 0.0f) ,Math::Vec2(0.0f, 0.0f) },
+                    {Math::Vec3(0.5f, -0.5f, 0.5f)  ,Math::Vec3(0.0f, -1.0f, 0.0f),Math::Vec2(0.0f, 0.0f) },
+                    {Math::Vec3(0.5f, -0.5f, -0.5f) ,Math::Vec3(0.0f, -1.0f, 0.0f),Math::Vec2(1.0f, 0.0f) },
+                    {Math::Vec3(-0.5f, -0.5f, -0.5f),Math::Vec3(0.0f, -1.0f, 0.0f),Math::Vec2(0.0f, 1.0f) },
+                    {Math::Vec3(-0.5f, -0.5f, 0.5f) ,Math::Vec3(0.0f, -1.0f, 0.0f),Math::Vec2(1.0f, 1.0f) }
                 },
                 std::vector<uint32_t>(indexCount) = {
                     2, 1, 0,

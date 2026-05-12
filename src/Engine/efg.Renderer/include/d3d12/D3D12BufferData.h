@@ -75,7 +75,7 @@ struct GpuStructuredBuffer
 
 struct InstanceData
 {
-    efg::Mat4 world;
+    efg::Math::Mat4 world;
 };
 
 struct GpuUploadBufferArena

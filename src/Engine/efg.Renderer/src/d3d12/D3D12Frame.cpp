@@ -190,7 +190,7 @@ void D3D12RendererBackend::DrawInstancedBatch(const FrameContext& ctx, const Fra
     {
         const RenderObject& object = scene.renderObjects[sortedIndices[i]];
         InstanceData instance = {};
-        instance.world = efg::Transpose(object.world);
+        instance.world = efg::Math::Transpose(object.world);
         instances.push_back(instance);
     }
 

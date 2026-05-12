@@ -33,18 +33,18 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	efg::MeshHandle pyramidMeshHandle = renderer.CreateMesh(pyramidMeshData);
 
 	efg::MaterialDesc blueMaterial;
-	blueMaterial.baseColor = efg::Vec3(0.0f, 0.0f, 1.0f);
-	blueMaterial.specular = efg::Vec2(1.0f, 64.0f);
+	blueMaterial.baseColor = efg::Math::Vec3(0.0f, 0.0f, 1.0f);
+	blueMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
 	efg::MaterialHandle blueMaterialHandle = renderer.RegisterMaterial(blueMaterial);
 
 	efg::MaterialDesc redMaterial;
-	redMaterial.baseColor = efg::Vec3(1.0f, 0.0f, 0.0f);
-	redMaterial.specular = efg::Vec2(1.0f, 64.0f);
+	redMaterial.baseColor = efg::Math::Vec3(1.0f, 0.0f, 0.0f);
+	redMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
 	efg::MaterialHandle redMaterialHandle = renderer.RegisterMaterial(redMaterial);
 
 	efg::MaterialDesc greenMaterial;
-	greenMaterial.baseColor = efg::Vec3(0.0f, 1.0f, 0.0f);
-	greenMaterial.specular = efg::Vec2(1.0f, 64.0f);
+	greenMaterial.baseColor = efg::Math::Vec3(0.0f, 1.0f, 0.0f);
+	greenMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
 	efg::MaterialHandle greenMaterialHandle = renderer.RegisterMaterial(greenMaterial);
 
 
@@ -61,7 +61,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		const float y = heightDist(rng);
 		const float z = posDist(rng);
 
-		efg::Mat4 transform = efg::Translation(x, y, z);
+		efg::Math::Mat4 transform = efg::Math::Translation(x, y, z);
 
 		object.mesh = sphereMeshHandle;
 		object.material = blueMaterialHandle;
@@ -81,18 +81,18 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	efg::Scene::SceneRenderObjectHandle hObject3;
 	object1.mesh = cubeMeshHandle;
 	object1.material = blueMaterialHandle;
-	object1.world = efg::Translation(-1.0f, 0.0f, 0.0f);
-	object1.initialTransform = efg::Translation(-1.0f, 0.0f, 0.0f);
+	object1.world = efg::Math::Translation(-1.0f, 0.0f, 0.0f);
+	object1.initialTransform = efg::Math::Translation(-1.0f, 0.0f, 0.0f);
 	object1.name = L"Cube";
 	object2.mesh = pyramidMeshHandle;
 	object2.material = redMaterialHandle;
-	object2.world = efg::Translation(1.0f, 0.0f, 0.0f);
-	object2.initialTransform = efg::Translation(1.0f, 0.0f, 0.0f);
+	object2.world = efg::Math::Translation(1.0f, 0.0f, 0.0f);
+	object2.initialTransform = efg::Math::Translation(1.0f, 0.0f, 0.0f);
 	object2.name = L"Pyramid";
 	object3.mesh = sphereMeshHandle;
 	object3.material = greenMaterialHandle;
-	object3.world = efg::Translation(0.0f, 1.0f, 0.0f);
-	object3.initialTransform = efg::Translation(0.0f, 1.0f, 0.0f);
+	object3.world = efg::Math::Translation(0.0f, 1.0f, 0.0f);
+	object3.initialTransform = efg::Math::Translation(0.0f, 1.0f, 0.0f);
 	object3.name = L"Sphere";
 
 
@@ -105,9 +105,9 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 
 	efg::Lights::Point pointLight1;
-	pointLight1.color = efg::Vec3(1.0f, 1.0f, 1.0f);
+	pointLight1.color = efg::Math::Vec3(1.0f, 1.0f, 1.0f);
 	pointLight1.intensity = 1.0f;
-	pointLight1.position = efg::Vec3(-1.0f, 0.0f, -2.0f);
+	pointLight1.position = efg::Math::Vec3(-1.0f, 0.0f, -2.0f);
 	pointLight1.radius = 5.0f;
 
 	sceneManager.AddPointLightToScene(testSceneHandle, pointLight1);
@@ -117,13 +117,13 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	{
 		const float deltaTime = timer.Tick();
 		angle += 1.0f * deltaTime;
-		efg::Mat4 rotation = efg::RotationY(angle);
+		efg::Math::Mat4 rotation = efg::Math::RotationY(angle);
 
-		efg::Mat4 translation1 = object1.initialTransform;
+		efg::Math::Mat4 translation1 = object1.initialTransform;
 		pObject1->world = translation1 * rotation;
-        efg::Mat4 translation2 = object2.initialTransform;
+        efg::Math::Mat4 translation2 = object2.initialTransform;
         pObject2->world = translation2 * rotation;
-        efg::Mat4 translation3 = object3.initialTransform;
+        efg::Math::Mat4 translation3 = object3.initialTransform;
         pObject3->world = translation3 * rotation;
 
 		window.PollEvents();

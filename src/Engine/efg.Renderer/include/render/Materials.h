@@ -28,7 +28,7 @@ namespace efg
 
     struct MaterialDesc
     {
-        Vec3 baseColor = Vec3(0.8f, 0.8f, 0.8f);
-        Vec2 specular = Vec2(1.0f, 64.0f);
+        Math::Vec3 baseColor = Math::Vec3(0.8f, 0.8f, 0.8f);
+        Math::Vec2 specular = Math::Vec2(1.0f, 64.0f);
     };
 }

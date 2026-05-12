@@ -5,8 +5,8 @@
 efg::MaterialHandle D3D12MaterialLibrary::RegisterMaterial(const efg::MaterialDesc& mat)
 {
 	GpuMaterial material{
-		efg::Vec4(mat.baseColor.x, mat.baseColor.y, mat.baseColor.z, 1.0f),
-		efg::Vec4(mat.specular.x, mat.specular.y, 0.0f, 0.0f),
+		efg::Math::Vec4(mat.baseColor.x, mat.baseColor.y, mat.baseColor.z, 1.0f),
+		efg::Math::Vec4(mat.specular.x, mat.specular.y, 0.0f, 0.0f),
 	};
 	m_materials.push_back(material);
 
@@ -29,7 +29,7 @@ const GpuMaterial& D3D12MaterialLibrary::GetMaterialByHandle(efg::MaterialHandle
 GpuMaterial D3D12MaterialLibrary::GetDefaultMaterial()
 {
 	return GpuMaterial {
-		efg::Vec4(0.8f, 0.8f, 0.8f, 1.0f),
-		efg::Vec4(1.0f, 64.0f, 0.0f, 0.0f),
+		efg::Math::Vec4(0.8f, 0.8f, 0.8f, 1.0f),
+		efg::Math::Vec4(1.0f, 64.0f, 0.0f, 0.0f),
 	};
 }

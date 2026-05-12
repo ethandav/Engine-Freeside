@@ -2,17 +2,17 @@
 
 namespace efg
 {
-    void Camera::SetPosition(const Vec3& position)
+    void Camera::SetPosition(const Math::Vec3& position)
     {
         m_position = position;
     }
 
-    void Camera::SetTarget(const Vec3& target)
+    void Camera::SetTarget(const Math::Vec3& target)
     {
         m_target = target;
     }
 
-    void Camera::SetUp(const Vec3& up)
+    void Camera::SetUp(const Math::Vec3& up)
     {
         m_up = up;
     }
@@ -21,12 +21,12 @@ namespace efg
     {
         CameraConstants constants = {};
         constants.viewProjection = Transpose(GetViewProjectionMatrix());
-        Vec3 camPosition = GetPosition();
-        constants.viewPosition = Vec4(camPosition.x, camPosition.y, camPosition.z, 0.0f);
+        Math::Vec3 camPosition = GetPosition();
+        constants.viewPosition = Math::Vec4(camPosition.x, camPosition.y, camPosition.z, 0.0f);
         return constants;
     }
 
-    void Camera::LookAt(const Vec3& position, const Vec3& target, const Vec3& up)
+    void Camera::LookAt(const Math::Vec3& position, const Math::Vec3& target, const Math::Vec3& up)
     {
         m_position = position;
         m_target = target;
@@ -45,17 +45,17 @@ namespace efg
         m_farZ = farZ;
     }
 
-    const Vec3& Camera::GetPosition() const
+    const Math::Vec3& Camera::GetPosition() const
     {
         return m_position;
     }
 
-    const Vec3& Camera::GetTarget() const
+    const Math::Vec3& Camera::GetTarget() const
     {
         return m_target;
     }
 
-    const Vec3& Camera::GetUp() const
+    const Math::Vec3& Camera::GetUp() const
     {
         return m_up;
     }
@@ -80,24 +80,24 @@ namespace efg
         return m_farZ;
     }
 
-    Mat4 Camera::GetViewMatrix() const
+    Math::Mat4 Camera::GetViewMatrix() const
     {
         return LookAtLH(m_position, m_target, m_up);
     }
 
-    Mat4 Camera::GetProjectionMatrix() const
+    Math::Mat4 Camera::GetProjectionMatrix() const
     {
-        return PerspectiveFovLH(
+        return Math::PerspectiveFovLH(
             m_fovYRadians,
             m_aspectRatio,
             m_nearZ,
             m_farZ);
     }
 
-    Mat4 Camera::GetViewProjectionMatrix() const
+    Math::Mat4 Camera::GetViewProjectionMatrix() const
     {
-        Mat4 view = GetViewMatrix();
-        Mat4 projection = GetProjectionMatrix();
+        Math::Mat4 view = GetViewMatrix();
+        Math::Mat4 projection = GetProjectionMatrix();
 
         return projection * view;
     }
