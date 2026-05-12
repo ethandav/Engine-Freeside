@@ -8,6 +8,8 @@ namespace efg::d3d12
 {
     static constexpr UINT64 ConstantArenaSize = 1024 * 256;
 
+    static constexpr UINT64 InstanceDataAlignment = 16;
+
     inline UINT64 AlignUp(UINT64 value, UINT64 alignment)
     {
         return (value + alignment - 1) & ~(alignment - 1);

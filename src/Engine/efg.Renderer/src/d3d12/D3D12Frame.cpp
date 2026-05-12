@@ -174,7 +174,7 @@ namespace efg::d3d12
         ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
         const uint32_t instanceCount = end - begin;
         const UINT64 instanceBufferSize = static_cast<UINT64>(instanceCount) * sizeof(InstanceData);
-        GpuUploadBufferAllocation instanceAllocation = m_bufferFactory.AllocateUploadBufferArena(ctx.frame->gpuUploadBufferArena, instanceBufferSize, alignof(InstanceData));
+        GpuUploadBufferAllocation instanceAllocation = m_bufferFactory.AllocateUploadBufferArena(ctx.frame->gpuUploadBufferArena, instanceBufferSize, InstanceDataAlignment);
         InstanceData* instances = reinterpret_cast<InstanceData*>(instanceAllocation.cpu);
 
         for (uint32_t i = 0; i < instanceCount; ++i)
