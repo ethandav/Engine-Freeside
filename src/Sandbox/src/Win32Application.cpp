@@ -3,7 +3,7 @@
 
 #include <random>
 
-constexpr uint32_t ObjectCount = 1000;
+constexpr uint32_t ObjectCount = 10000;
 
 void Application::Run(HINSTANCE hInstance, int nCmdShow)
 {

@@ -23,6 +23,7 @@ namespace efg::d3d12
         void DestroyConstantBufferArena(GpuConstantBufferArena& arena);
         GpuUploadBufferArena CreateUploadBufferArena(ID3D12Device* device, UINT64 capacityInBytes);
         D3D12_GPU_VIRTUAL_ADDRESS UploadBufferArena(GpuUploadBufferArena& arena, const void* data, UINT64 sizeInBytes, UINT64 alignment = 16);
+        GpuUploadBufferAllocation AllocateUploadBufferArena(GpuUploadBufferArena& arena, UINT64 sizeInBytes, UINT64 alignment);
     private:
     };
 }

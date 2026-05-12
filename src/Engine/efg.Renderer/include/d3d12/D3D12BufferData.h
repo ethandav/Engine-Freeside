@@ -98,4 +98,12 @@ namespace efg::d3d12
             currentOffset = 0;
         }
     };
+
+    struct GpuUploadBufferAllocation
+    {
+        uint8_t* cpu = nullptr;
+        D3D12_GPU_VIRTUAL_ADDRESS gpu = 0;
+        UINT64 sizeInBytes = 0;
+        UINT64 offset = 0;
+    };
 }

@@ -56,7 +56,7 @@ namespace efg::d3d12
 
             m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
             m_frameResources[i].materialConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
-            m_frameResources[i].gpuUploadBufferArena = m_bufferFactory.CreateUploadBufferArena(m_graphicsContext.GetDevice(), 10000 * sizeof(InstanceData));
+            m_frameResources[i].gpuUploadBufferArena = m_bufferFactory.CreateUploadBufferArena(m_graphicsContext.GetDevice(), 100000 * sizeof(InstanceData));
 
             m_frameResources[i].pointLightStructuredBuffer = m_bufferFactory.CreateStructuredBufferUpload(m_graphicsContext.GetDevice(), Lights::MaxPointLights, sizeof(Lights::GpuPointLight));
             DescriptorAllocation srvAllocation = m_descriptorContext.CreateStructuredBufferSRV(m_frameResources[i].pointLightStructuredBuffer.resource.Get(), m_frameResources[i].pointLightStructuredBuffer.elementCount, m_frameResources[i].pointLightStructuredBuffer.elementStride);

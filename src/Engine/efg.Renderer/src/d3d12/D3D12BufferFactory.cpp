@@ -213,7 +213,7 @@ namespace efg::d3d12
     GpuUploadBufferArena D3D12BufferFactory::CreateUploadBufferArena(ID3D12Device* device, UINT64 capacityInBytes)
     {
         GpuUploadBufferArena arena = {};
-        arena.capacityInBytes = capacityInBytes;
+        arena.capacityInBytes = AlignUp(capacityInBytes, 256);
         arena.currentOffset = 0;
         auto uploadHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
         auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(arena.capacityInBytes);
@@ -237,6 +237,14 @@ namespace efg::d3d12
 
     D3D12_GPU_VIRTUAL_ADDRESS D3D12BufferFactory::UploadBufferArena(GpuUploadBufferArena& arena, const void* data, UINT64 sizeInBytes, UINT64 alignment)
     {
+        GpuUploadBufferAllocation allocation = AllocateUploadBufferArena(arena, sizeInBytes, alignment);
+        std::memcpy(allocation.cpu, data, static_cast<size_t>(sizeInBytes));
+
+        return allocation.gpu;
+    }
+
+    GpuUploadBufferAllocation D3D12BufferFactory::AllocateUploadBufferArena(GpuUploadBufferArena& arena, UINT64 sizeInBytes, UINT64 alignment)
+    {
         const UINT64 alignedOffset = AlignUp(arena.currentOffset, alignment);
 
         if (alignedOffset + sizeInBytes > arena.capacityInBytes)
@@ -244,9 +252,14 @@ namespace efg::d3d12
             throw std::runtime_error("Upload buffer arena out of memory.");
         }
 
-        std::memcpy(arena.mappedData + alignedOffset, data, static_cast<size_t>(sizeInBytes));
+        GpuUploadBufferAllocation allocation = {};
+        allocation.cpu = arena.mappedData + alignedOffset;
+        allocation.gpu = arena.GetGpuAddress(alignedOffset);
+        allocation.sizeInBytes = sizeInBytes;
+        allocation.offset = alignedOffset;
+
         arena.currentOffset = alignedOffset + sizeInBytes;
 
-        return arena.GetGpuAddress(alignedOffset);
+        return allocation;
     }
 }

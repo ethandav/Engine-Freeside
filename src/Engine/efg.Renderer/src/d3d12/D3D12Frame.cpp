@@ -172,20 +172,20 @@ namespace efg::d3d12
         const GpuMaterial& material = first.material.IsValid() ? m_materialLibrary.GetMaterialByHandle(first.material) : m_materialLibrary.GetDefaultMaterial();
         D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.UploadConstantBufferArena(ctx.frame->materialConstantArena, &material, sizeof(GpuMaterial));
         ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
-        std::vector<InstanceData> instances;
-        instances.reserve(end - begin);
+        const uint32_t instanceCount = end - begin;
+        const UINT64 instanceBufferSize = static_cast<UINT64>(instanceCount) * sizeof(InstanceData);
+        GpuUploadBufferAllocation instanceAllocation = m_bufferFactory.AllocateUploadBufferArena(ctx.frame->gpuUploadBufferArena, instanceBufferSize, alignof(InstanceData));
+        InstanceData* instances = reinterpret_cast<InstanceData*>(instanceAllocation.cpu);
 
-        for (uint32_t i = begin; i < end; ++i)
+        for (uint32_t i = 0; i < instanceCount; ++i)
         {
-            const RenderObject& object = scene.renderObjects[sortedIndices[i]];
-            InstanceData instance = {};
-            instance.world = efg::Math::Transpose(object.world);
-            instances.push_back(instance);
+            const RenderObject& object = scene.renderObjects[sortedIndices[begin + i]];
+            instances[i] = {};
+            instances[i].world = efg::Math::Transpose(object.world);
         }
 
-        D3D12_GPU_VIRTUAL_ADDRESS instanceBufferAddress = m_bufferFactory.UploadBufferArena(ctx.frame->gpuUploadBufferArena, instances.data(), instances.size() * sizeof(InstanceData));
-        ctx.commandList->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::InstanceData), instanceBufferAddress);
-        DrawMeshInstanced(ctx.commandList, first.mesh, static_cast<uint32_t>(instances.size()));
+        ctx.commandList->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::InstanceData), instanceAllocation.gpu);
+        DrawMeshInstanced(ctx.commandList, first.mesh, instanceCount);
     }
 
     void D3D12RendererBackend::DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle, uint32_t instanceCount)
