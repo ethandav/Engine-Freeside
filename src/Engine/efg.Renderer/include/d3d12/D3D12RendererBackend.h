@@ -1,5 +1,6 @@
 #pragma once
 #include "..\render\IRendererBackend.h"
+#include "..\render\RenderQueue.h"
 #include "D3D12Context.h"
 #include "D3D12Error.h"
 #include "D3D12GraphicsPipelineLibrary.h"
@@ -56,5 +57,7 @@ namespace efg::d3d12
 		D3D12ForwardLitGeometryRenderPass m_forwarLitGeometryRenderPass = {};
 
 		std::array<FrameResource, NumFramesInFlight> m_frameResources = {};
+
+		RenderQueue m_renderQueue = {};
 	};
 }

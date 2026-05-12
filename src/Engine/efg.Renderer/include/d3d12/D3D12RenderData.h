@@ -5,6 +5,7 @@
 
 #include <wrl.h>
 #include <stdint.h>
+#include "../render/RenderQueue.h"
 
 namespace efg::d3d12
 {
@@ -33,5 +34,6 @@ namespace efg::d3d12
 		ID3D12GraphicsCommandList* commandList = nullptr;
 		D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = {};
 		ID3D12Resource* backBuffer = nullptr;
+		RenderQueue* renderQueue = nullptr;
 	};
 }

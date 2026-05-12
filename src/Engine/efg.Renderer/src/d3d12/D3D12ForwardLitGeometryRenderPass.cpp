@@ -1,4 +1,5 @@
 #include "..\..\include\d3d12\passes\D3D12ForwardLitGeometryRenderPass.h"
+#include "..\..\include\render\RenderQueue.h"
 #include <algorithm>
 
 namespace efg::d3d12
@@ -19,7 +20,6 @@ namespace efg::d3d12
         UploadPassResources(ctx, scene, resources);
         BindPassResources(ctx, resources);
         DrawAllRenderObjects(ctx, scene);
-        resources = {};
 	}
 
     void D3D12ForwardLitGeometryRenderPass::BeginPass(const FrameContext& ctx, const FramePacket& scene)
@@ -48,6 +48,29 @@ namespace efg::d3d12
         resources.cameraCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &cameraConstants, sizeof(CameraConstants));
         resources.directionalLightCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &dirLightConstants, sizeof(Lights::DirectionalLightConstants));
         resources.pointLightConstantsCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.pointLightConstants, sizeof(Lights::PointLightConstants));
+    }
+
+    void D3D12ForwardLitGeometryRenderPass::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
+    {
+        for (const auto& batch : ctx.renderQueue->batches)
+        {
+            const RenderObject& first = scene.renderObjects[ctx.renderQueue->sortedIndices[batch.firstSortedIndex]];
+            const GpuMaterial& material = batch.material.IsValid() ? m_materialLibrary->GetMaterialByHandle(batch.material) : m_materialLibrary->GetDefaultMaterial();
+            D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &material, sizeof(GpuMaterial));
+            ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
+            const UINT64 instanceBufferSize = static_cast<UINT64>(batch.instanceCount) * sizeof(InstanceData);
+            GpuUploadBufferAllocation instanceAllocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, instanceBufferSize, InstanceDataAlignment);
+            InstanceData* instances = reinterpret_cast<InstanceData*>(instanceAllocation.cpu);
+            for (uint32_t i = 0; i < batch.instanceCount; ++i)
+            {
+                const RenderObject& object = scene.renderObjects[ctx.renderQueue->sortedIndices[batch.firstSortedIndex + i]];
+                instances[i] = {};
+                instances[i].world = efg::Math::Transpose(object.world);
+            }
+
+            ctx.commandList->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::InstanceData), instanceAllocation.gpu);
+            DrawMeshInstanced(ctx.commandList, batch.mesh, batch.instanceCount);
+        }
     }
 
     void D3D12ForwardLitGeometryRenderPass::UploadPointLights(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
@@ -82,81 +105,6 @@ namespace efg::d3d12
         }
 
         resources.pointLightConstants.pointLightCount = count;
-    }
-
-    void D3D12ForwardLitGeometryRenderPass::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
-    {
-        std::vector<uint32_t> sortedIndices(scene.renderObjects.size());
-
-        SortRenderObjectsForInstancing(sortedIndices, scene);
-        uint32_t begin = 0;
-
-        while (begin < sortedIndices.size())
-        {
-            const RenderObject& first = scene.renderObjects[sortedIndices[begin]];
-
-            uint32_t end = begin + 1;
-
-            while (end < sortedIndices.size())
-            {
-                const RenderObject& candidate = scene.renderObjects[sortedIndices[end]];
-
-                if (candidate.mesh != first.mesh ||
-                    candidate.material != first.material)
-                {
-                    break;
-                }
-
-                ++end;
-            }
-
-            // Objects in [begin, end) are one batch.
-            DrawInstancedBatch(ctx, scene, sortedIndices, begin, end);
-
-            begin = end;
-        }
-    }
-
-    void D3D12ForwardLitGeometryRenderPass::SortRenderObjectsForInstancing(std::vector<uint32_t>& sortedIndices, const FramePacket& scene)
-    {
-        for (uint32_t i = 0; i < sortedIndices.size(); ++i)
-        {
-            sortedIndices[i] = i;
-        }
-
-        std::sort(sortedIndices.begin(), sortedIndices.end(),
-            [&](uint32_t lhs, uint32_t rhs)
-            {
-                const RenderObject& a = scene.renderObjects[lhs];
-                const RenderObject& b = scene.renderObjects[rhs];
-
-                if (a.material.index != b.material.index)
-                    return a.material.index < b.material.index;
-
-                return a.mesh.index < b.mesh.index;
-            });
-    }
-
-    void D3D12ForwardLitGeometryRenderPass::DrawInstancedBatch(const FrameContext& ctx, const FramePacket& scene, const std::vector<uint32_t>& sortedIndices, uint32_t begin, uint32_t end)
-    {
-        const RenderObject& first = scene.renderObjects[sortedIndices[begin]];
-        const GpuMaterial& material = first.material.IsValid() ? m_materialLibrary->GetMaterialByHandle(first.material) : m_materialLibrary->GetDefaultMaterial();
-        D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &material, sizeof(GpuMaterial));
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
-        const uint32_t instanceCount = end - begin;
-        const UINT64 instanceBufferSize = static_cast<UINT64>(instanceCount) * sizeof(InstanceData);
-        GpuUploadBufferAllocation instanceAllocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, instanceBufferSize, InstanceDataAlignment);
-        InstanceData* instances = reinterpret_cast<InstanceData*>(instanceAllocation.cpu);
-
-        for (uint32_t i = 0; i < instanceCount; ++i)
-        {
-            const RenderObject& object = scene.renderObjects[sortedIndices[begin + i]];
-            instances[i] = {};
-            instances[i].world = efg::Math::Transpose(object.world);
-        }
-
-        ctx.commandList->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::InstanceData), instanceAllocation.gpu);
-        DrawMeshInstanced(ctx.commandList, first.mesh, instanceCount);
     }
 
     void D3D12ForwardLitGeometryRenderPass::DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle, uint32_t instanceCount)

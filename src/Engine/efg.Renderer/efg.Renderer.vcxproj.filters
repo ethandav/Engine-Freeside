@@ -99,6 +99,9 @@
     <ClInclude Include="include\d3d12\passes\D3D12BackBufferSetup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\render\RenderQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\render\Renderer.cpp">
@@ -159,6 +162,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\d3d12\D3D12ForwardLitGeometryRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\RenderQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

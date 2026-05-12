@@ -21,6 +21,7 @@ namespace efg::d3d12
         ctx.commandList = m_commandContext.GetDirectCommandList();
         ctx.backBuffer = m_swapChain.GetCurrentBackBuffer();
         ctx.backBufferHandle = m_swapChain.GetCurrentBackBufferHandle();
+        ctx.renderQueue = &m_renderQueue;
 
         frame.ResetTransientAllocators();
 

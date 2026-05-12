@@ -83,6 +83,7 @@ namespace efg::d3d12
         PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"BackBufferSetup");
         RecordBackBufferSetup(ctx);
         PIXEndEvent(ctx.commandList); // BackBufferSetup End
+        m_renderQueue.BuildForwardGeometryBatches(scene.renderObjects);
         PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"ForwardLitGeometryPass");
         m_forwarLitGeometryRenderPass.Execute(ctx, scene);
         PIXEndEvent(ctx.commandList); // ForwardLitGeometryPass End

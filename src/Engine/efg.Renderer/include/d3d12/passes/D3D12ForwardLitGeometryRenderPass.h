@@ -29,8 +29,6 @@ namespace efg::d3d12
 		void UploadPointLights(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
 		void UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
 		void DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene);
-		void SortRenderObjectsForInstancing(std::vector<uint32_t>& sortedIndices, const FramePacket& scene);
-		void DrawInstancedBatch(const FrameContext& ctx, const FramePacket& scene, const std::vector<uint32_t>& sortedIndices, uint32_t begin, uint32_t end);
 		void DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, MeshHandle handle, uint32_t instanceCount);
 
 		D3D12GraphicsPipelineLibary* m_pipelineLibrary = nullptr;
