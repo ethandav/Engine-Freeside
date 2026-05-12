@@ -10,62 +10,56 @@ namespace efg::d3d12
         m_meshLibrary = meshLibrary;
         m_materialLibrary = materialLibrary;
         m_bufferFactory = bufferFactory;
-
-        CreatePassResources();
     }
 
     void D3D12ForwardLitGeometryRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene)
 	{
-        BeginPass(ctx);
-        UploadPassResources(ctx, scene);
-        BindPassResources(ctx);
+        ForwardLitPassResources resources = {};
+        BeginPass(ctx, scene);
+        UploadPassResources(ctx, scene, resources);
+        BindPassResources(ctx, resources);
         DrawAllRenderObjects(ctx, scene);
+        resources = {};
 	}
 
-    void D3D12ForwardLitGeometryRenderPass::CreatePassResources()
+    void D3D12ForwardLitGeometryRenderPass::BeginPass(const FrameContext& ctx, const FramePacket& scene)
     {
-
     }
 
-    void D3D12ForwardLitGeometryRenderPass::BeginPass(const FrameContext& ctx)
+    void D3D12ForwardLitGeometryRenderPass::UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
     {
-        ctx.frame->ResetTransientAllocators();
-        m_passResources[ctx.frameIndex].ResetTransientAllocators();
+        UploadPointLights(ctx, scene, resources);
+        UploadFrameConstants(ctx, scene, resources);
     }
 
-    void D3D12ForwardLitGeometryRenderPass::UploadPassResources(const FrameContext& ctx, const FramePacket& scene)
-    {
-        UploadPointLights(ctx, scene);
-        UploadFrameConstants(ctx, scene);
-    }
-
-    void D3D12ForwardLitGeometryRenderPass::BindPassResources(const FrameContext& ctx)
+    void D3D12ForwardLitGeometryRenderPass::BindPassResources(const FrameContext& ctx, ForwardLitPassResources& resources)
     {
         m_pipelineLibrary->BindPipeline(ctx.commandList, PipelineId::ForwardLitGeometry);
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), m_cameraCB);
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), m_directionalLightCB);
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightConstants), m_pointLightCB);
-        ctx.commandList->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv), m_pointLightsSB.gpu);
+        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), resources.cameraCB);
+        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), resources.directionalLightCB);
+        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightConstants), resources.pointLightConstantsCB);
+        ctx.commandList->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv), resources.pointLightsSRV);
     }
 
-    void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene)
+    void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
     {
         CameraConstants cameraConstants = scene.camera.BuildCameraConstants();
         Lights::DirectionalLightConstants dirLightConstants = scene.directionalLight.BuildDirectionalLightConstants();
-        m_cameraCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &cameraConstants, sizeof(CameraConstants));
-        m_directionalLightCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &dirLightConstants, sizeof(Lights::DirectionalLightConstants));
-        m_pointLightCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &m_pointLightConstants, sizeof(Lights::PointLightConstants));
+        resources.cameraCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &cameraConstants, sizeof(CameraConstants));
+        resources.directionalLightCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &dirLightConstants, sizeof(Lights::DirectionalLightConstants));
+        resources.pointLightConstantsCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.pointLightConstants, sizeof(Lights::PointLightConstants));
     }
 
-    void D3D12ForwardLitGeometryRenderPass::UploadPointLights(const FrameContext& ctx, const FramePacket& scene)
+    void D3D12ForwardLitGeometryRenderPass::UploadPointLights(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
     {
         uint32_t count = 0;
 
         if (!scene.pointLights.empty())
         {
             count = scene.pointLights.size();
-            m_pointLightsSB = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, count * sizeof(Lights::GpuPointLight), InstanceDataAlignment);
-            Lights::GpuPointLight* instances = reinterpret_cast<Lights::GpuPointLight*>(m_pointLightsSB.cpu);
+            GpuUploadBufferAllocation allocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, count * sizeof(Lights::GpuPointLight), StructuredBufferAlignment);
+            Lights::GpuPointLight* instances = reinterpret_cast<Lights::GpuPointLight*>(allocation.cpu);
+            resources.pointLightsSRV = allocation.gpu;
 
             for (uint32_t i = 0; i < count; ++i)
             {
@@ -87,7 +81,7 @@ namespace efg::d3d12
             }
         }
 
-        m_pointLightConstants.pointLightCount = count;
+        resources.pointLightConstants.pointLightCount = count;
     }
 
     void D3D12ForwardLitGeometryRenderPass::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
