@@ -80,6 +80,7 @@ namespace efg::d3d12
 		D3D12ShaderLibrary m_shaderLibrary = {};
 		D3D12MaterialLibrary m_materialLibrary = {};
 		D3D12BufferFactory m_bufferFactory = {};
+		D3D12ResourceFactory m_resourceFactory = {};
 		D3D12MeshLibrary m_meshLibrary;
 		D3D12SwapChain m_swapChain = {};
 		D3D12QueueFence m_directFence = {};

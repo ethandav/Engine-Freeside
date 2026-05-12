@@ -87,9 +87,9 @@ namespace efg::d3d12
         const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
         m_commandContext.SetViewportAndScissor(m_viewport, m_scissorRect);
         m_commandContext.ResourceBarrierTransition(ctx.backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-        m_commandContext.SetRenderTarget(ctx.backBufferHandle, ctx.frame->depthBuffer.cpuSrv);
+        m_commandContext.SetRenderTarget(ctx.backBufferHandle, ctx.frame->depthBuffer.dsv);
         m_commandContext.ClearRenderTarget(ctx.backBufferHandle, clearColor);
-        m_commandContext.ClearDepthStencil(ctx.frame->depthBuffer.cpuSrv, 1.0f, 0);
+        m_commandContext.ClearDepthStencil(ctx.frame->depthBuffer.dsv, 1.0f, 0);
     }
 
     void D3D12RendererBackend::RecordForwardLitGeometryPass(const FrameContext& ctx, const FramePacket& scene)
@@ -170,7 +170,7 @@ namespace efg::d3d12
     {
         const RenderObject& first = scene.renderObjects[sortedIndices[begin]];
         const GpuMaterial& material = first.material.IsValid() ? m_materialLibrary.GetMaterialByHandle(first.material) : m_materialLibrary.GetDefaultMaterial();
-        D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.UploadConstantBufferArena(ctx.frame->materialConstantArena, &material, sizeof(GpuMaterial));
+        D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory.CopyToConstantBufferArena(ctx.frame->materialConstantArena, &material, sizeof(GpuMaterial));
         ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
         const uint32_t instanceCount = end - begin;
         const UINT64 instanceBufferSize = static_cast<UINT64>(instanceCount) * sizeof(InstanceData);

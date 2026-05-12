@@ -35,6 +35,8 @@ namespace efg::d3d12
         m_uploadContext.Initialize(&m_graphicsContext);
         m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorContext);
         m_descriptorContext.Initialize(m_graphicsContext.GetDevice());
+        m_resourceFactory.Initialize(m_graphicsContext.GetDevice());
+        m_bufferFactory.Initialize(&m_resourceFactory);
         m_directFence.Initialize(&m_graphicsContext);
         m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
         m_descriptorContext.CreateAllHeaps();
@@ -50,22 +52,20 @@ namespace efg::d3d12
         {
             m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
 
-            m_frameResources[i].cameraConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(CameraConstants));
-            m_frameResources[i].directionalLightConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(Lights::DirectionalLightConstants));
-            m_frameResources[i].pointLightConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(Lights::PointLightConstants));
+            m_frameResources[i].cameraConstantBuffer = m_bufferFactory.CreateConstantBuffer(sizeof(CameraConstants));
+            m_frameResources[i].directionalLightConstantBuffer = m_bufferFactory.CreateConstantBuffer(sizeof(Lights::DirectionalLightConstants));
+            m_frameResources[i].pointLightConstantBuffer = m_bufferFactory.CreateConstantBuffer(sizeof(Lights::PointLightConstants));
 
-            m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
-            m_frameResources[i].materialConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
-            m_frameResources[i].gpuUploadBufferArena = m_bufferFactory.CreateUploadBufferArena(m_graphicsContext.GetDevice(), 100000 * sizeof(InstanceData));
+            m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(ConstantArenaSize);
+            m_frameResources[i].materialConstantArena = m_bufferFactory.CreateConstantBufferArena(ConstantArenaSize);
+            m_frameResources[i].gpuUploadBufferArena = m_bufferFactory.CreateUploadBufferArena(100000 * sizeof(InstanceData));
 
-            m_frameResources[i].pointLightStructuredBuffer = m_bufferFactory.CreateStructuredBufferUpload(m_graphicsContext.GetDevice(), Lights::MaxPointLights, sizeof(Lights::GpuPointLight));
+            m_frameResources[i].pointLightStructuredBuffer = m_bufferFactory.CreateStructuredBufferUpload(Lights::MaxPointLights, sizeof(Lights::GpuPointLight));
             DescriptorAllocation srvAllocation = m_descriptorContext.CreateStructuredBufferSRV(m_frameResources[i].pointLightStructuredBuffer.resource.Get(), m_frameResources[i].pointLightStructuredBuffer.elementCount, m_frameResources[i].pointLightStructuredBuffer.elementStride);
             m_frameResources[i].pointLightStructuredBuffer.cpuSrv = srvAllocation.cpu;
             m_frameResources[i].pointLightStructuredBuffer.gpuSrv = srvAllocation.gpu;
-            m_frameResources[i].depthBuffer = m_bufferFactory.CreateDepthBuffer(m_graphicsContext.GetDevice(), width, height);
-            DescriptorAllocation dsvAllocation = m_descriptorContext.CreateDSV(m_frameResources[i].depthBuffer.resource.Get(), nullptr);
-            m_frameResources[i].depthBuffer.cpuSrv = dsvAllocation.cpu;
-            m_frameResources[i].depthBuffer.gpuSrv = dsvAllocation.gpu;
+            m_frameResources[i].depthBuffer = m_bufferFactory.CreateDepthBuffer(width, height);
+            m_frameResources[i].depthBuffer.dsv = m_descriptorContext.CreateDSV(m_frameResources[i].depthBuffer.resource.Get(), nullptr).cpu;
         }
     }
 
@@ -108,8 +108,8 @@ namespace efg::d3d12
     MeshHandle D3D12RendererBackend::CreateMesh(const MeshData& mesh)
     {
         MeshHandle handle = m_meshLibrary.RegisterMesh(mesh);
-        GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), mesh.vertices.data(), (mesh.vertices.size() * sizeof(Vertex)), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-        GpuBuffer indexBuffer = m_bufferFactory.CreateStaticBuffer(m_graphicsContext.GetDevice(), mesh.indices.data(), (mesh.indices.size() * sizeof(uint32_t)), D3D12_RESOURCE_STATE_INDEX_BUFFER);
+        GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer(mesh.vertices.data(), (mesh.vertices.size() * sizeof(Vertex)));
+        GpuBuffer indexBuffer = m_bufferFactory.CreateStaticBuffer(mesh.indices.data(), (mesh.indices.size() * sizeof(uint32_t)));
         m_meshLibrary.SetVertexBuffer(handle, vertexBuffer);
         m_meshLibrary.SetIndexBuffer(handle, indexBuffer);
         m_uploadContext.QueueBufferForUpload(vertexBuffer.resource.Get(), vertexBuffer.uploadResource.Get(), vertexBuffer.sizeInBytes, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
