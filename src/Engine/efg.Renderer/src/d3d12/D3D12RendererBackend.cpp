@@ -7,66 +7,85 @@ namespace efg::d3d12
 {
     void D3D12RendererBackend::Initialize(const RendererDesc& desc)
     {
+        CreateViewportAndScissor(desc.width, desc.height);
+        InitializeD3D12Systems(desc);
+        CreateFrameResources(desc.width, desc.height);
+        m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
+    }
+
+    void D3D12RendererBackend::CreateViewportAndScissor(uint32_t width, uint32_t height)
+    {
         m_viewport.TopLeftX = 0.0f;
         m_viewport.TopLeftY = 0.0f;
-        m_viewport.Width = static_cast<float>(desc.width);
-        m_viewport.Height = static_cast<float>(desc.height);
+        m_viewport.Width = static_cast<float>(width);
+        m_viewport.Height = static_cast<float>(height);
         m_viewport.MinDepth = 0.0f;
         m_viewport.MaxDepth = 1.0f;
 
         m_scissorRect.left = 0;
         m_scissorRect.top = 0;
-        m_scissorRect.right = static_cast<LONG>(desc.width);
-        m_scissorRect.bottom = static_cast<LONG>(desc.height);
+        m_scissorRect.right = static_cast<LONG>(width);
+        m_scissorRect.bottom = static_cast<LONG>(height);
+    }
 
+    void D3D12RendererBackend::InitializeD3D12Systems(const RendererDesc& desc)
+    {
         m_graphicsContext.Initialize(false);
         m_commandContext.Initialize(&m_graphicsContext);
         m_uploadContext.Initialize(&m_graphicsContext);
         m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorContext);
         m_descriptorContext.Initialize(m_graphicsContext.GetDevice());
         m_directFence.Initialize(&m_graphicsContext);
-
         m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
         m_descriptorContext.CreateAllHeaps();
         m_swapChain.CreateBackBufferViews();
+        m_directFence.CreateFence(0);
+        m_shaderLibrary.Initialize();
+        m_graphicsPipelineLibrary.Initialize(&m_graphicsContext, m_shaderLibrary);
+    }
 
+    void D3D12RendererBackend::CreateFrameResources(uint32_t width, uint32_t height)
+    {
         for (UINT i = 0; i < NumFramesInFlight; i++)
         {
             m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
+
             m_frameResources[i].cameraConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(CameraConstants));
             m_frameResources[i].directionalLightConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(Lights::DirectionalLightConstants));
             m_frameResources[i].pointLightConstantBuffer = m_bufferFactory.CreateConstantBuffer(m_graphicsContext.GetDevice(), sizeof(Lights::PointLightConstants));
+
             m_frameResources[i].objectConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
             m_frameResources[i].materialConstantArena = m_bufferFactory.CreateConstantBufferArena(m_graphicsContext.GetDevice(), ConstantArenaSize);
+            m_frameResources[i].gpuUploadBufferArena = m_bufferFactory.CreateUploadBufferArena(m_graphicsContext.GetDevice(), 10000 * sizeof(InstanceData));
+
             m_frameResources[i].pointLightStructuredBuffer = m_bufferFactory.CreateStructuredBufferUpload(m_graphicsContext.GetDevice(), Lights::MaxPointLights, sizeof(Lights::GpuPointLight));
             DescriptorAllocation srvAllocation = m_descriptorContext.CreateStructuredBufferSRV(m_frameResources[i].pointLightStructuredBuffer.resource.Get(), m_frameResources[i].pointLightStructuredBuffer.elementCount, m_frameResources[i].pointLightStructuredBuffer.elementStride);
             m_frameResources[i].pointLightStructuredBuffer.cpuSrv = srvAllocation.cpu;
             m_frameResources[i].pointLightStructuredBuffer.gpuSrv = srvAllocation.gpu;
-            m_frameResources[i].gpuUploadBufferArena = m_bufferFactory.CreateUploadBufferArena(m_graphicsContext.GetDevice(), 10000 * sizeof(InstanceData));
-            m_frameResources[i].depthBuffer = m_bufferFactory.CreateDepthBuffer(m_graphicsContext.GetDevice(), desc.width, desc.height);
+            m_frameResources[i].depthBuffer = m_bufferFactory.CreateDepthBuffer(m_graphicsContext.GetDevice(), width, height);
             DescriptorAllocation dsvAllocation = m_descriptorContext.CreateDSV(m_frameResources[i].depthBuffer.resource.Get(), nullptr);
             m_frameResources[i].depthBuffer.cpuSrv = dsvAllocation.cpu;
             m_frameResources[i].depthBuffer.gpuSrv = dsvAllocation.gpu;
         }
+    }
 
-        m_directFence.CreateFence(0);
-
-        m_shaderLibrary.Initialize();
-        m_graphicsPipelineLibrary.Initialize(&m_graphicsContext, m_shaderLibrary);
-
-        m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
+    void D3D12RendererBackend::DestroyFrameResources()
+    {
+        for (UINT i = 0; i < NumFramesInFlight; i++)
+        {
+            m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].cameraConstantBuffer);
+            m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].directionalLightConstantBuffer);
+            m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].pointLightConstantBuffer);
+            m_bufferFactory.DestroyConstantBufferArena(m_frameResources[i].objectConstantArena);
+            m_bufferFactory.DestroyConstantBufferArena(m_frameResources[i].materialConstantArena);
+        }
     }
 
     void D3D12RendererBackend::Shutdown()
     {
         m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
-        for (UINT i = 0; i < NumFramesInFlight; i++)
-        {
-            m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].cameraConstantBuffer);
-            m_bufferFactory.DestroyConstantBuffer(m_frameResources[i].directionalLightConstantBuffer);
-            m_bufferFactory.DestroyConstantBufferArena(m_frameResources[i].objectConstantArena);
-            m_bufferFactory.DestroyConstantBufferArena(m_frameResources[i].materialConstantArena);
-        }
+        DestroyFrameResources();
+
     }
 
     void D3D12RendererBackend::Render(const FramePacket& scene)
@@ -104,15 +123,23 @@ namespace efg::d3d12
         return handle;
     }
 
-    void D3D12RendererBackend::FlushPendingUploads()
+    void D3D12RendererBackend::ProcessUploads()
     {
-        UploadTicket uploadTicket = m_uploadContext.FlushUploads();
-        if (uploadTicket.resources.empty())
+        if (m_uploadContext.queueSize > 0)
         {
-            return;
+            UploadTicket uploadTicket = m_uploadContext.FlushUploads();
+            RecordUploadedResourceTransitions(uploadTicket);
         }
-        m_uploadContext.copyfence.WaitForQueue(m_commandContext.GetDirectCommandQueue(), uploadTicket.copyFenceValue);
-        for (const auto& upload : uploadTicket.resources)
+        if (m_uploadContext.pendingBatchesSize > 0)
+        {
+            m_uploadContext.RetireCompletedUploads();
+        }
+    }
+
+    void D3D12RendererBackend::RecordUploadedResourceTransitions(const UploadTicket& ticket)
+    {
+        m_uploadContext.copyfence.WaitForQueue(m_commandContext.GetDirectCommandQueue(), ticket.copyFenceValue);
+        for (const auto& upload : ticket.resources)
         {
             m_commandContext.ResourceBarrierTransition(upload.destination.Get(), D3D12_RESOURCE_STATE_COPY_DEST, upload.finalState);
         }

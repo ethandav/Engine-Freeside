@@ -11,7 +11,6 @@ namespace efg::d3d12
         UINT frameIndex = m_swapChain.GetFrameIndex();
         FrameResource& frame = m_frameResources[frameIndex];
         ID3D12CommandAllocator* allocator = frame.commandAllocator.Get();
-        D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChain.GetCurrentBackBufferHandle();
 
         m_directFence.WaitForCPU(frame.fenceValue);
         m_commandContext.BeginRecording(allocator);
@@ -73,18 +72,6 @@ namespace efg::d3d12
         m_bufferFactory.UpdateConstantBuffer(ctx.frame->pointLightConstantBuffer, &metadata, sizeof(Lights::PointLightConstants));
     }
 
-    void D3D12RendererBackend::ProcessUploads()
-    {
-        if (m_uploadContext.queueSize > 0)
-        {
-            FlushPendingUploads();
-        }
-        if (m_uploadContext.pendingBatchesSize > 0)
-        {
-            m_uploadContext.RetireCompletedUploads();
-        }
-    }
-
     void D3D12RendererBackend::EndFrame(const FrameContext& ctx)
     {
         ID3D12CommandQueue* queue = m_commandContext.GetDirectCommandQueue();
@@ -108,9 +95,9 @@ namespace efg::d3d12
     void D3D12RendererBackend::RecordForwardLitGeometryPass(const FrameContext& ctx, const FramePacket& scene)
     {
         BindPipeline(ctx.commandList, PipelineId::ForwardLitGeometry);
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), m_frameResources[m_swapChain.GetFrameIndex()].cameraConstantBuffer.resource->GetGPUVirtualAddress());
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), m_frameResources[m_swapChain.GetFrameIndex()].directionalLightConstantBuffer.resource->GetGPUVirtualAddress());
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightConstants), m_frameResources[m_swapChain.GetFrameIndex()].pointLightConstantBuffer.resource->GetGPUVirtualAddress());
+        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), ctx.frame->cameraConstantBuffer.resource->GetGPUVirtualAddress());
+        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), ctx.frame->directionalLightConstantBuffer.resource->GetGPUVirtualAddress());
+        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightConstants), ctx.frame->pointLightConstantBuffer.resource->GetGPUVirtualAddress());
 
         ID3D12DescriptorHeap* heaps[] = { m_descriptorContext.GetCBVSRVUAVHeap() };
         ctx.commandList->SetDescriptorHeaps(_countof(heaps), heaps);

@@ -47,11 +47,15 @@ namespace efg::d3d12
 		efg::MaterialHandle RegisterMaterial(const efg::MaterialDesc& mat) override;
 
 	private:
+		void CreateViewportAndScissor(uint32_t width, uint32_t height);
+		void InitializeD3D12Systems(const RendererDesc& desc);
+		void CreateFrameResources(uint32_t width, uint32_t height);
+		void DestroyFrameResources();
 		FrameContext BeginFrame();
 		void UpdateFrameConstants(const FrameContext& ctx, const FramePacket& scene);
 		void UpdatePointLights(const FrameContext& ctx, const FramePacket& scene);
 		void ProcessUploads();
-		void FlushPendingUploads();
+		void RecordUploadedResourceTransitions(const UploadTicket& ticket);
 		void EndFrame(const FrameContext& ctx);
 		void RecordBackBufferSetup(const FrameContext& ctx);
 		void RecordForwardLitGeometryPass(const FrameContext& ctx, const FramePacket& scene);
