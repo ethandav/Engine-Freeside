@@ -44,9 +44,10 @@ namespace efg::d3d12
 	{
 	public:
 		void Initialize(D3D12Context* context, const D3D12ShaderLibrary& shaderLibrary);
-		const GraphicsPipelineState& Get(PipelineId id) const;
+		void BindPipeline(ID3D12GraphicsCommandList* commandList, PipelineId pipelineId);
 
 	private:
+		const GraphicsPipelineState& Get(PipelineId id) const;
 		void CreateRootSignature(ID3D12RootSignature** rootSignature);
 		void CreatePipelineStateObject();
 		void AddGraphicsPipeline(PipelineId id, GraphicsPipelineState pipeline);

@@ -11,32 +11,11 @@
 #include "D3D12QueueFence.h"
 #include "D3D12UploadContext.h"
 #include "D3D12MaterialLibrary.h"
+#include "D3D12RenderData.h"
+#include "passes\D3D12ForwardLitGeometryRenderPass.h"
 
 namespace efg::d3d12
 {
-	struct FrameResource
-	{
-		ComPtr<ID3D12CommandAllocator> commandAllocator;
-		UINT64 fenceValue = 0;
-		GpuConstantBuffer cameraConstantBuffer = {};
-		GpuConstantBuffer directionalLightConstantBuffer = {};
-		GpuConstantBuffer pointLightConstantBuffer = {};
-		GpuConstantBufferArena objectConstantArena = {};
-		GpuConstantBufferArena materialConstantArena = {};
-		GpuStructuredBuffer pointLightStructuredBuffer = {};
-		GpuUploadBufferArena gpuUploadBufferArena = {};
-		GpuDepthBuffer depthBuffer = {};
-	};
-
-	struct FrameContext
-	{
-		UINT frameIndex = 0;
-		FrameResource* frame = nullptr;
-		ID3D12GraphicsCommandList* commandList = nullptr;
-		D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = {};
-		ID3D12Resource* backBuffer = nullptr;
-	};
-
 	class D3D12RendererBackend final : public IRendererBackend
 	{
 	public:
@@ -49,6 +28,7 @@ namespace efg::d3d12
 	private:
 		void CreateViewportAndScissor(uint32_t width, uint32_t height);
 		void InitializeD3D12Systems(const RendererDesc& desc);
+		void InitializeRenderPasses();
 		void CreateFrameResources(uint32_t width, uint32_t height);
 		void DestroyFrameResources();
 		FrameContext BeginFrame();
@@ -58,7 +38,6 @@ namespace efg::d3d12
 		void RecordUploadedResourceTransitions(const UploadTicket& ticket);
 		void EndFrame(const FrameContext& ctx);
 		void RecordBackBufferSetup(const FrameContext& ctx);
-		void RecordForwardLitGeometryPass(const FrameContext& ctx, const FramePacket& scene);
 		void BindPipeline(ID3D12GraphicsCommandList* commandList, PipelineId pipelineId);
 		void DrawMesh(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle);
 		void DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle, uint32_t instanceCount);
@@ -84,6 +63,8 @@ namespace efg::d3d12
 		D3D12MeshLibrary m_meshLibrary;
 		D3D12SwapChain m_swapChain = {};
 		D3D12QueueFence m_directFence = {};
+
+		D3D12ForwardLitGeometryRenderPass m_forwarLitGeometryRenderPass = {};
 
 		std::array<FrameResource, NumFramesInFlight> m_frameResources = {};
 	};

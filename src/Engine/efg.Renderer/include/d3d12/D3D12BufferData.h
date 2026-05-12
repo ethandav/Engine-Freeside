@@ -1,8 +1,9 @@
 #pragma once
 
 #include "..\..\..\efg.Core\include\math\Mat4.h"
-
-using Microsoft::WRL::ComPtr;
+#include <d3d12.h>
+#include <wrl.h>
+#include <cstdint>
 
 namespace efg::d3d12
 {
@@ -23,8 +24,8 @@ namespace efg::d3d12
     struct GpuBuffer
     {
         UINT64 sizeInBytes = 0;
-        ComPtr<ID3D12Resource> resource;
-        ComPtr<ID3D12Resource> uploadResource;
+        Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+        Microsoft::WRL::ComPtr<ID3D12Resource> uploadResource;
     };
 
     struct GpuConstantBuffer
@@ -38,14 +39,14 @@ namespace efg::d3d12
 
     struct GpuDepthBuffer
     {
-        ComPtr<ID3D12Resource> resource;
+        Microsoft::WRL::ComPtr<ID3D12Resource> resource;
         D3D12_CPU_DESCRIPTOR_HANDLE dsv = {};
         DXGI_FORMAT format = DXGI_FORMAT_D32_FLOAT;
     };
 
     struct GpuConstantBufferArena
     {
-        ComPtr<ID3D12Resource> resource;
+        Microsoft::WRL::ComPtr<ID3D12Resource> resource;
 
         uint8_t* mappedData = nullptr;
 

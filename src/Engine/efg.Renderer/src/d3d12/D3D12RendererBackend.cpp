@@ -9,6 +9,7 @@ namespace efg::d3d12
     {
         CreateViewportAndScissor(desc.width, desc.height);
         InitializeD3D12Systems(desc);
+        InitializeRenderPasses();
         CreateFrameResources(desc.width, desc.height);
         m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
     }
@@ -44,6 +45,11 @@ namespace efg::d3d12
         m_directFence.CreateFence(0);
         m_shaderLibrary.Initialize();
         m_graphicsPipelineLibrary.Initialize(&m_graphicsContext, m_shaderLibrary);
+    }
+
+    void D3D12RendererBackend::InitializeRenderPasses()
+    {
+        m_forwarLitGeometryRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_materialLibrary, &m_bufferFactory);
     }
 
     void D3D12RendererBackend::CreateFrameResources(uint32_t width, uint32_t height)
@@ -99,7 +105,7 @@ namespace efg::d3d12
         RecordBackBufferSetup(ctx);
         PIXEndEvent(ctx.commandList); // BackBufferSetup End
         PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"ForwardLitGeometryPass");
-        RecordForwardLitGeometryPass(ctx, scene);
+        m_forwarLitGeometryRenderPass.Execute(ctx, scene);
         PIXEndEvent(ctx.commandList); // ForwardLitGeometryPass End
         PIXEndEvent(ctx.commandList); // BeginFrame End
         EndFrame(ctx);

@@ -98,4 +98,12 @@ namespace efg::d3d12
 
         AddGraphicsPipeline(PipelineId::ForwardLitGeometry, pipeline);
     }
+
+    void D3D12GraphicsPipelineLibary::BindPipeline(ID3D12GraphicsCommandList* commandList, PipelineId pipelineId)
+    {
+        const GraphicsPipelineState& pipeline = Get(pipelineId);
+        commandList->SetGraphicsRootSignature(pipeline.rootSignature.Get());
+        commandList->SetPipelineState(pipeline.pipelineState.Get());
+        commandList->IASetPrimitiveTopology(pipeline.primitiveTopology);
+    }
 }
