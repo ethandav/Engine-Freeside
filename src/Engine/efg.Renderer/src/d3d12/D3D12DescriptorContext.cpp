@@ -90,7 +90,6 @@ namespace efg::d3d12
         allocation.index = m_rtvUsed;
         allocation.cpu = m_rtvHeapStart;
         allocation.cpu.ptr += static_cast<SIZE_T>(m_rtvUsed) * m_rtvDescriptorSize;
-
         ++m_rtvUsed;
 
         return allocation;
@@ -107,7 +106,6 @@ namespace efg::d3d12
         allocation.index = m_dsvUsed;
         allocation.cpu = m_dsvHeapStart;
         allocation.cpu.ptr += static_cast<SIZE_T>(m_dsvUsed) * m_dsvDescriptorSize;
-
         ++m_dsvUsed;
 
         return allocation;
@@ -124,12 +122,7 @@ namespace efg::d3d12
     DescriptorAllocation D3D12DescriptorContext::CreateDSV(ID3D12Resource* resource, const D3D12_DEPTH_STENCIL_VIEW_DESC* desc)
     {
         DescriptorAllocation allocation = AllocateDSV();
-
-        m_device->CreateDepthStencilView(
-            resource,
-            desc,
-            allocation.cpu
-        );
+        m_device->CreateDepthStencilView(resource, desc, allocation.cpu);
 
         return allocation;
     }
@@ -141,11 +134,7 @@ namespace efg::d3d12
         D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
         cbvDesc.BufferLocation = resource->GetGPUVirtualAddress();
         cbvDesc.SizeInBytes = AlignConstantBufferSize(sizeInBytes);
-
-        m_device->CreateConstantBufferView(
-            &cbvDesc,
-            allocation.cpu
-        );
+        m_device->CreateConstantBufferView(&cbvDesc, allocation.cpu);
 
         return allocation;
     }
@@ -162,13 +151,7 @@ namespace efg::d3d12
         uavDesc.Buffer.StructureByteStride = elementStride;
         uavDesc.Buffer.CounterOffsetInBytes = 0;
         uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
-
-        m_device->CreateUnorderedAccessView(
-            resource,
-            counterResource,
-            &uavDesc,
-            allocation.cpu
-        );
+        m_device->CreateUnorderedAccessView(resource, counterResource, &uavDesc, allocation.cpu);
 
         return allocation;
     }
@@ -184,12 +167,7 @@ namespace efg::d3d12
         srvDesc.Buffer.NumElements = elementCount;
         srvDesc.Buffer.StructureByteStride = elementStride;
         srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-
-        m_device->CreateShaderResourceView(
-            resource,
-            &srvDesc,
-            allocation.cpu
-        );
+        m_device->CreateShaderResourceView(resource, &srvDesc, allocation.cpu);
 
         return allocation;
     }
@@ -205,12 +183,7 @@ namespace efg::d3d12
         srvDesc.Texture2D.MostDetailedMip = 0;
         srvDesc.Texture2D.PlaneSlice = 0;
         srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-
-        m_device->CreateShaderResourceView(
-            resource,
-            &srvDesc,
-            allocation.cpu
-        );
+        m_device->CreateShaderResourceView(resource, &srvDesc, allocation.cpu);
 
         return allocation;
     }
@@ -218,11 +191,7 @@ namespace efg::d3d12
     DescriptorAllocation D3D12DescriptorContext::CreateSampler(const D3D12_SAMPLER_DESC& samplerDesc)
     {
         DescriptorAllocation allocation = AllocateSampler();
-
-        m_device->CreateSampler(
-            &samplerDesc,
-            allocation.cpu
-        );
+        m_device->CreateSampler(&samplerDesc, allocation.cpu);
 
         return allocation;
     }
@@ -240,7 +209,6 @@ namespace efg::d3d12
         allocation.cpu.ptr += static_cast<SIZE_T>(m_shaderVisibleUsed) * m_shaderVisibleDescriptorSize;
         allocation.gpu = m_shaderVisibleHeapGpuStart;
         allocation.gpu.ptr += static_cast<UINT64>(m_shaderVisibleUsed) * m_shaderVisibleDescriptorSize;
-
         ++m_shaderVisibleUsed;
 
         return allocation;
@@ -255,13 +223,10 @@ namespace efg::d3d12
 
         DescriptorAllocation allocation = {};
         allocation.index = m_samplerUsed;
-
         allocation.cpu = m_samplerHeapCpuStart;
         allocation.cpu.ptr += static_cast<SIZE_T>(m_samplerUsed) * m_samplerDescriptorSize;
-
         allocation.gpu = m_samplerHeapGpuStart;
         allocation.gpu.ptr += static_cast<UINT64>(m_samplerUsed) * m_samplerDescriptorSize;
-
         ++m_samplerUsed;
 
         return allocation;
