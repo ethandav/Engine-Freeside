@@ -5,29 +5,32 @@
 #include <deque>
 #include "RenderTypes.h"
 
-class IRendererBackend;
-
-class RenderThread
+namespace efg
 {
-public:
-    void Start(IRendererBackend* backend);
-    void Stop();
-    void Submit(efg::FramePacket sceneData);
+    class IRendererBackend;
 
-private:
-    void ThreadMain();
+    class RenderThread
+    {
+    public:
+        void Start(IRendererBackend* backend);
+        void Stop();
+        void Submit(FramePacket sceneData);
 
-private:
-    static constexpr uint32_t MaxQueuedFrames = 2;
+    private:
+        void ThreadMain();
 
-    IRendererBackend* m_backend = nullptr;
+    private:
+        static constexpr uint32_t MaxQueuedFrames = 2;
 
-    std::thread m_thread;
-    std::mutex m_mutex;
-    std::condition_variable m_hasWorkCv;
-    std::condition_variable m_hasSpaceCv;
+        IRendererBackend* m_backend = nullptr;
 
-    std::deque<efg::FramePacket> m_frameQueue;
+        std::thread m_thread;
+        std::mutex m_mutex;
+        std::condition_variable m_hasWorkCv;
+        std::condition_variable m_hasSpaceCv;
 
-    bool m_running = false;
-};
+        std::deque<FramePacket> m_frameQueue;
+
+        bool m_running = false;
+    };
+}

@@ -9,39 +9,42 @@
 
 using Microsoft::WRL::ComPtr;
 
-enum class ShaderId : uint32_t
+namespace efg::d3d12
 {
-    TriangleVS,
-    TrianglePS,
-
-    GeometryVS,
-    GeometryPS,
-
-    Count
-};
-
-struct ShaderBytecode
-{
-    ComPtr<ID3DBlob> blob;
-
-    D3D12_SHADER_BYTECODE GetD3D12Bytecode() const
+    enum class ShaderId : uint32_t
     {
-        D3D12_SHADER_BYTECODE bytecode = {};
-        bytecode.pShaderBytecode = blob->GetBufferPointer();
-        bytecode.BytecodeLength = blob->GetBufferSize();
-        return bytecode;
-    }
-};
+        TriangleVS,
+        TrianglePS,
 
-class D3D12ShaderLibrary
-{
-public:
-	void Initialize();
-    const ShaderBytecode& Get(ShaderId id) const;
-private:
-    void CompileAllShaders();
-	ComPtr<ID3DBlob> CompileShaderFromFile(const std::wstring& filePath, const std::string& entryPoint, const std::string& target);
-    void AddShader(ShaderId id, const std::wstring& filePath, const std::string& entryPoint, const std::string& target);
+        GeometryVS,
+        GeometryPS,
 
-    std::array<ShaderBytecode, static_cast<size_t>(ShaderId::Count)> m_shaders;
-};
+        Count
+    };
+
+    struct ShaderBytecode
+    {
+        ComPtr<ID3DBlob> blob;
+
+        D3D12_SHADER_BYTECODE GetD3D12Bytecode() const
+        {
+            D3D12_SHADER_BYTECODE bytecode = {};
+            bytecode.pShaderBytecode = blob->GetBufferPointer();
+            bytecode.BytecodeLength = blob->GetBufferSize();
+            return bytecode;
+        }
+    };
+
+    class D3D12ShaderLibrary
+    {
+    public:
+        void Initialize();
+        const ShaderBytecode& Get(ShaderId id) const;
+    private:
+        void CompileAllShaders();
+        ComPtr<ID3DBlob> CompileShaderFromFile(const std::wstring& filePath, const std::string& entryPoint, const std::string& target);
+        void AddShader(ShaderId id, const std::wstring& filePath, const std::string& entryPoint, const std::string& target);
+
+        std::array<ShaderBytecode, static_cast<size_t>(ShaderId::Count)> m_shaders;
+    };
+}

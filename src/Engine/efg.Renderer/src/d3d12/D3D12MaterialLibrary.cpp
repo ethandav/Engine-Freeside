@@ -2,34 +2,37 @@
 
 #include <stdexcept>
 
-efg::MaterialHandle D3D12MaterialLibrary::RegisterMaterial(const efg::MaterialDesc& mat)
+namespace efg::d3d12
 {
-	GpuMaterial material{
-		efg::Math::Vec4(mat.baseColor.x, mat.baseColor.y, mat.baseColor.z, 1.0f),
-		efg::Math::Vec4(mat.specular.x, mat.specular.y, 0.0f, 0.0f),
-	};
-	m_materials.push_back(material);
-
-	return efg::MaterialHandle
+	efg::MaterialHandle D3D12MaterialLibrary::RegisterMaterial(const efg::MaterialDesc& mat)
 	{
-		static_cast<uint32_t>(m_materials.size() - 1)
-	};
-}
+		GpuMaterial material{
+			efg::Math::Vec4(mat.baseColor.x, mat.baseColor.y, mat.baseColor.z, 1.0f),
+			efg::Math::Vec4(mat.specular.x, mat.specular.y, 0.0f, 0.0f),
+		};
+		m_materials.push_back(material);
 
-const GpuMaterial& D3D12MaterialLibrary::GetMaterialByHandle(efg::MaterialHandle handle) const
-{
-	if (!handle.IsValid() || handle.index >= m_materials.size())
-	{
-		throw std::runtime_error("Invalid material handle.");
+		return efg::MaterialHandle
+		{
+			static_cast<uint32_t>(m_materials.size() - 1)
+		};
 	}
 
-	return m_materials[handle.index];
-}
+	const GpuMaterial& D3D12MaterialLibrary::GetMaterialByHandle(efg::MaterialHandle handle) const
+	{
+		if (!handle.IsValid() || handle.index >= m_materials.size())
+		{
+			throw std::runtime_error("Invalid material handle.");
+		}
 
-GpuMaterial D3D12MaterialLibrary::GetDefaultMaterial()
-{
-	return GpuMaterial {
-		efg::Math::Vec4(0.8f, 0.8f, 0.8f, 1.0f),
-		efg::Math::Vec4(1.0f, 64.0f, 0.0f, 0.0f),
-	};
+		return m_materials[handle.index];
+	}
+
+	GpuMaterial D3D12MaterialLibrary::GetDefaultMaterial()
+	{
+		return GpuMaterial{
+			efg::Math::Vec4(0.8f, 0.8f, 0.8f, 1.0f),
+			efg::Math::Vec4(1.0f, 64.0f, 0.0f, 0.0f),
+		};
+	}
 }

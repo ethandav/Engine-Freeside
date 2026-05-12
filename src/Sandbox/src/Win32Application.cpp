@@ -9,7 +9,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
 	Window window;
 	Timer timer;
-	Renderer renderer;
+	efg::Renderer renderer;
 	efg::Scene::SceneManager sceneManager;
 	efg::RendererDesc rendererDesc = {
 		nullptr,

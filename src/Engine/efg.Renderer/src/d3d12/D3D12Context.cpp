@@ -1,29 +1,32 @@
 #include "..\..\include\d3d12\D3D12Context.h"
 
-void D3D12Context::Initialize(bool useWarpDevice)
+namespace efg::d3d12
 {
-    UINT dxgiFactoryFlags = 0;
-#if defined(_DEBUG)
+    void D3D12Context::Initialize(bool useWarpDevice)
     {
-        ComPtr<ID3D12Debug> debugController;
-        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+        UINT dxgiFactoryFlags = 0;
+#if defined(_DEBUG)
         {
-            debugController->EnableDebugLayer();
+            ComPtr<ID3D12Debug> debugController;
+            if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+            {
+                debugController->EnableDebugLayer();
 
-            dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+                dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+            }
         }
-    }
 #endif
-	CreateFactory();
-	CreateDevice(useWarpDevice);
-}
+        CreateFactory();
+        CreateDevice(useWarpDevice);
+    }
 
-ID3D12Device* D3D12Context::GetDevice()
-{
-	return m_device.Get();
-}
+    ID3D12Device* D3D12Context::GetDevice()
+    {
+        return m_device.Get();
+    }
 
-IDXGIFactory4* D3D12Context::GetFactory()
-{
-	return m_factory.Get();
+    IDXGIFactory4* D3D12Context::GetFactory()
+    {
+        return m_factory.Get();
+    }
 }
