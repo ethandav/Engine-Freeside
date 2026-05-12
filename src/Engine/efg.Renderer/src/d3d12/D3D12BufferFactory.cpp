@@ -14,7 +14,7 @@ namespace efg::d3d12
     {
         GpuBuffer buffer = {};
         buffer.sizeInBytes = sizeInBytes;
-        buffer.resource = m_resourceFactory->CreateDefaultBuffer(sizeInBytes, D3D12_RESOURCE_STATE_COPY_DEST);
+        buffer.resource = m_resourceFactory->CreateDefaultBuffer(sizeInBytes, D3D12_RESOURCE_STATE_COMMON);
         buffer.uploadResource = m_resourceFactory->CreateUploadBuffer(sizeInBytes);
         void* mappedData = nullptr;
         CD3DX12_RANGE readRange(0, 0);

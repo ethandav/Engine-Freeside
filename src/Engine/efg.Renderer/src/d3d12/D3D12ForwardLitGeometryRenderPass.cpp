@@ -79,7 +79,7 @@ namespace efg::d3d12
 
         if (!scene.pointLights.empty())
         {
-            count = scene.pointLights.size();
+            count = static_cast<uint32_t>(scene.pointLights.size());
             GpuUploadBufferAllocation allocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, count * sizeof(Lights::GpuPointLight), StructuredBufferAlignment);
             Lights::GpuPointLight* instances = reinterpret_cast<Lights::GpuPointLight*>(allocation.cpu);
             resources.pointLightsSRV = allocation.gpu;
