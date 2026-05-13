@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="efg.h" />
+    <ClInclude Include="include\d3d12\D3D12Format.h" />
     <ClInclude Include="include\d3d12\D3D12RenderData.h" />
     <ClInclude Include="include\d3d12\D3D12ResourceFactory.h" />
     <ClInclude Include="include\d3d12\D3D12TextureLibrary.h" />
@@ -148,6 +149,7 @@
     <ClInclude Include="include\d3d12\D3D12ShaderLibrary.h" />
     <ClInclude Include="include\d3d12\D3D12SwapChain.h" />
     <ClInclude Include="include\d3d12\D3D12UploadContext.h" />
+    <ClInclude Include="include\render\ImageLoader.h" />
     <ClInclude Include="include\render\IRendererBackend.h" />
     <ClInclude Include="include\render\Lights.h" />
     <ClInclude Include="include\render\MeshData.h" />
@@ -155,14 +157,17 @@
     <ClInclude Include="include\render\RenderQueue.h" />
     <ClInclude Include="include\render\RenderThread.h" />
     <ClInclude Include="include\render\RenderTypes.h" />
+    <ClInclude Include="include\render\types\Format.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\d3d12\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\D3D12MeshLibrary.h" />
+    <ClCompile Include="src\d3d12\D3D12Format.cpp" />
     <ClCompile Include="src\d3d12\D3D12ForwardLitGeometryRenderPass.cpp" />
     <ClCompile Include="src\d3d12\D3D12MaterialLibrary.cpp" />
     <ClCompile Include="src\d3d12\D3D12ResourceFactory.cpp" />
     <ClCompile Include="src\d3d12\D3D12TextureLibrary.cpp" />
+    <ClCompile Include="src\render\ImageLoader.cpp" />
     <ClCompile Include="src\render\RenderQueue.cpp" />
     <ClCompile Include="src\render\RenderThread.cpp" />
     <ClCompile Include="src\render\Lights.cpp" />

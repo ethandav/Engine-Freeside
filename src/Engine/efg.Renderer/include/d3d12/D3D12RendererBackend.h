@@ -1,6 +1,7 @@
 #pragma once
 #include "..\render\IRendererBackend.h"
 #include "..\render\RenderQueue.h"
+#include "..\render\ImageLoader.h"
 #include "D3D12Context.h"
 #include "D3D12Error.h"
 #include "D3D12GraphicsPipelineLibrary.h"
@@ -19,14 +20,7 @@
 
 namespace efg::d3d12
 {
-	struct DecodedImage
-	{
-		std::vector<uint8_t> pixels;
-		uint32_t width = 0;
-		uint32_t height = 0;
-		uint32_t rowPitch = 0;
-		DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	};
+
 
 	class D3D12RendererBackend final : public IRendererBackend
 	{
@@ -72,5 +66,6 @@ namespace efg::d3d12
 		std::array<FrameResource, NumFramesInFlight> m_frameResources = {};
 
 		RenderQueue m_renderQueue = {};
+		ImageLoader m_imageLoader = {};
 	};
 }

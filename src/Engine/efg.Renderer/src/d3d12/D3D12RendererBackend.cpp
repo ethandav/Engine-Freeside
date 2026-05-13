@@ -2,78 +2,13 @@
 #include "..\..\include\render\Camera.h"
 #include "..\..\include\render\RenderTypes.h"
 #include "..\..\include\d3d12\D3D12Pix.h"
-
-#include <wincodec.h>
-#include <wrl.h>
-#include <vector>
-#include <string>
-#include <stdexcept>
-
-#pragma comment(lib, "windowscodecs.lib")
+#include "..\..\include\render\types\Format.h"
+#include "..\..\include\d3d12\D3D12Format.h"
 
 namespace efg::d3d12
 {
-
-    DecodedImage LoadImageWithWIC(const wchar_t* filePath)
-    {
-        using Microsoft::WRL::ComPtr;
-
-        ComPtr<IWICImagingFactory> factory;
-        D3D12_THROW_IF_FAILED(CoCreateInstance(
-            CLSID_WICImagingFactory,
-            nullptr,
-            CLSCTX_INPROC_SERVER,
-            IID_PPV_ARGS(factory.GetAddressOf())
-        ));
-
-        ComPtr<IWICBitmapDecoder> decoder;
-        D3D12_THROW_IF_FAILED(factory->CreateDecoderFromFilename(
-            filePath,
-            nullptr,
-            GENERIC_READ,
-            WICDecodeMetadataCacheOnLoad,
-            decoder.GetAddressOf()
-        ));
-
-        ComPtr<IWICBitmapFrameDecode> frame;
-        D3D12_THROW_IF_FAILED(decoder->GetFrame(0, frame.GetAddressOf()));
-
-        UINT width = 0;
-        UINT height = 0;
-        D3D12_THROW_IF_FAILED(frame->GetSize(&width, &height));
-
-        ComPtr<IWICFormatConverter> converter;
-        D3D12_THROW_IF_FAILED(factory->CreateFormatConverter(converter.GetAddressOf()));
-
-        D3D12_THROW_IF_FAILED(converter->Initialize(
-            frame.Get(),
-            GUID_WICPixelFormat32bppRGBA,
-            WICBitmapDitherTypeNone,
-            nullptr,
-            0.0,
-            WICBitmapPaletteTypeCustom
-        ));
-
-        DecodedImage image = {};
-        image.width = width;
-        image.height = height;
-        image.rowPitch = width * 4;
-        image.format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        image.pixels.resize(static_cast<size_t>(image.rowPitch) * height);
-
-        D3D12_THROW_IF_FAILED(converter->CopyPixels(
-            nullptr,
-            image.rowPitch,
-            static_cast<UINT>(image.pixels.size()),
-            image.pixels.data()
-        ));
-
-        return image;
-    }
-
     void D3D12RendererBackend::Initialize(const RendererDesc& desc)
     {
-        CoInitializeEx(nullptr, COINIT_MULTITHREADED);
         CreateViewportAndScissor(desc.width, desc.height);
         InitializeD3D12Systems(desc);
         InitializeRenderPasses();
@@ -178,14 +113,14 @@ namespace efg::d3d12
 
     TextureHandle D3D12RendererBackend::RegisterTexture2D(const wchar_t* filename)
     {
-        DecodedImage image = LoadImageWithWIC(filename);
+        DecodedImage image = m_imageLoader.LoadImageWithWIC(filename);
 
         GpuTexture2D texture =
             m_resourceFactory.CreateTexture2DFromMemory(
                 image.pixels.data(),
                 image.width,
                 image.height,
-                image.format,
+                ToDxgiFormat(image.format),
                 image.rowPitch
             );
 
