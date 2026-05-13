@@ -13,8 +13,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	efg::Scene::SceneManager sceneManager;
 	efg::RendererDesc rendererDesc = {
 		nullptr,
-		1280,
-		720
+		1920,
+		1080
 	};
 
 	efg::MeshData cubeMeshData = efg::Shapes::Cube().mesh;
@@ -31,28 +31,37 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	efg::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
 	efg::MeshHandle sphereMeshHandle = renderer.CreateMesh(sphereMeshData);
 	efg::MeshHandle pyramidMeshHandle = renderer.CreateMesh(pyramidMeshData);
+	
+	efg::TextureHandle earthTexture = renderer.RegisterTexture2D(L"assets/textures/earth.jpeg");
+	efg::TextureHandle crateTexture = renderer.RegisterTexture2D(L"assets/textures/crate.png");
+	efg::TextureHandle pyramidTexture = renderer.RegisterTexture2D(L"assets/textures/pyramid.jpg");
 
-	efg::MaterialDesc blueMaterial;
-	blueMaterial.baseColor = efg::Math::Vec3(0.0f, 0.0f, 1.0f);
-	blueMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
-	efg::MaterialHandle blueMaterialHandle = renderer.RegisterMaterial(blueMaterial);
+	efg::MaterialDesc earthMaterial;
+	earthMaterial.baseColor = efg::Math::Vec3(0.0f, 0.0f, 1.0f);
+	earthMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
+	earthMaterial.baseColorTexture2D = earthTexture;
+	efg::MaterialHandle earthMaterialHandle = renderer.RegisterMaterial(earthMaterial);
 
-	efg::MaterialDesc redMaterial;
-	redMaterial.baseColor = efg::Math::Vec3(1.0f, 0.0f, 0.0f);
-	redMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
-	efg::MaterialHandle redMaterialHandle = renderer.RegisterMaterial(redMaterial);
 
-	efg::MaterialDesc greenMaterial;
-	greenMaterial.baseColor = efg::Math::Vec3(0.0f, 1.0f, 0.0f);
-	greenMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
-	efg::MaterialHandle greenMaterialHandle = renderer.RegisterMaterial(greenMaterial);
+	efg::MaterialDesc crateMaterial;
+	crateMaterial.baseColor = efg::Math::Vec3(1.0f, 0.0f, 0.0f);
+	crateMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
+	crateMaterial.baseColorTexture2D = crateTexture;
+	efg::MaterialHandle crateMaterialHandle = renderer.RegisterMaterial(crateMaterial);
 
+
+	efg::MaterialDesc pyramidMaterial;
+	pyramidMaterial.baseColor = efg::Math::Vec3(0.0f, 1.0f, 0.0f);
+	pyramidMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
+	pyramidMaterial.baseColorTexture2D = pyramidTexture;
+	efg::MaterialHandle pyramidMaterialHandle = renderer.RegisterMaterial(pyramidMaterial);
 
 	std::mt19937 rng{ std::random_device{}() };
 
 	std::uniform_real_distribution<float> posDist(-50.0f, 50.0f);
 	std::uniform_real_distribution<float> heightDist(-50.0f, 50.0f);
 
+	/*
 	for (uint32_t i = 0; i < ObjectCount; ++i)
 	{
 		efg::RenderObject object = {};
@@ -64,11 +73,12 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		efg::Math::Mat4 transform = efg::Math::Translation(x, y, z);
 
 		object.mesh = sphereMeshHandle;
-		object.material = blueMaterialHandle;
+		object.material = earthMaterialHandle;
 		object.world = transform;
 		object.initialTransform = transform;
 		sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object);
 	}
+	*/
 
 	efg::RenderObject object1;
 	efg::RenderObject object2;
@@ -80,17 +90,17 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	efg::Scene::SceneRenderObjectHandle hObject2;
 	efg::Scene::SceneRenderObjectHandle hObject3;
 	object1.mesh = cubeMeshHandle;
-	object1.material = blueMaterialHandle;
+	object1.material = crateMaterialHandle;
 	object1.world = efg::Math::Translation(-1.0f, 0.0f, 0.0f);
 	object1.initialTransform = efg::Math::Translation(-1.0f, 0.0f, 0.0f);
 	object1.name = L"Cube";
 	object2.mesh = pyramidMeshHandle;
-	object2.material = redMaterialHandle;
+	object2.material = pyramidMaterialHandle;
 	object2.world = efg::Math::Translation(1.0f, 0.0f, 0.0f);
 	object2.initialTransform = efg::Math::Translation(1.0f, 0.0f, 0.0f);
 	object2.name = L"Pyramid";
 	object3.mesh = sphereMeshHandle;
-	object3.material = greenMaterialHandle;
+	object3.material = earthMaterialHandle;
 	object3.world = efg::Math::Translation(0.0f, 1.0f, 0.0f);
 	object3.initialTransform = efg::Math::Translation(0.0f, 1.0f, 0.0f);
 	object3.name = L"Sphere";

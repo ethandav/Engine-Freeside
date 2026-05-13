@@ -13,16 +13,32 @@ namespace efg::d3d12
 		D3D12_RESOURCE_STATES finalState = D3D12_RESOURCE_STATE_COMMON;
 	};
 
+	struct PendingTextureUpload
+	{
+		Microsoft::WRL::ComPtr<ID3D12Resource> destination;
+		Microsoft::WRL::ComPtr<ID3D12Resource> upload;
+		D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint = {};
+		D3D12_RESOURCE_STATES finalState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	};
+
+	struct UploadedResource
+	{
+		Microsoft::WRL::ComPtr<ID3D12Resource> destination;
+		D3D12_RESOURCE_STATES finalState = D3D12_RESOURCE_STATE_COMMON;
+	};
+
 	struct UploadTicket
 	{
 		UINT64 copyFenceValue = 0;
-		std::vector<PendingBufferUpload> resources = {};
+		std::vector<UploadedResource> resources = {};
 	};
 
 	struct UploadBatch
 	{
 		UINT64 copyFenceValue = 0;
-		std::vector<PendingBufferUpload> uploads = {};
+		std::vector<UploadedResource> resources = {};
+		std::vector<PendingBufferUpload> bufferUploads = {};
+		std::vector<PendingTextureUpload> textureUploads = {};
 	};
 
 	class D3D12UploadContext
@@ -35,6 +51,7 @@ namespace efg::d3d12
 		void Submit();
 		void CopyBufferRegion(ID3D12Resource* buffer1, ID3D12Resource* buffer2, UINT64 sizeInBytes);
 		void QueueBufferForUpload(ID3D12Resource* dest, ID3D12Resource* src, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState);
+		void QueueTextureForUpload(ID3D12Resource* destination, ID3D12Resource* upload, const D3D12_PLACED_SUBRESOURCE_FOOTPRINT& footprint, D3D12_RESOURCE_STATES finalState);
 		UploadTicket FlushUploads();
 		void RetireCompletedUploads();
 
@@ -52,6 +69,7 @@ namespace efg::d3d12
 		ComPtr<ID3D12CommandAllocator> m_copyCommandAllocator;
 		ComPtr<ID3D12GraphicsCommandList> m_copyCommandList;
 		std::vector<PendingBufferUpload> m_queuedBufferUploads = {};
+		std::vector<PendingTextureUpload> m_queuedTextureUploads = {};
 		std::vector<UploadBatch> m_pendingBatches = {};
 	};
 }

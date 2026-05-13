@@ -81,34 +81,81 @@ namespace efg::d3d12
 		request.sizeInBytes = sizeInBytes;
 
 		m_queuedBufferUploads.push_back(std::move(request));
-		queueSize = m_queuedBufferUploads.size();
+		queueSize = m_queuedBufferUploads.size() + m_queuedTextureUploads.size();
+	}
+
+	void D3D12UploadContext::QueueTextureForUpload(ID3D12Resource* destination, ID3D12Resource* upload, const D3D12_PLACED_SUBRESOURCE_FOOTPRINT& footprint, D3D12_RESOURCE_STATES finalState)
+	{
+		if (!destination)
+		{
+			throw std::runtime_error("QueueTextureForUpload destination is null.");
+		}
+
+		if (!upload)
+		{
+			throw std::runtime_error("QueueTextureForUpload upload resource is null.");
+		}
+
+		PendingTextureUpload pending = {};
+		pending.destination = destination;
+		pending.upload = upload;
+		pending.footprint = footprint;
+		pending.finalState = finalState;
+
+		m_queuedTextureUploads.push_back(std::move(pending));
+
+		queueSize = m_queuedBufferUploads.size() + m_queuedTextureUploads.size();
+
 	}
 
 	UploadTicket D3D12UploadContext::FlushUploads()
 	{
 		UploadTicket ticket = {};
-		if (m_queuedBufferUploads.size() > 0)
+
+		const bool hasBufferUploads = !m_queuedBufferUploads.empty();
+		const bool hasTextureUploads = !m_queuedTextureUploads.empty();
+
+		if (!hasBufferUploads && !hasTextureUploads)
 		{
-			BeginRecording();
-			PIXBeginEvent(m_copyCommandList.Get(), PIX_COLOR(100, 100, 255), L"FlushUploads");
-			for (const PendingBufferUpload& upload : m_queuedBufferUploads)
-			{
-				CopyBufferRegion(upload.destination.Get(), upload.upload.Get(), upload.sizeInBytes);
-			}
-			PIXEndEvent(m_copyCommandList.Get()); // FlushUploads End
-			EndRecording();
-			Submit();
-			UINT64 copyFenceValue = copyfence.Signal(m_copyQueue.Get());
-			UploadBatch batch = {};
-			batch.copyFenceValue = copyFenceValue;
-			batch.uploads = std::move(m_queuedBufferUploads);
-			ticket.copyFenceValue = copyFenceValue;
-			ticket.resources = batch.uploads;
-			m_pendingBatches.push_back(std::move(batch));
-			pendingBatchesSize = m_pendingBatches.size();
-			m_queuedBufferUploads.clear();
-			queueSize = 0;
+			return ticket;
 		}
+
+		BeginRecording();
+		PIXBeginEvent(m_copyCommandList.Get(), PIX_COLOR(100, 100, 255), L"FlushUploads");
+		for (const PendingBufferUpload& upload : m_queuedBufferUploads)
+		{
+			CopyBufferRegion(upload.destination.Get(), upload.upload.Get(), upload.sizeInBytes);
+			ticket.resources.push_back(UploadedResource{upload.destination, upload.finalState});
+		}
+
+		for (const PendingTextureUpload& upload : m_queuedTextureUploads)
+		{
+			D3D12_TEXTURE_COPY_LOCATION dst = {};
+			dst.pResource = upload.destination.Get();
+			dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+			dst.SubresourceIndex = 0;
+			D3D12_TEXTURE_COPY_LOCATION src = {};
+			src.pResource = upload.upload.Get();
+			src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+			src.PlacedFootprint = upload.footprint;
+			m_copyCommandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+			ticket.resources.push_back(UploadedResource{upload.destination, upload.finalState});
+		}
+		PIXEndEvent(m_copyCommandList.Get());
+		EndRecording();
+		Submit();
+		UINT64 copyFenceValue = copyfence.Signal(m_copyQueue.Get());
+		ticket.copyFenceValue = copyFenceValue;
+		UploadBatch batch = {};
+		batch.copyFenceValue = copyFenceValue;
+		batch.resources = ticket.resources;
+		batch.bufferUploads = std::move(m_queuedBufferUploads);
+		batch.textureUploads = std::move(m_queuedTextureUploads);
+		m_pendingBatches.push_back(std::move(batch));
+		pendingBatchesSize = m_pendingBatches.size();
+		m_queuedBufferUploads.clear();
+		m_queuedTextureUploads.clear();
+		queueSize = 0;
 
 		return ticket;
 	}

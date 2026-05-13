@@ -8,9 +8,9 @@ namespace efg::d3d12
     class D3D12TextureLibrary
     {
     public:
-        TextureHandle RegisterTexture(const TextureDesc& desc);
+        TextureHandle RegisterTexture2D(const GpuTexture2D& desc);
         const GpuTexture2D& GetTextureByHandle(TextureHandle handle) const;
-        GpuTexture2D GetDefaultTexture2D();
+        GpuTexture2D GetDefaultWhiteTexture();
     private:
         std::vector<GpuTexture2D> m_textures;
     };

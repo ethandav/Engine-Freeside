@@ -24,9 +24,17 @@ namespace efg::d3d12
     void D3D12GraphicsPipelineLibary::CreateRootSignature(ID3D12RootSignature** rootSignature)
     {
         CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-        CD3DX12_ROOT_PARAMETER rootParameters[7] = {};
+        CD3DX12_ROOT_PARAMETER rootParameters[8] = {};
         ComPtr<ID3DBlob> signature;
         ComPtr<ID3DBlob> error;
+
+        CD3DX12_STATIC_SAMPLER_DESC linearWrapSampler(
+            0, // s0
+            D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+            D3D12_TEXTURE_ADDRESS_MODE_WRAP
+        );
 
         rootParameters[0].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), 0, D3D12_SHADER_VISIBILITY_ALL);
         rootParameters[1].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Object), 0, D3D12_SHADER_VISIBILITY_VERTEX);
@@ -37,11 +45,15 @@ namespace efg::d3d12
         rootParameters[5].InitAsShaderResourceView(0, 0, D3D12_SHADER_VISIBILITY_PIXEL);
         rootParameters[6].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
+        CD3DX12_DESCRIPTOR_RANGE baseColorTextureRange = {};
+        baseColorTextureRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
+        rootParameters[7].InitAsDescriptorTable(1, &baseColorTextureRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
         rootSignatureDesc.Init(
             _countof(rootParameters),
             rootParameters,
-            0,
-            nullptr,
+            1,
+            &linearWrapSampler,
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
         );
 

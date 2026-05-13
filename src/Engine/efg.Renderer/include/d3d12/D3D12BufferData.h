@@ -65,6 +65,11 @@ namespace efg::d3d12
         D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
         D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
 
+        D3D12_PLACED_SUBRESOURCE_FOOTPRINT uploadFootprint = {};
+        UINT uploadNumRows = 0;
+        UINT64 uploadRowSizeInBytes = 0;
+        UINT64 uploadBufferSize = 0;
+
         uint32_t width = 0;
         uint32_t height = 0;
         uint32_t mipLevels = 1;

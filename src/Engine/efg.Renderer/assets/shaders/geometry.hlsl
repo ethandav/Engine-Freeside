@@ -36,6 +36,8 @@ struct InstanceData
 
 StructuredBuffer<PointLight> gPointLights : register(t0);
 StructuredBuffer<InstanceData> Instances : register(t1);
+Texture2D gBaseColorTexture : register(t2);
+SamplerState gLinearSampler : register(s0);
 
 cbuffer PointLightMetadata : register(b4)
 {
@@ -73,7 +75,7 @@ VSOutput VSMain(VSInput input, uint instanceId : SV_InstanceID)
     return output;
 }
 
-float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir)
+float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, float4 baseColor)
 {
     float3 result = float3(0.0f, 0.0f, 0.0f);
 
@@ -92,7 +94,7 @@ float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir)
         float attenuation = saturate(1.0f - distanceToLight / radius);
         attenuation *= attenuation;
         float ndotl = saturate(dot(normal, lightDir));
-        float3 diffuse = BaseColor.rgb * lightColor * ndotl * intensity * attenuation;
+        float3 diffuse = baseColor.rgb * lightColor * ndotl * intensity * attenuation;
         float3 halfVector = normalize(lightDir + viewDir);
         float specularAmount = pow(saturate(dot(normal, halfVector)), Specular.y);
         float3 specular = lightColor * specularAmount * Specular.x * intensity * attenuation;
@@ -105,16 +107,17 @@ float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir)
 
 float4 PSMain(VSOutput input) : SV_TARGET
 {
+    float4 sampledBaseColor = gBaseColorTexture.Sample(gLinearSampler, input.uv);
     float3 normal = normalize(input.normalWS);
     float3 viewDir = normalize(ViewPosition.xyz - input.worldPosition);
     float3 lightDir = normalize(-LightDirectionAndIntensity.xyz);
     float ndotl = saturate(dot(normal, lightDir));
-    float3 ambient = BaseColor.rgb * 0.1f;
-    float3 diffuse = BaseColor.rgb * LightColor.rgb * ndotl * LightDirectionAndIntensity.w;
+    float3 ambient = sampledBaseColor.rgb * 0.1f;
+    float3 diffuse = sampledBaseColor.rgb * LightColor.rgb * ndotl * LightDirectionAndIntensity.w;
     float3 halfVector = normalize(lightDir + viewDir);
     float specularAmount = pow(saturate(dot(normal, halfVector)), Specular.y);
     float3 specular = LightColor.rgb * specularAmount * Specular.x * LightDirectionAndIntensity.w;
-    float3 pointLights = AccumulatePointLights(input.worldPosition, normal, viewDir);
+    float3 pointLights = AccumulatePointLights(input.worldPosition, normal, viewDir, sampledBaseColor);
     float3 finalColor = ambient + diffuse + specular + pointLights;
 
     return float4(finalColor, BaseColor.a);

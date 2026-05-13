@@ -4,6 +4,7 @@
 #include "..\D3D12DescriptorContext.h"
 #include "..\D3D12MeshLibrary.h"
 #include "..\D3D12MaterialLibrary.h"
+#include "..\D3D12TextureLibrary.h"
 #include "..\D3D12BufferFactory.h"
 #include "..\..\render\RenderTypes.h"
 
@@ -12,7 +13,7 @@ namespace efg::d3d12
 	class D3D12ForwardLitGeometryRenderPass
 	{
 	public:
-		void Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12BufferFactory* bufferFactory);
+		void Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12TextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory);
 		void Execute(const FrameContext& ctx, const FramePacket& scene);
 	private:
 		struct ForwardLitPassResources
@@ -35,6 +36,7 @@ namespace efg::d3d12
 		D3D12DescriptorContext* m_descriptorContext = nullptr;
 		D3D12MeshLibrary* m_meshLibrary = nullptr;
 		D3D12MaterialLibrary* m_materialLibrary = nullptr;
+		D3D12TextureLibrary* m_textureLibrary = nullptr;
 		D3D12BufferFactory* m_bufferFactory = nullptr;
 	};
 }

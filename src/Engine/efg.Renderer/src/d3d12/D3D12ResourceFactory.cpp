@@ -76,6 +76,58 @@ namespace efg::d3d12
         return resource;
     }
 
+    GpuTexture2D D3D12ResourceFactory::CreateTexture2DFromMemory(const void* pixelData, uint32_t width, uint32_t height, DXGI_FORMAT format, uint32_t sourceRowPitch)
+    {
+        if (!pixelData)
+        {
+            throw std::runtime_error("Texture pixel data is null.");
+        }
+
+        if (width == 0 || height == 0)
+        {
+            throw std::runtime_error("Texture dimensions cannot be zero.");
+        }
+
+        GpuTexture2D texture = {};
+        texture.width = width;
+        texture.height = height;
+        texture.mipLevels = 1;
+        texture.format = format;
+
+        texture.resource = CreateTexture2D(width, height, format, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
+
+        D3D12_RESOURCE_DESC textureDesc = texture.resource->GetDesc();
+        m_device->GetCopyableFootprints(&textureDesc, 0, 1, 0, &texture.uploadFootprint, &texture.uploadNumRows, &texture.uploadRowSizeInBytes, &texture.uploadBufferSize);
+        texture.uploadResource = CreateUploadBuffer(texture.uploadBufferSize);
+
+        uint8_t* mappedData = nullptr;
+        CD3DX12_RANGE readRange(0, 0);
+
+        D3D12_THROW_IF_FAILED(texture.uploadResource->Map(0, &readRange, reinterpret_cast<void**>(&mappedData)));
+
+        const uint8_t* srcBytes =
+            static_cast<const uint8_t*>(pixelData);
+
+        uint8_t* dstBytes =
+            mappedData + texture.uploadFootprint.Offset;
+
+        const UINT64 dstRowPitch =
+            texture.uploadFootprint.Footprint.RowPitch;
+
+        for (uint32_t row = 0; row < height; ++row)
+        {
+            std::memcpy(
+                dstBytes + row * dstRowPitch,
+                srcBytes + row * sourceRowPitch,
+                sourceRowPitch
+            );
+        }
+
+        texture.uploadResource->Unmap(0, nullptr);
+
+        return texture;
+    }
+
     Microsoft::WRL::ComPtr<ID3D12Resource> D3D12ResourceFactory::CreateDepthTexture2D(uint32_t width, uint32_t height, DXGI_FORMAT format)
     {
         D3D12_CLEAR_VALUE clearValue = {};
