@@ -8,4 +8,3 @@
 #include "..\..\Engine\efg.Renderer\include\render\MeshData.h"
 #include "..\..\Engine\efg.Renderer\include\render\Camera.h"
 #include "..\..\Engine\efg.Scene\include\SceneManager.h"
-#include "..\..\Engine\efg.Renderer\include\render\Materials.h"

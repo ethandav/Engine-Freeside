@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\render\Materials.h"
+#include "..\render\RenderTypes.h"
 #include "D3D12BufferData.h"
 
 namespace efg::d3d12
@@ -8,7 +8,7 @@ namespace efg::d3d12
     class D3D12TextureLibrary
     {
     public:
-        TextureHandle RegisterTexture(const MaterialDesc& desc);
+        TextureHandle RegisterTexture(const TextureDesc& desc);
         const GpuTexture2D& GetTextureByHandle(TextureHandle handle) const;
         GpuTexture2D GetDefaultTexture2D();
     private:

@@ -150,7 +150,6 @@
     <ClInclude Include="include\d3d12\D3D12UploadContext.h" />
     <ClInclude Include="include\render\IRendererBackend.h" />
     <ClInclude Include="include\render\Lights.h" />
-    <ClInclude Include="include\render\Materials.h" />
     <ClInclude Include="include\render\MeshData.h" />
     <ClInclude Include="include\render\Renderer.h" />
     <ClInclude Include="include\render\RenderQueue.h" />
@@ -163,6 +162,7 @@
     <ClCompile Include="src\d3d12\D3D12ForwardLitGeometryRenderPass.cpp" />
     <ClCompile Include="src\d3d12\D3D12MaterialLibrary.cpp" />
     <ClCompile Include="src\d3d12\D3D12ResourceFactory.cpp" />
+    <ClCompile Include="src\d3d12\D3D12TextureLibrary.cpp" />
     <ClCompile Include="src\render\RenderQueue.cpp" />
     <ClCompile Include="src\render\RenderThread.cpp" />
     <ClCompile Include="src\render\Lights.cpp" />

@@ -2,7 +2,6 @@
 
 #include "RenderTypes.h"
 #include "MeshData.h"
-#include "Materials.h"
 
 namespace efg
 {

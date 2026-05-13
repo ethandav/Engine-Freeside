@@ -54,6 +54,11 @@ namespace efg
 		TextureHandle baseColorTexture2D = {};
 	};
 
+	struct TextureDesc
+	{
+
+	};
+
 	struct MaterialConstants
 	{
 		Math::Vec4 baseColor;

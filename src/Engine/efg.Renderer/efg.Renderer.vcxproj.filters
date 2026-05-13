@@ -75,9 +75,6 @@
     <ClInclude Include="include\render\RenderThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\render\Materials.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\d3d12\D3D12MaterialLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -168,6 +165,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\render\RenderQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\D3D12TextureLibrary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
