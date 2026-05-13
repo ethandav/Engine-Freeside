@@ -44,6 +44,33 @@ namespace efg::d3d12
         DXGI_FORMAT format = DXGI_FORMAT_D32_FLOAT;
     };
 
+    struct GpuStructuredBuffer
+    {
+        Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+        uint8_t* mappedData = nullptr;
+
+        uint32_t elementCount = 0;
+        uint32_t elementStride = 0;
+        uint64_t sizeInBytes = 0;
+
+        D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
+        D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
+    };
+
+    struct GpuTexture2D
+    {
+        Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+        Microsoft::WRL::ComPtr<ID3D12Resource> uploadResource;
+
+        D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
+        D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
+
+        uint32_t width = 0;
+        uint32_t height = 0;
+        uint32_t mipLevels = 1;
+        DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    };
+
     struct GpuConstantBufferArena
     {
         Microsoft::WRL::ComPtr<ID3D12Resource> resource;
@@ -62,24 +89,6 @@ namespace efg::d3d12
         {
             return resource->GetGPUVirtualAddress() + offset;
         }
-    };
-
-    struct GpuStructuredBuffer
-    {
-        Microsoft::WRL::ComPtr<ID3D12Resource> resource;
-        uint8_t* mappedData = nullptr;
-
-        uint32_t elementCount = 0;
-        uint32_t elementStride = 0;
-        uint64_t sizeInBytes = 0;
-
-        D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
-        D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
-    };
-
-    struct InstanceData
-    {
-        efg::Math::Mat4 world;
     };
 
     struct GpuUploadBufferArena
