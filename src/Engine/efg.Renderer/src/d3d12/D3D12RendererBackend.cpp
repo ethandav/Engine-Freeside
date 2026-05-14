@@ -9,10 +9,11 @@ namespace efg::d3d12
 {
     void D3D12RendererBackend::Initialize(const RendererDesc& desc)
     {
-        CreateViewportAndScissor(desc.width, desc.height);
         InitializeD3D12Systems(desc);
+        CreateViewportAndScissor(desc.width, desc.height);
+        CreateRenderTargets(desc.width, desc.height);
         InitializeRenderPasses();
-        CreateFrameResources(desc.width, desc.height);
+        CreateFrameResources();
         m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
     }
 
@@ -29,6 +30,12 @@ namespace efg::d3d12
         m_scissorRect.top = 0;
         m_scissorRect.right = static_cast<LONG>(width);
         m_scissorRect.bottom = static_cast<LONG>(height);
+    }
+
+    void D3D12RendererBackend::CreateRenderTargets(uint32_t width, uint32_t height)
+    {
+        m_renderTargets.sceneDepth = m_bufferFactory.CreateDepthBuffer(width, height);
+        m_renderTargets.sceneDepth.dsv = m_descriptorContext.CreateDSV(m_renderTargets.sceneDepth.resource.Get(), nullptr).cpu;
     }
 
     void D3D12RendererBackend::InitializeD3D12Systems(const RendererDesc& desc)
@@ -55,21 +62,23 @@ namespace efg::d3d12
         m_forwarLitGeometryRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_materialLibrary, &m_textureLibrary, &m_bufferFactory);
     }
 
-    void D3D12RendererBackend::CreateFrameResources(uint32_t width, uint32_t height)
+    void D3D12RendererBackend::CreateFrameResources()
     {
         for (UINT i = 0; i < NumFramesInFlight; i++)
         {
             m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
             m_frameResources[i].uploadBufferArena = m_bufferFactory.CreateUploadBufferArena(100000 * sizeof(InstanceData));
             m_frameResources[i].constantBufferArena = m_bufferFactory.CreateConstantBufferArena(ConstantArenaSize);
-            m_frameResources[i].depthBuffer = m_bufferFactory.CreateDepthBuffer(width, height);
-            m_frameResources[i].depthBuffer.dsv = m_descriptorContext.CreateDSV(m_frameResources[i].depthBuffer.resource.Get(), nullptr).cpu;
         }
     }
 
     void D3D12RendererBackend::DestroyFrameResources()
     {
-
+        for (UINT i = 0; i < NumFramesInFlight; i++)
+        {
+            m_bufferFactory.DestroyUploadBufferArena(m_frameResources[i].uploadBufferArena);
+            m_bufferFactory.DestroyConstantBufferArena(m_frameResources[i].constantBufferArena);
+        }
     }
 
     void D3D12RendererBackend::Shutdown()

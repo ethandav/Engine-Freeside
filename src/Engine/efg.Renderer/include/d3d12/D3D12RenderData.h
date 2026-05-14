@@ -18,7 +18,6 @@ namespace efg::d3d12
 
 		GpuUploadBufferArena uploadBufferArena = {};
 		GpuConstantBufferArena constantBufferArena = {};
-		GpuDepthBuffer depthBuffer = {};
 
 		void ResetTransientAllocators()
 		{
@@ -35,5 +34,11 @@ namespace efg::d3d12
 		D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = {};
 		ID3D12Resource* backBuffer = nullptr;
 		RenderQueue* renderQueue = nullptr;
+	};
+
+	struct RenderTargets
+	{
+		GpuTexture2D sceneColor;
+		GpuDepthBuffer sceneDepth;
 	};
 }

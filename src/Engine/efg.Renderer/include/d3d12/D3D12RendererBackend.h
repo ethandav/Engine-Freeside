@@ -21,8 +21,6 @@
 
 namespace efg::d3d12
 {
-
-
 	class D3D12RendererBackend final : public IRendererBackend
 	{
 	public:
@@ -35,9 +33,10 @@ namespace efg::d3d12
 
 	private:
 		void CreateViewportAndScissor(uint32_t width, uint32_t height);
+		void CreateRenderTargets(uint32_t width, uint32_t height);
 		void InitializeD3D12Systems(const RendererDesc& desc);
 		void InitializeRenderPasses();
-		void CreateFrameResources(uint32_t width, uint32_t height);
+		void CreateFrameResources();
 		void DestroyFrameResources();
 		FrameContext BeginFrame();
 		void ProcessUploads();
@@ -62,6 +61,8 @@ namespace efg::d3d12
 		D3D12MeshLibrary m_meshLibrary;
 		D3D12SwapChain m_swapChain = {};
 		D3D12QueueFence m_directFence = {};
+
+		RenderTargets m_renderTargets = {};
 
 		D3D12ForwardLitGeometryRenderPass m_forwarLitGeometryRenderPass = {};
 

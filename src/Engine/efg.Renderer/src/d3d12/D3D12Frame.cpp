@@ -43,8 +43,8 @@ namespace efg::d3d12
         const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
         m_commandContext.SetViewportAndScissor(m_viewport, m_scissorRect);
         m_commandContext.ResourceBarrierTransition(ctx.backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-        m_commandContext.SetRenderTarget(ctx.backBufferHandle, ctx.frame->depthBuffer.dsv);
+        m_commandContext.SetRenderTarget(ctx.backBufferHandle, m_renderTargets.sceneDepth.dsv);
         m_commandContext.ClearRenderTarget(ctx.backBufferHandle, clearColor);
-        m_commandContext.ClearDepthStencil(ctx.frame->depthBuffer.dsv, 1.0f, 0);
+        m_commandContext.ClearDepthStencil(m_renderTargets.sceneDepth.dsv, 1.0f, 0);
     }
 }
