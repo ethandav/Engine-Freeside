@@ -1,33 +1,25 @@
 #pragma once
 
 #include "D3D12Context.h"
-
 #include "..\..\render\IRendererBackend.h"
 #include "..\..\render\RenderQueue.h"
 #include "..\..\render\ImageLoader.h"
-
 #include "..\frame\D3D12FrameContext.h"
 #include "..\frame\D3D12FrameResouce.h"
 #include "..\frame\D3D12FrameConfig.h"
 #include "..\frame\D3D12RenderTargets.h"
-
 #include "..\commands\D3D12UploadTypes.h"
 #include "..\commands\D3D12CommandContext.h"
 #include "..\commands\D3D12UploadContext.h"
-
 #include "..\descriptors\D3D12DescriptorContext.h"
-
 #include "..\libraries\D3D12GraphicsPipelineLibrary.h"
 #include "..\libraries\D3D12MaterialLibrary.h"
 #include "..\libraries\D3D12TextureLibrary.h"
 #include "..\libraries\D3D12MeshLibrary.h"
-
 #include "..\factories\D3D12BufferFactory.h"
 #include "..\factories\D3D12TextrureFactory.h"
 #include "..\factories\D3D12ResourceFactory.h"
-
 #include "..\passes\D3D12ForwardLitGeometryRenderPass.h"
-
 #include "..\presentation\D3D12SwapChain.h"
 
 

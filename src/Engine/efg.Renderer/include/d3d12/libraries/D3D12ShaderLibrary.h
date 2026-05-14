@@ -1,5 +1,4 @@
 #pragma once
-#pragma comment(lib, "d3dcompiler.lib")
 
 #include <d3d12.h>
 #include <d3dcompiler.h>
