@@ -2,32 +2,16 @@
 #include "..\..\include\d3d12\D3D12Error.h"
 
 #include "d3dx12.h"
-#include <stdexcept>
 
 namespace efg::d3d12
 {
     void D3D12ResourceFactory::Initialize(ID3D12Device* device)
     {
-        if (!device)
-        {
-            throw std::runtime_error("D3D12ResourceFactory initialized with null device.");
-        }
-
         m_device = device;
     }
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> D3D12ResourceFactory::CreateBuffer(UINT64 sizeInBytes, D3D12_HEAP_TYPE heapType, D3D12_RESOURCE_STATES initialState, D3D12_RESOURCE_FLAGS flags)
+    Microsoft::WRL::ComPtr<ID3D12Resource> D3D12ResourceFactory::CreateCommittedBufferResource(UINT64 sizeInBytes, D3D12_HEAP_TYPE heapType, D3D12_RESOURCE_STATES initialState, D3D12_RESOURCE_FLAGS flags)
     {
-        if (!m_device)
-        {
-            throw std::runtime_error("D3D12ResourceFactory device is null.");
-        }
-
-        if (sizeInBytes == 0)
-        {
-            throw std::runtime_error("Cannot create zero-sized buffer.");
-        }
-
         auto heapProps = CD3DX12_HEAP_PROPERTIES(heapType);
         auto desc = CD3DX12_RESOURCE_DESC::Buffer(sizeInBytes, flags);
 
@@ -38,23 +22,18 @@ namespace efg::d3d12
         return resource;
     }
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> D3D12ResourceFactory::CreateUploadBuffer(UINT64 sizeInBytes)
+    Microsoft::WRL::ComPtr<ID3D12Resource> D3D12ResourceFactory::CreateCommittedUploadBufferResource(UINT64 sizeInBytes)
     {
-        return CreateBuffer(sizeInBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ);
+        return CreateCommittedBufferResource(sizeInBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ);
     }
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> D3D12ResourceFactory::CreateDefaultBuffer(UINT64 sizeInBytes, D3D12_RESOURCE_STATES initialState, D3D12_RESOURCE_FLAGS flags)
+    Microsoft::WRL::ComPtr<ID3D12Resource> D3D12ResourceFactory::CreateCommittedDefaultBufferResource(UINT64 sizeInBytes, D3D12_RESOURCE_STATES initialState, D3D12_RESOURCE_FLAGS flags)
     {
-        return CreateBuffer(sizeInBytes, D3D12_HEAP_TYPE_DEFAULT, initialState, flags);
+        return CreateCommittedBufferResource(sizeInBytes, D3D12_HEAP_TYPE_DEFAULT, initialState, flags);
     }
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> D3D12ResourceFactory::CreateTexture2D(uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue)
+    Microsoft::WRL::ComPtr<ID3D12Resource> D3D12ResourceFactory::CreateCommittedTexture2DResource(uint32_t width, uint32_t height, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue)
     {
-        if (!m_device)
-        {
-            throw std::runtime_error("D3D12ResourceFactory device is null.");
-        }
-
         auto heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
         D3D12_RESOURCE_DESC desc = {};
@@ -76,65 +55,13 @@ namespace efg::d3d12
         return resource;
     }
 
-    GpuTexture2D D3D12ResourceFactory::CreateTexture2DFromMemory(const void* pixelData, uint32_t width, uint32_t height, DXGI_FORMAT format, uint32_t sourceRowPitch)
-    {
-        if (!pixelData)
-        {
-            throw std::runtime_error("Texture pixel data is null.");
-        }
-
-        if (width == 0 || height == 0)
-        {
-            throw std::runtime_error("Texture dimensions cannot be zero.");
-        }
-
-        GpuTexture2D texture = {};
-        texture.width = width;
-        texture.height = height;
-        texture.mipLevels = 1;
-        texture.format = format;
-
-        texture.resource = CreateTexture2D(width, height, format, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
-
-        D3D12_RESOURCE_DESC textureDesc = texture.resource->GetDesc();
-        m_device->GetCopyableFootprints(&textureDesc, 0, 1, 0, &texture.uploadFootprint, &texture.uploadNumRows, &texture.uploadRowSizeInBytes, &texture.uploadBufferSize);
-        texture.uploadResource = CreateUploadBuffer(texture.uploadBufferSize);
-
-        uint8_t* mappedData = nullptr;
-        CD3DX12_RANGE readRange(0, 0);
-
-        D3D12_THROW_IF_FAILED(texture.uploadResource->Map(0, &readRange, reinterpret_cast<void**>(&mappedData)));
-
-        const uint8_t* srcBytes =
-            static_cast<const uint8_t*>(pixelData);
-
-        uint8_t* dstBytes =
-            mappedData + texture.uploadFootprint.Offset;
-
-        const UINT64 dstRowPitch =
-            texture.uploadFootprint.Footprint.RowPitch;
-
-        for (uint32_t row = 0; row < height; ++row)
-        {
-            std::memcpy(
-                dstBytes + row * dstRowPitch,
-                srcBytes + row * sourceRowPitch,
-                sourceRowPitch
-            );
-        }
-
-        texture.uploadResource->Unmap(0, nullptr);
-
-        return texture;
-    }
-
-    Microsoft::WRL::ComPtr<ID3D12Resource> D3D12ResourceFactory::CreateDepthTexture2D(uint32_t width, uint32_t height, DXGI_FORMAT format)
+    Microsoft::WRL::ComPtr<ID3D12Resource> D3D12ResourceFactory::CreateCommittedDepthTexture2DResource(uint32_t width, uint32_t height, DXGI_FORMAT format)
     {
         D3D12_CLEAR_VALUE clearValue = {};
         clearValue.Format = format;
         clearValue.DepthStencil.Depth = 1.0f;
         clearValue.DepthStencil.Stencil = 0;
 
-        return CreateTexture2D(width, height, format, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue);
+        return CreateCommittedTexture2DResource(width, height, format, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue);
     }
 }

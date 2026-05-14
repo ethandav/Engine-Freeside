@@ -10,17 +10,11 @@ namespace efg::d3d12
         m_resourceFactory = resourceFactory;
     }
 
-    GpuBuffer D3D12BufferFactory::CreateStaticBuffer(const void* data, UINT64 sizeInBytes)
+    GpuBuffer D3D12BufferFactory::CreateStaticBuffer(UINT64 sizeInBytes)
     {
         GpuBuffer buffer = {};
         buffer.sizeInBytes = sizeInBytes;
-        buffer.resource = m_resourceFactory->CreateDefaultBuffer(sizeInBytes, D3D12_RESOURCE_STATE_COMMON);
-        buffer.uploadResource = m_resourceFactory->CreateUploadBuffer(sizeInBytes);
-        void* mappedData = nullptr;
-        CD3DX12_RANGE readRange(0, 0);
-        D3D12_THROW_IF_FAILED(buffer.uploadResource->Map(0, &readRange, &mappedData));
-        memcpy(mappedData, data, static_cast<size_t>(sizeInBytes));
-        buffer.uploadResource->Unmap(0, nullptr);
+        buffer.resource = m_resourceFactory->CreateCommittedDefaultBufferResource(sizeInBytes, D3D12_RESOURCE_STATE_COMMON);
 
         return buffer;
     }
@@ -30,7 +24,7 @@ namespace efg::d3d12
         GpuConstantBuffer buffer = {};
         buffer.sizeInBytes = sizeInBytes;
         buffer.alignedSizeInBytes = AlignConstantBufferSize(sizeInBytes);
-        buffer.resource = m_resourceFactory->CreateUploadBuffer(sizeInBytes);
+        buffer.resource = m_resourceFactory->CreateCommittedUploadBufferResource(sizeInBytes);
         CD3DX12_RANGE readRange(0, 0);
         D3D12_THROW_IF_FAILED(buffer.resource->Map(0, &readRange, &buffer.mappedData));
 
@@ -40,7 +34,7 @@ namespace efg::d3d12
     GpuDepthBuffer D3D12BufferFactory::CreateDepthBuffer(uint32_t width, uint32_t height)
     {
         GpuDepthBuffer buffer = {};
-        buffer.resource = m_resourceFactory->CreateDepthTexture2D(width, height);
+        buffer.resource = m_resourceFactory->CreateCommittedDepthTexture2DResource(width, height);
 
         return buffer;
     }
@@ -73,7 +67,7 @@ namespace efg::d3d12
 
         arena.capacityInBytes = AlignConstantBufferSize(capacityInBytes);
         arena.currentOffset = 0;
-        arena.resource = m_resourceFactory->CreateUploadBuffer(arena.capacityInBytes);
+        arena.resource = m_resourceFactory->CreateCommittedUploadBufferResource(arena.capacityInBytes);
 
         CD3DX12_RANGE readRange(0, 0);
         void* mapped = nullptr;
@@ -90,7 +84,7 @@ namespace efg::d3d12
         buffer.elementCount = elementCount;
         buffer.elementStride = elementStride;
         buffer.sizeInBytes = static_cast<uint64_t>(elementCount) * elementStride;
-        buffer.resource = m_resourceFactory->CreateUploadBuffer(buffer.sizeInBytes);
+        buffer.resource = m_resourceFactory->CreateCommittedUploadBufferResource(buffer.sizeInBytes);
 
         CD3DX12_RANGE readRange(0, 0);
         D3D12_THROW_IF_FAILED(buffer.resource->Map(0, &readRange, reinterpret_cast<void**>(&buffer.mappedData)));
@@ -103,7 +97,7 @@ namespace efg::d3d12
         GpuUploadBufferArena arena = {};
         arena.capacityInBytes = AlignUp(capacityInBytes, 256);
         arena.currentOffset = 0;
-        arena.resource = m_resourceFactory->CreateUploadBuffer(arena.capacityInBytes);
+        arena.resource = m_resourceFactory->CreateCommittedUploadBufferResource(arena.capacityInBytes);
 
         CD3DX12_RANGE readRange(0, 0);
         void* mapped = nullptr;
@@ -214,10 +208,6 @@ namespace efg::d3d12
         if (buffer.resource)
         {
             buffer.resource->Unmap(0, nullptr);
-        }
-        if (buffer.uploadResource)
-        {
-            buffer.uploadResource->Unmap(0, nullptr);
         }
 
         buffer.resource.Reset();

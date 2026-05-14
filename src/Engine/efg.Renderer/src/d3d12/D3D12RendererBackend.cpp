@@ -35,11 +35,12 @@ namespace efg::d3d12
     {
         m_graphicsContext.Initialize(false);
         m_commandContext.Initialize(&m_graphicsContext);
-        m_uploadContext.Initialize(&m_graphicsContext);
-        m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorContext);
         m_descriptorContext.Initialize(m_graphicsContext.GetDevice());
+        m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorContext);
         m_resourceFactory.Initialize(m_graphicsContext.GetDevice());
+        m_uploadContext.Initialize(&m_graphicsContext, &m_resourceFactory);
         m_bufferFactory.Initialize(&m_resourceFactory);
+        m_textureFactory.Initialize(m_graphicsContext.GetDevice(), &m_resourceFactory);
         m_directFence.Initialize(&m_graphicsContext);
         m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
         m_descriptorContext.CreateAllHeaps();
@@ -96,12 +97,12 @@ namespace efg::d3d12
     MeshHandle D3D12RendererBackend::CreateMesh(const MeshData& mesh)
     {
         MeshHandle handle = m_meshLibrary.RegisterMesh(mesh);
-        GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer(mesh.vertices.data(), (mesh.vertices.size() * sizeof(Vertex)));
-        GpuBuffer indexBuffer = m_bufferFactory.CreateStaticBuffer(mesh.indices.data(), (mesh.indices.size() * sizeof(uint32_t)));
+        GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer((mesh.vertices.size() * sizeof(Vertex)));
+        GpuBuffer indexBuffer = m_bufferFactory.CreateStaticBuffer((mesh.indices.size() * sizeof(uint32_t)));
         m_meshLibrary.SetVertexBuffer(handle, vertexBuffer);
         m_meshLibrary.SetIndexBuffer(handle, indexBuffer);
-        m_uploadContext.QueueBufferForUpload(vertexBuffer.resource.Get(), vertexBuffer.uploadResource.Get(), vertexBuffer.sizeInBytes, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-        m_uploadContext.QueueBufferForUpload(indexBuffer.resource.Get(), indexBuffer.uploadResource.Get(), indexBuffer.sizeInBytes, D3D12_RESOURCE_STATE_INDEX_BUFFER);
+        m_uploadContext.QueueBufferUpload(vertexBuffer.resource.Get(), mesh.vertices.data(), vertexBuffer.sizeInBytes, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+        m_uploadContext.QueueBufferUpload(indexBuffer.resource.Get(), mesh.indices.data(), indexBuffer.sizeInBytes, D3D12_RESOURCE_STATE_INDEX_BUFFER);
         return handle;
     }
 
@@ -114,17 +115,8 @@ namespace efg::d3d12
     TextureHandle D3D12RendererBackend::RegisterTexture2D(const wchar_t* filename)
     {
         DecodedImage image = m_imageLoader.LoadImageWithWIC(filename);
-
-        GpuTexture2D texture =
-            m_resourceFactory.CreateTexture2DFromMemory(
-                image.pixels.data(),
-                image.width,
-                image.height,
-                ToDxgiFormat(image.format),
-                image.rowPitch
-            );
-
-        m_uploadContext.QueueTextureForUpload(texture.resource.Get(), texture.uploadResource.Get(), texture.uploadFootprint, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format));
+        m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         DescriptorAllocation alloc = m_descriptorContext.CreateTexture2DSRV(texture.resource.Get(), texture.format, texture.mipLevels);
         texture.gpuSrv = alloc.gpu;
         texture.cpuSrv = alloc.cpu;

@@ -8,6 +8,7 @@
 #include "D3D12ShaderLibrary.h"
 #include "D3D12ResourceFactory.h"
 #include "D3D12BufferFactory.h"
+#include "D3D12TextrureFactory.h"
 #include "D3D12MeshLibrary.h"
 #include "D3D12CommandContext.h"
 #include "D3D12SwapChain.h"
@@ -56,6 +57,7 @@ namespace efg::d3d12
 		D3D12MaterialLibrary m_materialLibrary = {};
 		D3D12TextureLibrary m_textureLibrary = {};
 		D3D12BufferFactory m_bufferFactory = {};
+		D3D12TextureFactory m_textureFactory = {};
 		D3D12ResourceFactory m_resourceFactory = {};
 		D3D12MeshLibrary m_meshLibrary;
 		D3D12SwapChain m_swapChain = {};

@@ -191,10 +191,10 @@
     <ClCompile Include="src\d3d12\D3D12Format.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3d12\D3D12TextureFactory.cpp">
+    <ClCompile Include="src\render\types\FormatUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\render\types\FormatUtils.cpp">
+    <ClCompile Include="src\d3d12\D3D12TextrureFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

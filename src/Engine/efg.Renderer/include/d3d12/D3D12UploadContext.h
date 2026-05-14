@@ -1,6 +1,7 @@
 #pragma once
 #include "D3D12Context.h"
 #include "D3D12QueueFence.h"
+#include "D3D12ResourceFactory.h"
 #include <vector>
 
 namespace efg::d3d12
@@ -44,14 +45,14 @@ namespace efg::d3d12
 	class D3D12UploadContext
 	{
 	public:
-		void Initialize(D3D12Context* graphicsContext);
+		void Initialize(D3D12Context* graphicsContext, D3D12ResourceFactory* resourceFactory);
 		ID3D12CommandQueue* GetCommandQueue();
 		void BeginRecording();
 		void EndRecording();
 		void Submit();
-		void CopyBufferRegion(ID3D12Resource* buffer1, ID3D12Resource* buffer2, UINT64 sizeInBytes);
-		void QueueBufferForUpload(ID3D12Resource* dest, ID3D12Resource* src, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState);
-		void QueueTextureForUpload(ID3D12Resource* destination, ID3D12Resource* upload, const D3D12_PLACED_SUBRESOURCE_FOOTPRINT& footprint, D3D12_RESOURCE_STATES finalState);
+
+		void QueueBufferUpload(ID3D12Resource* dest, const void* data, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState);
+		void QueueTextureUpload(ID3D12Resource* destination, const void* sourceData, const D3D12_RESOURCE_DESC& destinationDesc, uint32_t sourceRowPitch, D3D12_RESOURCE_STATES finalState);
 		UploadTicket FlushUploads();
 		void RetireCompletedUploads();
 
@@ -65,6 +66,7 @@ namespace efg::d3d12
 		void CreateCopyQueueFence();
 
 		D3D12Context* m_graphicsContext = nullptr;
+		D3D12ResourceFactory* m_resourceFactory = nullptr;
 		ComPtr<ID3D12CommandQueue> m_copyQueue;
 		ComPtr<ID3D12CommandAllocator> m_copyCommandAllocator;
 		ComPtr<ID3D12GraphicsCommandList> m_copyCommandList;

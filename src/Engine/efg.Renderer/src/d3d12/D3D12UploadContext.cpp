@@ -1,12 +1,14 @@
 #include "..\..\include\d3d12\D3D12UploadContext.h"
 #include "..\..\include\d3d12\D3D12Error.h"
 #include "..\..\include\d3d12\D3D12Pix.h"
+#include <d3dx12.h>
 
 namespace efg::d3d12
 {
-	void D3D12UploadContext::Initialize(D3D12Context* graphicsContext)
+	void D3D12UploadContext::Initialize(D3D12Context* graphicsContext, D3D12ResourceFactory* resourceFactory)
 	{
 		m_graphicsContext = graphicsContext;
+		m_resourceFactory = resourceFactory;
 		CreateCopyCommandAllocator();
 		CreateCopyQueue();
 		CreateCopyCommandList();
@@ -62,39 +64,56 @@ namespace efg::d3d12
 		copyfence.CreateFence(0);
 	}
 
-	void D3D12UploadContext::CopyBufferRegion(ID3D12Resource* dest, ID3D12Resource* src, UINT64 sizeInBytes)
-	{
-		m_copyCommandList->CopyBufferRegion(
-			dest,
-			0,
-			src,
-			0,
-			sizeInBytes
-		);
-	}
-
-	void D3D12UploadContext::QueueBufferForUpload(ID3D12Resource* dest, ID3D12Resource* src, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState)
+	void D3D12UploadContext::QueueBufferUpload(ID3D12Resource* dest, const void* data, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState)
 	{
 		PendingBufferUpload request = {};
 		request.destination = dest;
-		request.upload = src;
 		request.sizeInBytes = sizeInBytes;
+		request.finalState = finalState;
+
+		request.upload = m_resourceFactory->CreateCommittedUploadBufferResource(sizeInBytes);
+		void* mappedData = nullptr;
+		CD3DX12_RANGE readRange(0, 0);
+		D3D12_THROW_IF_FAILED(request.upload->Map(0, &readRange, &mappedData));
+		memcpy(mappedData, data, static_cast<size_t>(sizeInBytes));
+		request.upload->Unmap(0, nullptr);
 
 		m_queuedBufferUploads.push_back(std::move(request));
 		queueSize = m_queuedBufferUploads.size() + m_queuedTextureUploads.size();
 	}
 
-	void D3D12UploadContext::QueueTextureForUpload(ID3D12Resource* destination, ID3D12Resource* upload, const D3D12_PLACED_SUBRESOURCE_FOOTPRINT& footprint, D3D12_RESOURCE_STATES finalState)
+	void D3D12UploadContext::QueueTextureUpload(ID3D12Resource* destination, const void* sourceData, const D3D12_RESOURCE_DESC& textureDesc, uint32_t sourceRowPitch, D3D12_RESOURCE_STATES finalState)
 	{
 		if (!destination)
 		{
-			throw std::runtime_error("QueueTextureForUpload destination is null.");
+			throw std::runtime_error("QueueTextureUpload destination is null.");
 		}
 
-		if (!upload)
+		if (!sourceData)
 		{
-			throw std::runtime_error("QueueTextureForUpload upload resource is null.");
+			throw std::runtime_error("QueueTextureUpload sourceData is null.");
 		}
+
+		D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint = {};
+		UINT numRows = 0;
+		UINT64 rowSizeInBytes = 0;
+		UINT64 uploadBufferSize = 0;
+		uint8_t* mappedData = nullptr;
+		CD3DX12_RANGE readRange(0, 0);
+		const uint8_t* srcBytes = static_cast<const uint8_t*>(sourceData);
+
+		m_graphicsContext->GetDevice()->GetCopyableFootprints(&textureDesc, 0, 1, 0, &footprint, &numRows, &rowSizeInBytes, &uploadBufferSize);
+		ComPtr<ID3D12Resource> upload = m_resourceFactory->CreateCommittedUploadBufferResource(uploadBufferSize);
+		D3D12_THROW_IF_FAILED(upload->Map(0, &readRange, reinterpret_cast<void**>(&mappedData)));
+		uint8_t* dstBytes = mappedData + footprint.Offset;
+		const UINT64 dstRowPitch = footprint.Footprint.RowPitch;
+
+		for (UINT row = 0; row < numRows; ++row)
+		{
+			std::memcpy(dstBytes + row * dstRowPitch, srcBytes + row * sourceRowPitch, sourceRowPitch);
+		}
+
+		upload->Unmap(0, nullptr);
 
 		PendingTextureUpload pending = {};
 		pending.destination = destination;
@@ -122,9 +141,10 @@ namespace efg::d3d12
 
 		BeginRecording();
 		PIXBeginEvent(m_copyCommandList.Get(), PIX_COLOR(100, 100, 255), L"FlushUploads");
+
 		for (const PendingBufferUpload& upload : m_queuedBufferUploads)
 		{
-			CopyBufferRegion(upload.destination.Get(), upload.upload.Get(), upload.sizeInBytes);
+			m_copyCommandList->CopyBufferRegion(upload.destination.Get(), 0, upload.upload.Get(), 0, upload.sizeInBytes);
 			ticket.resources.push_back(UploadedResource{upload.destination, upload.finalState});
 		}
 
@@ -141,16 +161,20 @@ namespace efg::d3d12
 			m_copyCommandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
 			ticket.resources.push_back(UploadedResource{upload.destination, upload.finalState});
 		}
+
 		PIXEndEvent(m_copyCommandList.Get());
 		EndRecording();
 		Submit();
+
 		UINT64 copyFenceValue = copyfence.Signal(m_copyQueue.Get());
 		ticket.copyFenceValue = copyFenceValue;
+
 		UploadBatch batch = {};
 		batch.copyFenceValue = copyFenceValue;
 		batch.resources = ticket.resources;
 		batch.bufferUploads = std::move(m_queuedBufferUploads);
 		batch.textureUploads = std::move(m_queuedTextureUploads);
+
 		m_pendingBatches.push_back(std::move(batch));
 		pendingBatchesSize = m_pendingBatches.size();
 		m_queuedBufferUploads.clear();

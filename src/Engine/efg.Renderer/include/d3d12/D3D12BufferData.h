@@ -25,7 +25,6 @@ namespace efg::d3d12
     {
         UINT64 sizeInBytes = 0;
         Microsoft::WRL::ComPtr<ID3D12Resource> resource;
-        Microsoft::WRL::ComPtr<ID3D12Resource> uploadResource;
     };
 
     struct GpuConstantBuffer
@@ -60,15 +59,9 @@ namespace efg::d3d12
     struct GpuTexture2D
     {
         Microsoft::WRL::ComPtr<ID3D12Resource> resource;
-        Microsoft::WRL::ComPtr<ID3D12Resource> uploadResource;
 
         D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
         D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
-
-        D3D12_PLACED_SUBRESOURCE_FOOTPRINT uploadFootprint = {};
-        UINT uploadNumRows = 0;
-        UINT64 uploadRowSizeInBytes = 0;
-        UINT64 uploadBufferSize = 0;
 
         uint32_t width = 0;
         uint32_t height = 0;

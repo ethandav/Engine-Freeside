@@ -164,11 +164,11 @@
   <ItemGroup>
     <ClInclude Include="include\d3d12\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\D3D12MeshLibrary.h" />
+    <ClCompile Include="src\d3d12\D3D12TextrureFactory.cpp" />
     <ClCompile Include="src\d3d12\D3D12Format.cpp" />
     <ClCompile Include="src\d3d12\D3D12ForwardLitGeometryRenderPass.cpp" />
     <ClCompile Include="src\d3d12\D3D12MaterialLibrary.cpp" />
     <ClCompile Include="src\d3d12\D3D12ResourceFactory.cpp" />
-    <ClCompile Include="src\d3d12\D3D12TextureFactory.cpp" />
     <ClCompile Include="src\d3d12\D3D12TextureLibrary.cpp" />
     <ClCompile Include="src\render\types\FormatUtils.cpp" />
     <ClCompile Include="src\render\ImageLoader.cpp" />
