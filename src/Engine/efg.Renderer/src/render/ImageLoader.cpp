@@ -1,4 +1,5 @@
 #include "..\..\include\render\ImageLoader.h"
+#include "..\..\include\render\types\FormatUtils.h"
 #pragma comment(lib, "windowscodecs.lib")
 
 #include <wincodec.h>
@@ -53,8 +54,8 @@ namespace efg
         DecodedImage image = {};
         image.width = width;
         image.height = height;
-        image.rowPitch = width * 4;
         image.format = Format::R8G8B8A8_UNorm;
+        image.rowPitch = image.width * BytesPerPixelOrBlock(image.format);
         image.pixels.resize(static_cast<size_t>(image.rowPitch) * height);
 
         converter->CopyPixels(

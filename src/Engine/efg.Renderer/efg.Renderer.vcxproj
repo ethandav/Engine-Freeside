@@ -135,6 +135,7 @@
     <ClInclude Include="include\d3d12\D3D12TextureLibrary.h" />
     <ClInclude Include="include\d3d12\passes\D3D12BackBufferSetup.h" />
     <ClInclude Include="include\d3d12\passes\D3D12ForwardLitGeometryRenderPass.h" />
+    <ClInclude Include="include\d3d12\D3D12TextrureFactory.h" />
     <ClInclude Include="include\render\Camera.h" />
     <ClInclude Include="include\d3d12\D3D12BufferData.h" />
     <ClInclude Include="include\d3d12\D3D12CommandContext.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="include\render\RenderThread.h" />
     <ClInclude Include="include\render\RenderTypes.h" />
     <ClInclude Include="include\render\types\Format.h" />
+    <ClInclude Include="include\render\types\FormatUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\d3d12\D3D12BufferFactory.h" />
@@ -166,7 +168,9 @@
     <ClCompile Include="src\d3d12\D3D12ForwardLitGeometryRenderPass.cpp" />
     <ClCompile Include="src\d3d12\D3D12MaterialLibrary.cpp" />
     <ClCompile Include="src\d3d12\D3D12ResourceFactory.cpp" />
+    <ClCompile Include="src\d3d12\D3D12TextureFactory.cpp" />
     <ClCompile Include="src\d3d12\D3D12TextureLibrary.cpp" />
+    <ClCompile Include="src\render\types\FormatUtils.cpp" />
     <ClCompile Include="src\render\ImageLoader.cpp" />
     <ClCompile Include="src\render\RenderQueue.cpp" />
     <ClCompile Include="src\render\RenderThread.cpp" />
