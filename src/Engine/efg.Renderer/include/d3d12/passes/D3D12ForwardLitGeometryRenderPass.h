@@ -1,15 +1,19 @@
 #pragma once
-#include "..\D3D12RenderData.h"
-#include "..\D3D12GraphicsPipelineLibrary.h"
-#include "..\D3D12DescriptorContext.h"
-#include "..\D3D12MeshLibrary.h"
-#include "..\D3D12MaterialLibrary.h"
-#include "..\D3D12TextureLibrary.h"
-#include "..\D3D12BufferFactory.h"
 #include "..\..\render\RenderTypes.h"
+#include "..\frame\D3D12FrameContext.h"
+#include "..\..\render\Lights.h"
+
+#include <d3d12.h>
 
 namespace efg::d3d12
 {
+	class D3D12GraphicsPipelineLibary;
+	class D3D12DescriptorContext;
+	class D3D12MeshLibrary;
+	class D3D12MaterialLibrary;
+	class D3D12TextureLibrary;
+	class D3D12BufferFactory;
+
 	class D3D12ForwardLitGeometryRenderPass
 	{
 	public:
