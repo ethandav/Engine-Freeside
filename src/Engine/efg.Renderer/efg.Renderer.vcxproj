@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\..\packages\Microsoft.Direct3D.D3D12.1.619.2\build\native\Microsoft.Direct3D.D3D12.props" Condition="Exists('..\..\..\packages\Microsoft.Direct3D.D3D12.1.619.2\build\native\Microsoft.Direct3D.D3D12.props')" />
   <ItemGroup Label="ProjectConfigurations">
@@ -141,6 +141,7 @@
     <ClInclude Include="include\d3d12\passes\D3D12BackBufferSetup.h" />
     <ClInclude Include="include\d3d12\passes\D3D12ForwardLitGeometryRenderPass.h" />
     <ClInclude Include="include\d3d12\factories\D3D12TextrureFactory.h" />
+    <ClInclude Include="include\d3d12\passes\D3D12ForwardLitGeometryTypes.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuAlignment.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuArena.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuMesh.h" />
@@ -160,16 +161,20 @@
     <ClInclude Include="include\d3d12\libraries\D3D12ShaderLibrary.h" />
     <ClInclude Include="include\d3d12\presentation\D3D12SwapChain.h" />
     <ClInclude Include="include\d3d12\commands\D3D12UploadContext.h" />
+    <ClInclude Include="include\render\types\FramePacket.h" />
+    <ClInclude Include="include\render\types\Handles.h" />
     <ClInclude Include="include\render\ImageLoader.h" />
     <ClInclude Include="include\render\IRendererBackend.h" />
     <ClInclude Include="include\render\Lights.h" />
-    <ClInclude Include="include\render\MeshData.h" />
+    <ClInclude Include="include\render\types\MeshTypes.h" />
     <ClInclude Include="include\render\Renderer.h" />
+    <ClInclude Include="include\render\types\RenderObject.h" />
     <ClInclude Include="include\render\RenderQueue.h" />
     <ClInclude Include="include\render\RenderThread.h" />
-    <ClInclude Include="include\render\RenderTypes.h" />
+    <ClInclude Include="include\render\types\RendererDesc.h" />
     <ClInclude Include="include\render\types\Format.h" />
     <ClInclude Include="include\render\types\FormatUtils.h" />
+    <ClInclude Include="include\render\types\MaterialTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\d3d12\factories\D3D12BufferFactory.h" />

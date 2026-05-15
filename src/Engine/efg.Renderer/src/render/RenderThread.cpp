@@ -5,7 +5,7 @@
 
 namespace efg
 {
-    void RenderThread::Start(IRendererBackend* backend)
+    void RenderThread::Start(d3d12::IRendererBackend* backend)
     {
         m_backend = backend;
         m_running = true;

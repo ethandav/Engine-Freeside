@@ -1,6 +1,6 @@
 #include "..\..\include\render\lights.h"
 
-namespace efg
+namespace Freeside
 {
     namespace Lights
     {

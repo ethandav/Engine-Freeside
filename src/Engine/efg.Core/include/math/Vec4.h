@@ -1,6 +1,6 @@
 #pragma once
 
-namespace efg
+namespace Freeside
 {
     namespace Math
     {

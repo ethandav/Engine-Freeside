@@ -1,6 +1,8 @@
 #pragma once
 
-#include "..\..\render\RenderTypes.h"
+#include "..\..\render\types\MaterialTypes.h"
+#include "..\..\render\types\Handles.h"
+#include "..\passes\D3D12ForwardLitGeometryTypes.h"
 
 #include <vector>
 
@@ -9,8 +11,8 @@ namespace efg::d3d12
     class D3D12MaterialLibrary
     {
     public:
-        MaterialHandle RegisterMaterial(const MaterialDesc& desc);
-        const Material& GetMaterialByHandle(MaterialHandle handle) const;
+        Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& desc);
+        const Material& GetMaterialByHandle(Freeside::MaterialHandle handle) const;
         Material GetDefaultMaterial();
     private:
         std::vector<Material> m_materials = {};

@@ -1,7 +1,8 @@
 #pragma once
-#include "..\..\..\efg.Renderer\include\render\MeshData.h"
 
-namespace efg
+#include "..\math\math.h"
+
+namespace Freeside
 {
     namespace Shapes
     {

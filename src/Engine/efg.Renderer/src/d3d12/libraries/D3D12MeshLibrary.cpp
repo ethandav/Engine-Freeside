@@ -4,7 +4,7 @@
 
 namespace efg::d3d12
 {
-    MeshHandle D3D12MeshLibrary::RegisterMesh(const MeshData& meshData)
+    Freeside::MeshHandle D3D12MeshLibrary::RegisterMesh(const Freeside::MeshData& meshData)
     {
         if (meshData.vertices.empty())
         {
@@ -14,9 +14,9 @@ namespace efg::d3d12
         GpuMesh gpuMesh = {};
         gpuMesh.vertexCount = static_cast<uint32_t>(meshData.vertices.size());
         gpuMesh.indexCount = static_cast<uint32_t>(meshData.indices.size());
-        gpuMesh.vertexBufferSize = meshData.vertices.size() * sizeof(Vertex);
+        gpuMesh.vertexBufferSize = meshData.vertices.size() * sizeof(Freeside::Vertex);
         gpuMesh.indexBufferSize = meshData.indices.size() * sizeof(uint32_t);
-        gpuMesh.vertexBufferView.StrideInBytes = sizeof(Vertex);
+        gpuMesh.vertexBufferView.StrideInBytes = sizeof(Freeside::Vertex);
         gpuMesh.vertexBufferView.SizeInBytes = static_cast<UINT>(gpuMesh.vertexBufferSize);
         gpuMesh.indexBufferView.Format = DXGI_FORMAT_R32_UINT;
         gpuMesh.indexBufferView.SizeInBytes = static_cast<UINT>(gpuMesh.indexBufferSize);
@@ -24,13 +24,13 @@ namespace efg::d3d12
 
         m_meshes.push_back(std::move(gpuMesh));
 
-        return MeshHandle
+        return Freeside::MeshHandle
         {
             static_cast<uint32_t>(m_meshes.size() - 1)
         };
     }
 
-    const GpuMesh& D3D12MeshLibrary::Get(MeshHandle handle) const
+    const GpuMesh& D3D12MeshLibrary::Get(Freeside::MeshHandle handle) const
     {
         if (!handle.IsValid() || handle.index >= m_meshes.size())
         {
@@ -40,13 +40,13 @@ namespace efg::d3d12
         return m_meshes[handle.index];
     }
 
-    void D3D12MeshLibrary::SetVertexBuffer(MeshHandle handle, const GpuBuffer& buffer)
+    void D3D12MeshLibrary::SetVertexBuffer(Freeside::MeshHandle handle, const GpuBuffer& buffer)
     {
         m_meshes[handle.index].vertexBufferView.BufferLocation = buffer.resource->GetGPUVirtualAddress();
         m_meshes[handle.index].vertexBuffer.resource = buffer.resource;
     }
 
-    void D3D12MeshLibrary::SetIndexBuffer(MeshHandle handle, const GpuBuffer& buffer)
+    void D3D12MeshLibrary::SetIndexBuffer(Freeside::MeshHandle handle, const GpuBuffer& buffer)
     {
         m_meshes[handle.index].indexBufferView.BufferLocation = buffer.resource->GetGPUVirtualAddress();
         m_meshes[handle.index].indexBuffer.resource = buffer.resource;

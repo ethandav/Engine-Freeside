@@ -1,11 +1,16 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include <vector>
 
-#include "..\..\efg.Renderer\include\render\Renderer.h"
+#include "..\..\efg.Renderer\include\render\types\RenderObject.h"
+#include "..\..\efg.Renderer\include\render\Lights.h"
+#include "..\..\efg.Renderer\include\render\Camera.h"
 
-namespace efg
+namespace Freeside
 {
+	class Renderer;
+
 	namespace Scene
 	{
 		struct SceneHandle
@@ -33,7 +38,7 @@ namespace efg
 		public:
 			Scene(std::wstring name);
 			SceneRenderObjectHandle AddRenderObjectToRenderQueue(RenderObject object);
-			void AddPointLightToScene(efg::Lights::Point light);
+			void AddPointLightToScene(Lights::Point light);
 			RenderObject* GetRenderObjectByHandle(SceneRenderObjectHandle handle);
 			void CreateScenefromDefault(float aspectRatio);
 			void AddCamera(Camera camera);

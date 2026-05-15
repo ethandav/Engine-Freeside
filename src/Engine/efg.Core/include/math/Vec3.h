@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace efg
+namespace Freeside
 {
     namespace Math
     {

@@ -1,0 +1,15 @@
+#pragma once
+
+#include "Handles.h"
+#include "..\..\..\..\efg.Core\include\math\Vec2.h"
+#include "..\..\..\..\efg.Core\include\math\Vec3.h"
+
+namespace Freeside
+{
+	struct MaterialDesc
+	{
+		Freeside::Math::Vec3 baseColor = Freeside::Math::Vec3(0.8f, 0.8f, 0.8f);
+		Freeside::Math::Vec2 specular = Freeside::Math::Vec2(1.0f, 64.0f);
+		TextureHandle baseColorTexture2D = {};
+	};
+}

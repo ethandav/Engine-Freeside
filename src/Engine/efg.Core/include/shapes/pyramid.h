@@ -1,6 +1,10 @@
 #pragma once
 
-namespace efg
+#include "..\..\..\efg.Renderer\include\render\types\MeshTypes.h"
+#include "..\math\Vec2.h"
+#include "..\math\Vec3.h"
+
+namespace Freeside
 {
     namespace Shapes
     {
@@ -13,7 +17,7 @@ namespace efg
 
             MeshData mesh =
             {
-                std::vector<efg::Vertex>(vertexCount) = {
+                std::vector<Vertex>(vertexCount) = {
                     {Math::Vec3(0.5f, -0.5f, -0.5f) ,Math::Vec3(0.0f, 0.0f, -1.0f), Math::Vec2(1.0f, 0.0f)},
                     {Math::Vec3(0.0f, 0.5f, 0.0f)   ,Math::Vec3(0.0f, 0.0f, -1.0f),Math::Vec2(0.5f, 1.0f) },
                     {Math::Vec3(-0.5f, -0.5f, -0.5f),Math::Vec3(0.0f, 0.0f, -1.0f),Math::Vec2(0.0f, 0.0f) },

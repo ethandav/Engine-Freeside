@@ -9,52 +9,52 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
 	Window window;
 	Timer timer;
-	efg::Renderer renderer;
-	efg::Scene::SceneManager sceneManager;
-	efg::RendererDesc rendererDesc = {
+	Freeside::Renderer renderer;
+	Freeside::Scene::SceneManager sceneManager;
+	Freeside::RendererDesc rendererDesc = {
 		nullptr,
 		1920,
 		1080
 	};
 
-	efg::MeshData cubeMeshData = efg::Shapes::Cube().mesh;
-	efg::MeshData sphereMeshData = efg::Shapes::Sphere().mesh;
-	efg::MeshData pyramidMeshData = efg::Shapes::Pyramid().mesh;
+	Freeside::MeshData cubeMeshData = Freeside::Shapes::Cube().mesh;
+	Freeside::MeshData sphereMeshData = Freeside::Shapes::Sphere().mesh;
+	Freeside::MeshData pyramidMeshData = Freeside::Shapes::Pyramid().mesh;
 
 	window.Create(hInstance, rendererDesc.width, rendererDesc.height, L"Ethan's Framework (for) Graphics");
 	window.Show(nCmdShow);
 	rendererDesc.nativeWindowHandle = window.GetHwnd();
 	renderer.Initialize(rendererDesc);
 	sceneManager.Initialize(&renderer);
-	efg::Scene::SceneHandle testSceneHandle = sceneManager.CreateScene(L"Test Scene");
+	Freeside::Scene::SceneHandle testSceneHandle = sceneManager.CreateScene(L"Test Scene");
 
-	efg::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
-	efg::MeshHandle sphereMeshHandle = renderer.CreateMesh(sphereMeshData);
-	efg::MeshHandle pyramidMeshHandle = renderer.CreateMesh(pyramidMeshData);
+	Freeside::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
+	Freeside::MeshHandle sphereMeshHandle = renderer.CreateMesh(sphereMeshData);
+	Freeside::MeshHandle pyramidMeshHandle = renderer.CreateMesh(pyramidMeshData);
 	
-	efg::TextureHandle earthTexture = renderer.RegisterTexture2D(L"assets/textures/earth.jpeg");
-	efg::TextureHandle crateTexture = renderer.RegisterTexture2D(L"assets/textures/crate.png");
-	efg::TextureHandle pyramidTexture = renderer.RegisterTexture2D(L"assets/textures/pyramid.jpg");
+	Freeside::TextureHandle earthTexture = renderer.RegisterTexture2D(L"assets/textures/earth.jpeg");
+	Freeside::TextureHandle crateTexture = renderer.RegisterTexture2D(L"assets/textures/crate.png");
+	Freeside::TextureHandle pyramidTexture = renderer.RegisterTexture2D(L"assets/textures/pyramid.jpg");
 
-	efg::MaterialDesc earthMaterial;
-	earthMaterial.baseColor = efg::Math::Vec3(0.0f, 0.0f, 1.0f);
-	earthMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
+	Freeside::MaterialDesc earthMaterial;
+	earthMaterial.baseColor = Freeside::Math::Vec3(0.0f, 0.0f, 1.0f);
+	earthMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	earthMaterial.baseColorTexture2D = earthTexture;
-	efg::MaterialHandle earthMaterialHandle = renderer.RegisterMaterial(earthMaterial);
+	Freeside::MaterialHandle earthMaterialHandle = renderer.RegisterMaterial(earthMaterial);
 
 
-	efg::MaterialDesc crateMaterial;
-	crateMaterial.baseColor = efg::Math::Vec3(1.0f, 0.0f, 0.0f);
-	crateMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
+	Freeside::MaterialDesc crateMaterial;
+	crateMaterial.baseColor = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
+	crateMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	crateMaterial.baseColorTexture2D = crateTexture;
-	efg::MaterialHandle crateMaterialHandle = renderer.RegisterMaterial(crateMaterial);
+	Freeside::MaterialHandle crateMaterialHandle = renderer.RegisterMaterial(crateMaterial);
 
 
-	efg::MaterialDesc pyramidMaterial;
-	pyramidMaterial.baseColor = efg::Math::Vec3(0.0f, 1.0f, 0.0f);
-	pyramidMaterial.specular = efg::Math::Vec2(1.0f, 64.0f);
+	Freeside::MaterialDesc pyramidMaterial;
+	pyramidMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
+	pyramidMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	pyramidMaterial.baseColorTexture2D = pyramidTexture;
-	efg::MaterialHandle pyramidMaterialHandle = renderer.RegisterMaterial(pyramidMaterial);
+	Freeside::MaterialHandle pyramidMaterialHandle = renderer.RegisterMaterial(pyramidMaterial);
 
 	std::mt19937 rng{ std::random_device{}() };
 
@@ -70,7 +70,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		const float y = heightDist(rng);
 		const float z = posDist(rng);
 
-		efg::Math::Mat4 transform = efg::Math::Translation(x, y, z);
+		Freeside::Math::Mat4 transform = Freeside::Math::Translation(x, y, z);
 
 		object.mesh = sphereMeshHandle;
 		object.material = earthMaterialHandle;
@@ -80,29 +80,29 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	}
 	*/
 
-	efg::RenderObject object1;
-	efg::RenderObject object2;
-	efg::RenderObject object3;
-	efg::RenderObject* pObject1;
-	efg::RenderObject* pObject2;
-	efg::RenderObject* pObject3;
-	efg::Scene::SceneRenderObjectHandle hObject1;
-	efg::Scene::SceneRenderObjectHandle hObject2;
-	efg::Scene::SceneRenderObjectHandle hObject3;
+	Freeside::RenderObject object1;
+	Freeside::RenderObject object2;
+	Freeside::RenderObject object3;
+	Freeside::RenderObject* pObject1;
+	Freeside::RenderObject* pObject2;
+	Freeside::RenderObject* pObject3;
+	Freeside::Scene::SceneRenderObjectHandle hObject1;
+	Freeside::Scene::SceneRenderObjectHandle hObject2;
+	Freeside::Scene::SceneRenderObjectHandle hObject3;
 	object1.mesh = cubeMeshHandle;
 	object1.material = crateMaterialHandle;
-	object1.world = efg::Math::Translation(-1.0f, 0.0f, 0.0f);
-	object1.initialTransform = efg::Math::Translation(-1.0f, 0.0f, 0.0f);
+	object1.world = Freeside::Math::Translation(-1.0f, 0.0f, 0.0f);
+	object1.initialTransform = Freeside::Math::Translation(-1.0f, 0.0f, 0.0f);
 	object1.name = L"Cube";
 	object2.mesh = pyramidMeshHandle;
 	object2.material = pyramidMaterialHandle;
-	object2.world = efg::Math::Translation(1.0f, 0.0f, 0.0f);
-	object2.initialTransform = efg::Math::Translation(1.0f, 0.0f, 0.0f);
+	object2.world = Freeside::Math::Translation(1.0f, 0.0f, 0.0f);
+	object2.initialTransform = Freeside::Math::Translation(1.0f, 0.0f, 0.0f);
 	object2.name = L"Pyramid";
 	object3.mesh = sphereMeshHandle;
 	object3.material = earthMaterialHandle;
-	object3.world = efg::Math::Translation(0.0f, 1.0f, 0.0f);
-	object3.initialTransform = efg::Math::Translation(0.0f, 1.0f, 0.0f);
+	object3.world = Freeside::Math::Translation(0.0f, 1.0f, 0.0f);
+	object3.initialTransform = Freeside::Math::Translation(0.0f, 1.0f, 0.0f);
 	object3.name = L"Sphere";
 
 
@@ -114,10 +114,10 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	pObject3 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject3);
 
 
-	efg::Lights::Point pointLight1;
-	pointLight1.color = efg::Math::Vec3(1.0f, 1.0f, 1.0f);
+	Freeside::Lights::Point pointLight1;
+	pointLight1.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
 	pointLight1.intensity = 1.0f;
-	pointLight1.position = efg::Math::Vec3(-1.0f, 0.0f, -2.0f);
+	pointLight1.position = Freeside::Math::Vec3(-1.0f, 0.0f, -2.0f);
 	pointLight1.radius = 5.0f;
 
 	sceneManager.AddPointLightToScene(testSceneHandle, pointLight1);
@@ -127,13 +127,13 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	{
 		const float deltaTime = timer.Tick();
 		angle += 1.0f * deltaTime;
-		efg::Math::Mat4 rotation = efg::Math::RotationY(angle);
+		Freeside::Math::Mat4 rotation = Freeside::Math::RotationY(angle);
 
-		efg::Math::Mat4 translation1 = object1.initialTransform;
+		Freeside::Math::Mat4 translation1 = object1.initialTransform;
 		pObject1->world = translation1 * rotation;
-        efg::Math::Mat4 translation2 = object2.initialTransform;
+        Freeside::Math::Mat4 translation2 = object2.initialTransform;
         pObject2->world = translation2 * rotation;
-        efg::Math::Mat4 translation3 = object3.initialTransform;
+        Freeside::Math::Mat4 translation3 = object3.initialTransform;
         pObject3->world = translation3 * rotation;
 
 		window.PollEvents();

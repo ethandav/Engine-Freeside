@@ -1,5 +1,5 @@
 #pragma once
-#include "..\..\render\RenderTypes.h"
+#include "..\..\render\types\Handles.h"
 #include "..\resources\D3D12GpuTexture.h"
 
 #include <vector>
@@ -9,8 +9,8 @@ namespace efg::d3d12
     class D3D12TextureLibrary
     {
     public:
-        TextureHandle RegisterTexture2D(const GpuTexture2D& desc);
-        const GpuTexture2D& GetTextureByHandle(TextureHandle handle) const;
+        Freeside::TextureHandle RegisterTexture2D(const GpuTexture2D& desc);
+        const GpuTexture2D& GetTextureByHandle(Freeside::TextureHandle handle) const;
         GpuTexture2D GetDefaultWhiteTexture();
     private:
         std::vector<GpuTexture2D> m_textures;

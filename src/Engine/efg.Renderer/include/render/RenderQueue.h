@@ -1,14 +1,16 @@
 #pragma once
 
-#include "RenderTypes.h"
-#include "MeshData.h"
+#include "types/Handles.h"
+#include "types/RenderObject.h"
+
+#include <vector>
 
 namespace efg
 {
     struct DrawBatch
     {
-        MeshHandle mesh;
-        MaterialHandle material;
+        Freeside::MeshHandle mesh;
+        Freeside::MaterialHandle material;
 
         uint32_t firstSortedIndex = 0;
         uint32_t instanceCount = 0;
@@ -21,7 +23,7 @@ namespace efg
         std::vector<DrawBatch> batches;
 
         void Clear();
-        void BuildForwardGeometryBatches(const std::vector<RenderObject>& objects);
-        void SortRenderObjectsForInstancing(const std::vector<RenderObject>& objects);
+        void BuildForwardGeometryBatches(const std::vector<Freeside::RenderObject>& objects);
+        void SortRenderObjectsForInstancing(const std::vector<Freeside::RenderObject>& objects);
     };
 }

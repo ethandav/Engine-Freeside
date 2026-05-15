@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\..\render\MeshData.h"
+#include "..\..\render\types\Handles.h"
 #include "D3D12GpuBuffer.h"
 
 #include <d3d12.h>
@@ -21,6 +21,6 @@ namespace efg::d3d12
         uint64_t vertexBufferSize = 0;
         uint64_t indexBufferSize = 0;
 
-        MeshHandle handle = {};
+        Freeside::MeshHandle handle = {};
     };
 }

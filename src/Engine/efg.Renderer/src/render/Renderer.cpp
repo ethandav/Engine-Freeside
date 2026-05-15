@@ -3,11 +3,11 @@
 #include "..\..\include\d3d12\Core\D3D12RendererBackend.h"
 #include "..\..\include\render\RenderThread.h"
 
-namespace efg
+namespace Freeside
 {
     Renderer::Renderer()
     {
-        m_backend = std::make_unique<d3d12::D3D12RendererBackend>();
+        m_backend = std::make_unique<efg::d3d12::D3D12RendererBackend>();
     }
 
     Renderer::~Renderer()
@@ -15,12 +15,12 @@ namespace efg
         Shutdown();
     }
 
-    void Renderer::Initialize(const efg::RendererDesc& desc)
+    void Renderer::Initialize(const Freeside::RendererDesc& desc)
     {
         m_rendererDesc = desc;
         m_backend->Initialize(desc);
 
-        m_renderThread = std::make_unique<RenderThread>();
+        m_renderThread = std::make_unique<efg::RenderThread>();
         m_renderThread->Start(m_backend.get());
     }
 
@@ -44,7 +44,7 @@ namespace efg
         }
     }
 
-    void Renderer::SubmitFrame(FramePacket sceneRenderData)
+    void Renderer::SubmitFrame(efg::FramePacket sceneRenderData)
     {
         m_renderThread->Submit(std::move(sceneRenderData));
     }
@@ -54,7 +54,7 @@ namespace efg
         return m_backend->CreateMesh(mesh);
     }
 
-    efg::MaterialHandle Renderer::RegisterMaterial(const efg::MaterialDesc& mat)
+    Freeside::MaterialHandle Renderer::RegisterMaterial(const Freeside::MaterialDesc& mat)
     {
         return m_backend->RegisterMaterial(mat);
     }

@@ -1,6 +1,6 @@
 #include "..\..\include\render\Camera.h"
 
-namespace efg
+namespace Freeside
 {
     void Camera::SetPosition(const Math::Vec3& position)
     {

@@ -1,5 +1,7 @@
 #pragma once
-#include "..\render\types\Format.h"
+
+#include "types/Format.h"
+
 #include <vector>
 #include <string>
 

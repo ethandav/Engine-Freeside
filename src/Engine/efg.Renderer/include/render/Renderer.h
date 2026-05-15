@@ -1,14 +1,24 @@
 #pragma once
+
+#include "types/RendererDesc.h"
+#include "types/MaterialTypes.h"
+#include "types/MeshTypes.h"
+#include "types/FramePacket.h"
+
 #include <memory>
 #include <string>
 
-#include "RenderTypes.h"
-
-namespace efg
+namespace efg::d3d12
 {
 	class IRendererBackend;
+}
+namespace efg
+{
 	class RenderThread;
+}
 
+namespace Freeside
+{
 	class Renderer
 	{
 	public:
@@ -17,13 +27,13 @@ namespace efg
 		void Initialize(const RendererDesc& desc);
 		float GetRendererAspectRatio();
 		void Shutdown();
-		void SubmitFrame(FramePacket sceneRenderData);
+		void SubmitFrame(efg::FramePacket sceneRenderData);
 		MeshHandle CreateMesh(const MeshData& mesh);
 		MaterialHandle RegisterMaterial(const MaterialDesc& mat);
 		TextureHandle RegisterTexture2D(const wchar_t* filename);
 	private:
-		std::unique_ptr<IRendererBackend> m_backend;
-		std::unique_ptr<RenderThread> m_renderThread;
+		std::unique_ptr<efg::d3d12::IRendererBackend> m_backend;
+		std::unique_ptr<efg::RenderThread> m_renderThread;
 		RendererDesc m_rendererDesc = {};
 	};
 }

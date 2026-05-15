@@ -5,17 +5,17 @@
 
 namespace efg::d3d12
 {
-	TextureHandle D3D12TextureLibrary::RegisterTexture2D(const GpuTexture2D& texture)
+	Freeside::TextureHandle D3D12TextureLibrary::RegisterTexture2D(const GpuTexture2D& texture)
 	{
 		m_textures.push_back(texture);
 
-		return efg::TextureHandle
+		return Freeside::TextureHandle
 		{
 			static_cast<uint32_t>(m_textures.size() - 1)
 		};
 	}
 
-	const GpuTexture2D& D3D12TextureLibrary::GetTextureByHandle(TextureHandle handle) const
+	const GpuTexture2D& D3D12TextureLibrary::GetTextureByHandle(Freeside::TextureHandle handle) const
 	{
 		if (!handle.IsValid() || handle.index >= m_textures.size())
 		{

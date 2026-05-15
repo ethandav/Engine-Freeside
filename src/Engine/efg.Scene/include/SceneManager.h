@@ -1,11 +1,15 @@
 #pragma once
-#include "..\include\Scene.h"
-#include "..\..\efg.Renderer\include\render\Renderer.h"
+
+#include "Scene.h"
+#include "..\..\efg.Renderer\include\render\Lights.h"
+#include "..\..\efg.Renderer\include\render\Camera.h"
 
 #include <vector>
 
-namespace efg
+namespace Freeside
 {
+	class Renderer;
+
 	namespace Scene
 	{
 		class SceneManager
@@ -18,7 +22,7 @@ namespace efg
 			SceneHandle CreateScene(std::wstring sceneName);
 			SceneHandle AddSceneToQueue(const Scene& scene);
 			SceneRenderObjectHandle AddRenderObjectToRenderQueue(SceneHandle handle, RenderObject& object);
-			void AddPointLightToScene(SceneHandle handle, efg::Lights::Point& light);
+			void AddPointLightToScene(SceneHandle handle, Lights::Point& light);
 			RenderObject* GetRenderObjectByHandle(SceneHandle sceneHandle, SceneRenderObjectHandle objectHandle);
 			void AddCamera(SceneHandle handle, Camera camera);
 			void RenderScene(SceneHandle handle);

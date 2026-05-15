@@ -1,5 +1,8 @@
 #pragma once
-#include "..\..\render\RenderTypes.h"
+
+#include "..\..\render\types\FramePacket.h"
+#include "..\..\render\types\Handles.h"
+
 #include "..\frame\D3D12FrameContext.h"
 #include "..\..\render\Lights.h"
 
@@ -26,7 +29,7 @@ namespace efg::d3d12
 			D3D12_GPU_VIRTUAL_ADDRESS directionalLightCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS pointLightConstantsCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS pointLightsSRV = 0;
-			Lights::PointLightConstants pointLightConstants = {};
+			Freeside::Lights::PointLightConstants pointLightConstants = {};
 		};
 		void BeginPass(const FrameContext& ctx, const FramePacket& scene);
 		void UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
@@ -34,7 +37,7 @@ namespace efg::d3d12
 		void UploadPointLights(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
 		void UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
 		void DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene);
-		void DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, MeshHandle handle, uint32_t instanceCount);
+		void DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, Freeside::MeshHandle handle, uint32_t instanceCount);
 
 		D3D12GraphicsPipelineLibary* m_pipelineLibrary = nullptr;
 		D3D12DescriptorContext* m_descriptorContext = nullptr;

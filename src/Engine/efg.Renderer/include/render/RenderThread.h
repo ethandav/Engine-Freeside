@@ -1,18 +1,22 @@
 #pragma once
 
+#include "types/FramePacket.h"
+
 #include <thread>
 #include <mutex>
 #include <deque>
-#include "RenderTypes.h"
 
 namespace efg
 {
-    class IRendererBackend;
+    namespace d3d12
+    {
+        class IRendererBackend;
+    }
 
     class RenderThread
     {
     public:
-        void Start(IRendererBackend* backend);
+        void Start(d3d12::IRendererBackend* backend);
         void Stop();
         void Submit(FramePacket sceneData);
 
@@ -22,7 +26,7 @@ namespace efg
     private:
         static constexpr uint32_t MaxQueuedFrames = 2;
 
-        IRendererBackend* m_backend = nullptr;
+        d3d12::IRendererBackend* m_backend = nullptr;
 
         std::thread m_thread;
         std::mutex m_mutex;

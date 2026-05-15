@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-namespace efg
+namespace Freeside
 {
 	namespace Lights
 	{
@@ -12,14 +12,14 @@ namespace efg
 
 		struct DirectionalLightConstants
 		{
-			Math::Vec4 directionAndIntensity; // xyz = direction, w = intensity
-			Math::Vec4 colorAndPadding;       // rgb = color, w unused
+			Freeside::Math::Vec4 directionAndIntensity; // xyz = direction, w = intensity
+			Freeside::Math::Vec4 colorAndPadding;       // rgb = color, w unused
 		};
 
 		struct GpuPointLight
 		{
-			Math::Vec4 positionAndRadius;
-			Math::Vec4 colorAndIntensity;
+			Freeside::Math::Vec4 positionAndRadius;
+			Freeside::Math::Vec4 colorAndIntensity;
 		};
 
 		struct PointLightConstants
@@ -34,8 +34,8 @@ namespace efg
 			Directional() = default;
 			DirectionalLightConstants BuildDirectionalLightConstants() const;
 
-			Math::Vec3 direction = Math::Vec3(0.0f, 01.0f, 0.0f);
-			Math::Vec3 color = Math::Vec3(1.0f, 1.0f, 1.0f);
+			Freeside::Math::Vec3 direction = Freeside::Math::Vec3(0.0f, 01.0f, 0.0f);
+			Freeside::Math::Vec3 color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
 		};
 
 		class Point
@@ -44,9 +44,9 @@ namespace efg
 			Point() = default;
 			void BuildGpuPointLights();
 
-			Math::Vec3 position = Math::Vec3(0.0f, 0.0f, 0.0f);
+			Freeside::Math::Vec3 position = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
 			float radius = 0.0f;
-			Math::Vec3 color = Math::Vec3(1.0f, 1.0f, 1.0f);
+			Freeside::Math::Vec3 color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
 			float intensity = 1.0f;
 		};
 	}

@@ -1,3 +1,7 @@
+#include "..\..\..\include\render\types\RendererDesc.h"
+#include "..\..\..\include\render\types\MeshTypes.h"
+#include "..\..\..\include\render\types\Handles.h"
+
 #include "..\..\..\include\d3d12\core\D3D12RendererBackend.h"
 #include "..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
 #include "..\..\..\include\d3d12\core\D3D12Pix.h"
@@ -5,7 +9,7 @@
 
 namespace efg::d3d12
 {
-    void D3D12RendererBackend::Initialize(const RendererDesc& desc)
+    void D3D12RendererBackend::Initialize(const Freeside::RendererDesc& desc)
     {
         InitializeD3D12Systems(desc);
         CreateViewportAndScissor(desc.width, desc.height);
@@ -36,7 +40,7 @@ namespace efg::d3d12
         m_renderTargets.sceneDepth.dsv = m_descriptorContext.CreateDSV(m_renderTargets.sceneDepth.resource.Get(), nullptr).cpu;
     }
 
-    void D3D12RendererBackend::InitializeD3D12Systems(const RendererDesc& desc)
+    void D3D12RendererBackend::InitializeD3D12Systems(const Freeside::RendererDesc& desc)
     {
         m_graphicsContext.Initialize(false);
         m_commandContext.Initialize(&m_graphicsContext);
@@ -101,10 +105,10 @@ namespace efg::d3d12
         EndFrame(ctx);
     }
 
-    MeshHandle D3D12RendererBackend::CreateMesh(const MeshData& mesh)
+    Freeside::MeshHandle D3D12RendererBackend::CreateMesh(const Freeside::MeshData& mesh)
     {
-        MeshHandle handle = m_meshLibrary.RegisterMesh(mesh);
-        GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer((mesh.vertices.size() * sizeof(Vertex)));
+        Freeside::MeshHandle handle = m_meshLibrary.RegisterMesh(mesh);
+        GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer((mesh.vertices.size() * sizeof(Freeside::Vertex)));
         GpuBuffer indexBuffer = m_bufferFactory.CreateStaticBuffer((mesh.indices.size() * sizeof(uint32_t)));
         m_meshLibrary.SetVertexBuffer(handle, vertexBuffer);
         m_meshLibrary.SetIndexBuffer(handle, indexBuffer);
@@ -113,13 +117,13 @@ namespace efg::d3d12
         return handle;
     }
 
-    efg::MaterialHandle D3D12RendererBackend::RegisterMaterial(const efg::MaterialDesc& mat)
+    Freeside::MaterialHandle D3D12RendererBackend::RegisterMaterial(const Freeside::MaterialDesc& mat)
     {
-        MaterialHandle handle = m_materialLibrary.RegisterMaterial(mat);
+        Freeside::MaterialHandle handle = m_materialLibrary.RegisterMaterial(mat);
         return handle;
     }
 
-    TextureHandle D3D12RendererBackend::RegisterTexture2D(const wchar_t* filename)
+    Freeside::TextureHandle D3D12RendererBackend::RegisterTexture2D(const wchar_t* filename)
     {
         DecodedImage image = m_imageLoader.LoadImageWithWIC(filename);
         GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format));
@@ -127,7 +131,7 @@ namespace efg::d3d12
         DescriptorAllocation alloc = m_descriptorContext.CreateTexture2DSRV(texture.resource.Get(), texture.format, texture.mipLevels);
         texture.gpuSrv = alloc.gpu;
         texture.cpuSrv = alloc.cpu;
-        TextureHandle handle = m_textureLibrary.RegisterTexture2D(texture);
+        Freeside::TextureHandle handle = m_textureLibrary.RegisterTexture2D(texture);
 
         return handle;
     }

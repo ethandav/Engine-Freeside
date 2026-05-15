@@ -4,6 +4,9 @@
 #include "..\..\render\IRendererBackend.h"
 #include "..\..\render\RenderQueue.h"
 #include "..\..\render\ImageLoader.h"
+#include "..\..\render\types\Handles.h"
+#include "..\..\render\types\MeshTypes.h"
+#include "..\..\render\types\FramePacket.h"
 #include "..\frame\D3D12FrameContext.h"
 #include "..\frame\D3D12FrameResouce.h"
 #include "..\frame\D3D12FrameConfig.h"
@@ -28,17 +31,17 @@ namespace efg::d3d12
 	class D3D12RendererBackend final : public IRendererBackend
 	{
 	public:
-		void Initialize(const RendererDesc& desc) override;
+		void Initialize(const Freeside::RendererDesc& desc) override;
 		void Shutdown() override;
 		void Render(const FramePacket& scene) override;
-		MeshHandle CreateMesh(const MeshData& mesh) override;
-		MaterialHandle RegisterMaterial(const MaterialDesc& mat) override;
-		TextureHandle RegisterTexture2D(const wchar_t* filename) override;
+		Freeside::MeshHandle CreateMesh(const Freeside::MeshData& mesh) override;
+		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) override;
+		Freeside::TextureHandle RegisterTexture2D(const wchar_t* filename) override;
 
 	private:
 		void CreateViewportAndScissor(uint32_t width, uint32_t height);
 		void CreateRenderTargets(uint32_t width, uint32_t height);
-		void InitializeD3D12Systems(const RendererDesc& desc);
+		void InitializeD3D12Systems(const Freeside::RendererDesc& desc);
 		void InitializeRenderPasses();
 		void CreateFrameResources();
 		void DestroyFrameResources();

@@ -1,4 +1,5 @@
 #include "..\..\..\include\d3d12\passes\D3D12ForwardLitGeometryRenderPass.h"
+#include "..\..\..\include\d3d12\passes\D3D12ForwardLitGeometryTypes.h"
 #include "..\..\..\include\d3d12\libraries\D3D12GraphicsPipelineLibrary.h"
 #include "..\..\..\include\d3d12\libraries\D3D12MeshLibrary.h"
 #include "..\..\..\include\d3d12\libraries\D3D12TextureLibrary.h"
@@ -53,18 +54,18 @@ namespace efg::d3d12
 
     void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
     {
-        CameraConstants cameraConstants = scene.camera.BuildCameraConstants();
-        Lights::DirectionalLightConstants dirLightConstants = scene.directionalLight.BuildDirectionalLightConstants();
-        resources.cameraCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &cameraConstants, sizeof(CameraConstants));
-        resources.directionalLightCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &dirLightConstants, sizeof(Lights::DirectionalLightConstants));
-        resources.pointLightConstantsCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.pointLightConstants, sizeof(Lights::PointLightConstants));
+        Freeside::CameraConstants cameraConstants = scene.camera.BuildCameraConstants();
+        Freeside::Lights::DirectionalLightConstants dirLightConstants = scene.directionalLight.BuildDirectionalLightConstants();
+        resources.cameraCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &cameraConstants, sizeof(Freeside::CameraConstants));
+        resources.directionalLightCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &dirLightConstants, sizeof(Freeside::Lights::DirectionalLightConstants));
+        resources.pointLightConstantsCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.pointLightConstants, sizeof(Freeside::Lights::PointLightConstants));
     }
 
     void D3D12ForwardLitGeometryRenderPass::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
     {
         for (const auto& batch : ctx.renderQueue->batches)
         {
-            const RenderObject& first = scene.renderObjects[ctx.renderQueue->sortedIndices[batch.firstSortedIndex]];
+            const Freeside::RenderObject& first = scene.renderObjects[ctx.renderQueue->sortedIndices[batch.firstSortedIndex]];
             const Material& material = batch.material.IsValid() ? m_materialLibrary->GetMaterialByHandle(batch.material) : m_materialLibrary->GetDefaultMaterial();
             D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &material.constants, sizeof(MaterialConstants));
             ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
@@ -78,9 +79,9 @@ namespace efg::d3d12
             InstanceData* instances = reinterpret_cast<InstanceData*>(instanceAllocation.cpu);
             for (uint32_t i = 0; i < batch.instanceCount; ++i)
             {
-                const RenderObject& object = scene.renderObjects[ctx.renderQueue->sortedIndices[batch.firstSortedIndex + i]];
+                const Freeside::RenderObject& object = scene.renderObjects[ctx.renderQueue->sortedIndices[batch.firstSortedIndex + i]];
                 instances[i] = {};
-                instances[i].world = efg::Math::Transpose(object.world);
+                instances[i].world = Freeside::Math::Transpose(object.world);
             }
 
             ctx.commandList->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::InstanceData), instanceAllocation.gpu);
@@ -95,13 +96,13 @@ namespace efg::d3d12
         if (!scene.pointLights.empty())
         {
             count = static_cast<uint32_t>(scene.pointLights.size());
-            GpuUploadBufferAllocation allocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, count * sizeof(Lights::GpuPointLight), StructuredBufferAlignment);
-            Lights::GpuPointLight* instances = reinterpret_cast<Lights::GpuPointLight*>(allocation.cpu);
+            GpuUploadBufferAllocation allocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, count * sizeof(Freeside::Lights::GpuPointLight), StructuredBufferAlignment);
+            Freeside::Lights::GpuPointLight* instances = reinterpret_cast<Freeside::Lights::GpuPointLight*>(allocation.cpu);
             resources.pointLightsSRV = allocation.gpu;
 
             for (uint32_t i = 0; i < count; ++i)
             {
-                const Lights::Point& light = (scene.pointLights)[i];
+                const Freeside::Lights::Point& light = (scene.pointLights)[i];
 
                 instances[i].positionAndRadius = {
                     light.position.x,
@@ -122,7 +123,7 @@ namespace efg::d3d12
         resources.pointLightConstants.pointLightCount = count;
     }
 
-    void D3D12ForwardLitGeometryRenderPass::DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, efg::MeshHandle handle, uint32_t instanceCount)
+    void D3D12ForwardLitGeometryRenderPass::DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, Freeside::MeshHandle handle, uint32_t instanceCount)
     {
         const GpuMesh& mesh = m_meshLibrary->Get(handle);
         commandList->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);

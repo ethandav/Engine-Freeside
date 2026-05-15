@@ -27,9 +27,6 @@
     <ClInclude Include="include\d3d12\libraries\D3D12ShaderLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\render\MeshData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\d3d12\factories\D3D12BufferFactory.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -76,9 +73,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\d3d12\libraries\D3D12MaterialLibrary.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\render\RenderTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="efg.h">
@@ -145,6 +139,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\d3d12\resources\D3D12GpuMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\passes\D3D12ForwardLitGeometryTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render\types\FramePacket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render\types\Handles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render\types\MeshTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render\types\RenderObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render\types\RendererDesc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render\types\MaterialTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

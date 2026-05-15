@@ -1,8 +1,9 @@
 #include "..\include\SceneManager.h"
+#include "..\..\efg.Renderer\include\render\Renderer.h"
 
 #include <stdexcept>
 
-namespace efg
+namespace Freeside
 {
 	namespace Scene
 	{
@@ -42,7 +43,7 @@ namespace efg
 			return scene->AddRenderObjectToRenderQueue(object);
 		}
 
-		void SceneManager::AddPointLightToScene(SceneHandle handle, efg::Lights::Point& light)
+		void SceneManager::AddPointLightToScene(SceneHandle handle, Lights::Point& light)
 		{
 			Scene* scene = GetSceneByHandle(handle);
 			return scene->AddPointLightToScene(light);
