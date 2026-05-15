@@ -189,7 +189,6 @@
     <ClCompile Include="src\render\ImageLoader.cpp" />
     <ClCompile Include="src\render\RenderQueue.cpp" />
     <ClCompile Include="src\render\RenderThread.cpp" />
-    <ClCompile Include="src\render\Lights.cpp" />
     <ClCompile Include="src\render\Camera.cpp" />
     <ClCompile Include="src\d3d12\factories\D3D12BufferFactory.cpp" />
     <ClCompile Include="src\d3d12\commands\D3D12CommandContext.cpp" />

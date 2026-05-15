@@ -28,4 +28,22 @@ namespace efg
 		Freeside::Math::Vec4 viewPosition;
 		Freeside::Math::Mat4 viewProjection;
 	};
+
+	struct DirectionalLightConstants
+	{
+		Freeside::Math::Vec4 directionAndIntensity; // xyz = direction, w = intensity
+		Freeside::Math::Vec4 colorAndPadding;       // rgb = color, w unused
+	};
+
+	struct PointLightConstants
+	{
+		uint32_t pointLightCount = 0;
+		float padding[3] = {};
+	};
+
+	struct GpuPointLight
+	{
+		Freeside::Math::Vec4 positionAndRadius;
+		Freeside::Math::Vec4 colorAndIntensity;
+	};
 }

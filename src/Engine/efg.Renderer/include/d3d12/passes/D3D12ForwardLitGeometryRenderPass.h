@@ -1,10 +1,12 @@
 #pragma once
+#include "..\..\..\include\d3d12\passes\D3D12ForwardLitGeometryTypes.h"
 
 #include "..\..\render\types\FramePacket.h"
 #include "..\..\render\types\Handles.h"
 
 #include "..\frame\D3D12FrameContext.h"
 #include "..\..\render\Lights.h"
+#include "..\..\render\Camera.h"
 
 #include <d3d12.h>
 
@@ -29,13 +31,15 @@ namespace efg::d3d12
 			D3D12_GPU_VIRTUAL_ADDRESS directionalLightCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS pointLightConstantsCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS pointLightsSRV = 0;
-			Freeside::Lights::PointLightConstants pointLightConstants = {};
+			PointLightConstants pointLightConstants = {};
 		};
 		void BeginPass(const FrameContext& ctx, const FramePacket& scene);
 		void UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
 		void BindPassResources(const FrameContext& ctx, ForwardLitPassResources& resources);
 		void UploadPointLights(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
 		void UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
+		CameraConstants BuildCameraConstants(const Freeside::Camera& camera);
+		DirectionalLightConstants BuildDirectionalLightConstants(const Freeside::Lights::Directional& light);
 		void DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene);
 		void DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, Freeside::MeshHandle handle, uint32_t instanceCount);
 

@@ -1,5 +1,4 @@
 #include "..\..\..\include\d3d12\passes\D3D12ForwardLitGeometryRenderPass.h"
-#include "..\..\..\include\d3d12\passes\D3D12ForwardLitGeometryTypes.h"
 #include "..\..\..\include\d3d12\libraries\D3D12GraphicsPipelineLibrary.h"
 #include "..\..\..\include\d3d12\libraries\D3D12MeshLibrary.h"
 #include "..\..\..\include\d3d12\libraries\D3D12TextureLibrary.h"
@@ -54,15 +53,29 @@ namespace efg::d3d12
 
     void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
     {
+        CameraConstants cameraConstants = BuildCameraConstants(scene.camera);
+        DirectionalLightConstants dirLightConstants = BuildDirectionalLightConstants(scene.directionalLight);
+        resources.cameraCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &cameraConstants, sizeof(CameraConstants));
+        resources.directionalLightCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &dirLightConstants, sizeof(DirectionalLightConstants));
+        resources.pointLightConstantsCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.pointLightConstants, sizeof(PointLightConstants));
+    }
+
+    CameraConstants D3D12ForwardLitGeometryRenderPass::BuildCameraConstants(const Freeside::Camera& camera)
+    {
         CameraConstants cameraConstants = {};
-        cameraConstants.viewProjection = Freeside::Math::Transpose(scene.camera.GetViewProjectionMatrix());
-        Freeside::Math::Vec3 camPosition = scene.camera.GetPosition();
+        cameraConstants.viewProjection = Freeside::Math::Transpose(camera.GetViewProjectionMatrix());
+        Freeside::Math::Vec3 camPosition = camera.GetPosition();
         cameraConstants.viewPosition = Freeside::Math::Vec4(camPosition.x, camPosition.y, camPosition.z, 0.0f);
 
-        Freeside::Lights::DirectionalLightConstants dirLightConstants = scene.directionalLight.BuildDirectionalLightConstants();
-        resources.cameraCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &cameraConstants, sizeof(CameraConstants));
-        resources.directionalLightCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &dirLightConstants, sizeof(Freeside::Lights::DirectionalLightConstants));
-        resources.pointLightConstantsCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.pointLightConstants, sizeof(Freeside::Lights::PointLightConstants));
+        return cameraConstants;
+    }
+
+    DirectionalLightConstants D3D12ForwardLitGeometryRenderPass::BuildDirectionalLightConstants(const Freeside::Lights::Directional& light)
+    {
+        DirectionalLightConstants constants = {};
+        constants.directionAndIntensity = {light.direction.x, light.direction.y, light.direction.z, 1.0f};
+        constants.colorAndPadding = {light.color.x, light.color.y, light.color.z, 1.0f};
+        return constants;
     }
 
     void D3D12ForwardLitGeometryRenderPass::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
@@ -100,27 +113,15 @@ namespace efg::d3d12
         if (!scene.pointLights.empty())
         {
             count = static_cast<uint32_t>(scene.pointLights.size());
-            GpuUploadBufferAllocation allocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, count * sizeof(Freeside::Lights::GpuPointLight), StructuredBufferAlignment);
-            Freeside::Lights::GpuPointLight* instances = reinterpret_cast<Freeside::Lights::GpuPointLight*>(allocation.cpu);
+            GpuUploadBufferAllocation allocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, count * sizeof(GpuPointLight), StructuredBufferAlignment);
+            GpuPointLight* instances = reinterpret_cast<GpuPointLight*>(allocation.cpu);
             resources.pointLightsSRV = allocation.gpu;
 
             for (uint32_t i = 0; i < count; ++i)
             {
                 const Freeside::Lights::Point& light = (scene.pointLights)[i];
-
-                instances[i].positionAndRadius = {
-                    light.position.x,
-                    light.position.y,
-                    light.position.z,
-                    light.radius
-                };
-
-                instances[i].colorAndIntensity = {
-                    light.color.x,
-                    light.color.y,
-                    light.color.z,
-                    light.intensity
-                };
+                instances[i].positionAndRadius = {light.position.x, light.position.y, light.position.z, light.radius};
+                instances[i].colorAndIntensity = {light.color.x, light.color.y, light.color.z, light.intensity};
             }
         }
 

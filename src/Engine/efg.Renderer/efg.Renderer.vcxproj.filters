@@ -209,9 +209,6 @@
     <ClCompile Include="src\render\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\render\Lights.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\render\RenderThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
