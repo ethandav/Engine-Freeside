@@ -54,9 +54,13 @@ namespace efg::d3d12
 
     void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
     {
-        Freeside::CameraConstants cameraConstants = scene.camera.BuildCameraConstants();
+        CameraConstants cameraConstants = {};
+        cameraConstants.viewProjection = Freeside::Math::Transpose(scene.camera.GetViewProjectionMatrix());
+        Freeside::Math::Vec3 camPosition = scene.camera.GetPosition();
+        cameraConstants.viewPosition = Freeside::Math::Vec4(camPosition.x, camPosition.y, camPosition.z, 0.0f);
+
         Freeside::Lights::DirectionalLightConstants dirLightConstants = scene.directionalLight.BuildDirectionalLightConstants();
-        resources.cameraCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &cameraConstants, sizeof(Freeside::CameraConstants));
+        resources.cameraCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &cameraConstants, sizeof(CameraConstants));
         resources.directionalLightCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &dirLightConstants, sizeof(Freeside::Lights::DirectionalLightConstants));
         resources.pointLightConstantsCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.pointLightConstants, sizeof(Freeside::Lights::PointLightConstants));
     }

@@ -4,12 +4,6 @@
 
 namespace Freeside
 {
-    struct CameraConstants
-    {
-        Freeside::Math::Vec4 viewPosition;
-        Freeside::Math::Mat4 viewProjection;
-    };
-
     class Camera
     {
     public:
@@ -18,7 +12,6 @@ namespace Freeside
         void SetPosition(const Freeside::Math::Vec3& position);
         void SetTarget(const Freeside::Math::Vec3& target);
         void SetUp(const Freeside::Math::Vec3& up);
-        CameraConstants BuildCameraConstants() const;
 
         void LookAt(const Freeside::Math::Vec3& position, const Freeside::Math::Vec3& target, const Freeside::Math::Vec3& up = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f));
 

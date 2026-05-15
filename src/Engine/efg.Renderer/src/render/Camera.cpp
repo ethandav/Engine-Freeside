@@ -17,15 +17,6 @@ namespace Freeside
         m_up = up;
     }
 
-    CameraConstants Camera::BuildCameraConstants() const
-    {
-        CameraConstants constants = {};
-        constants.viewProjection = Transpose(GetViewProjectionMatrix());
-        Math::Vec3 camPosition = GetPosition();
-        constants.viewPosition = Math::Vec4(camPosition.x, camPosition.y, camPosition.z, 0.0f);
-        return constants;
-    }
-
     void Camera::LookAt(const Math::Vec3& position, const Math::Vec3& target, const Math::Vec3& up)
     {
         m_position = position;

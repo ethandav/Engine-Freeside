@@ -22,4 +22,10 @@ namespace efg
 		MaterialConstants constants = {};
 		Freeside::TextureHandle baseColorTexture = {};
 	};
+
+	struct CameraConstants
+	{
+		Freeside::Math::Vec4 viewPosition;
+		Freeside::Math::Mat4 viewProjection;
+	};
 }
