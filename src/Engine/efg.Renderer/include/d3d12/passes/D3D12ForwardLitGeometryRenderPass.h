@@ -33,7 +33,6 @@ namespace efg::d3d12
 			D3D12_GPU_VIRTUAL_ADDRESS pointLightsSRV = 0;
 			PointLightConstants pointLightConstants = {};
 		};
-		void BeginPass(const FrameContext& ctx, const FramePacket& scene);
 		void UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
 		void BindPassResources(const FrameContext& ctx, ForwardLitPassResources& resources);
 		void UploadPointLights(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);

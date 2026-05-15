@@ -24,15 +24,10 @@ namespace efg::d3d12
     void D3D12ForwardLitGeometryRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene)
 	{
         ForwardLitPassResources resources = {};
-        BeginPass(ctx, scene);
         UploadPassResources(ctx, scene, resources);
         BindPassResources(ctx, resources);
         DrawAllRenderObjects(ctx, scene);
 	}
-
-    void D3D12ForwardLitGeometryRenderPass::BeginPass(const FrameContext& ctx, const FramePacket& scene)
-    {
-    }
 
     void D3D12ForwardLitGeometryRenderPass::UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
     {
@@ -87,7 +82,6 @@ namespace efg::d3d12
             D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &material.constants, sizeof(MaterialConstants));
             ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
 
-            //const GpuTexture2D& baseColorTexture = material.baseColorTexture.IsValid() ? m_textureLibrary->GetTextureByHandle(material.baseColorTexture) : m_textureLibrary->GetDefaultWhiteTexture();
             const GpuTexture2D& baseColorTexture = m_textureLibrary->GetTextureByHandle(material.baseColorTexture);
             ctx.commandList->SetGraphicsRootDescriptorTable(7, baseColorTexture.gpuSrv);
 
