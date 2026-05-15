@@ -1,12 +1,10 @@
 #pragma once
 #include "..\..\..\include\d3d12\passes\D3D12ForwardLitGeometryTypes.h"
-
 #include "..\..\render\types\FramePacket.h"
 #include "..\..\render\types\Handles.h"
-
-#include "..\frame\D3D12FrameContext.h"
 #include "..\..\render\Lights.h"
 #include "..\..\render\Camera.h"
+#include "..\frame\D3D12FrameContext.h"
 
 #include <d3d12.h>
 
