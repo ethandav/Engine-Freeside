@@ -11,6 +11,7 @@ namespace efg::d3d12
 		MaterialConstants materialConstants{
 			Freeside::Math::Vec4(mat.baseColor.x, mat.baseColor.y, mat.baseColor.z, 1.0f),
 			Freeside::Math::Vec4(mat.specular.x, mat.specular.y, 0.0f, 0.0f),
+			Freeside::Math::Vec4(mat.uvScale.x, mat.uvScale.y, 0.0f, 0.0f)
 		};
 		material.constants = materialConstants;
 		material.baseColorTexture = mat.baseColorTexture2D;

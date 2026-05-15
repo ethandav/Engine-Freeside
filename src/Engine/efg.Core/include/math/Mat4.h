@@ -155,6 +155,28 @@ namespace Freeside
             );
         }
 
+        inline Mat4 RotationX(float radians)
+        {
+            const float c = std::cos(radians);
+            const float s = std::sin(radians);
+
+            return Mat4(
+                1.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, c, -s, 0.0f,
+                0.0f, s, c, 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
+            );
+        }
+
+        inline Mat4 TransformMatrix(const Vec3 position, const Vec3 rotation, const Vec3 scale)
+        {
+            Mat4 scaleMatrix = Scale(scale.x, scale.y, scale.z);
+            Mat4 rotationMatrix = RotationZ(rotation.z) * RotationX(rotation.x) * RotationY(rotation.y);
+            Mat4 translationMatrix = Translation(position.x, position.y, position.z);
+
+            return translationMatrix * rotationMatrix * scaleMatrix;
+        }
+
         inline Mat4 LookAtLH(const Vec3& eye, const Vec3& target, const Vec3& up)
         {
             const Vec3 zAxis = Normalize(target - eye);        // forward

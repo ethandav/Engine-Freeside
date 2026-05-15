@@ -43,6 +43,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MeshData cubeMeshData = Freeside::Shapes::Cube().mesh;
 	Freeside::MeshData sphereMeshData = Freeside::Shapes::Sphere().mesh;
 	Freeside::MeshData pyramidMeshData = Freeside::Shapes::Pyramid().mesh;
+	Freeside::MeshData planeMeshData = Freeside::Shapes::Plane().mesh;
 
 	window.Create(hInstance, rendererDesc.width, rendererDesc.height, L"Ethan's Framework (for) Graphics");
 	window.Show(nCmdShow);
@@ -54,10 +55,12 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
 	Freeside::MeshHandle sphereMeshHandle = renderer.CreateMesh(sphereMeshData);
 	Freeside::MeshHandle pyramidMeshHandle = renderer.CreateMesh(pyramidMeshData);
+	Freeside::MeshHandle planeMeshHandle = renderer.CreateMesh(planeMeshData);
 	
 	Freeside::TextureHandle earthTexture = renderer.RegisterTexture2D(L"assets/textures/earth.jpeg");
 	Freeside::TextureHandle crateTexture = renderer.RegisterTexture2D(L"assets/textures/crate.png");
 	Freeside::TextureHandle pyramidTexture = renderer.RegisterTexture2D(L"assets/textures/pyramid.jpg");
+	Freeside::TextureHandle grassTexture = renderer.RegisterTexture2D(L"assets/textures/grass.jpg");
 
 	Freeside::MaterialDesc earthMaterial;
 	earthMaterial.baseColor = Freeside::Math::Vec3(0.0f, 0.0f, 1.0f);
@@ -78,6 +81,13 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	pyramidMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	pyramidMaterial.baseColorTexture2D = pyramidTexture;
 	Freeside::MaterialHandle pyramidMaterialHandle = renderer.RegisterMaterial(pyramidMaterial);
+
+	Freeside::MaterialDesc grassMaterial;
+	grassMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
+	grassMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
+	grassMaterial.uvScale = Freeside::Math::Vec2(10.0f, 10.0f);
+	grassMaterial.baseColorTexture2D = grassTexture;
+	Freeside::MaterialHandle grassMaterialHandle = renderer.RegisterMaterial(grassMaterial);
 
 	std::mt19937 rng{ std::random_device{}() };
 
@@ -106,45 +116,64 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::RenderObject object1;
 	Freeside::RenderObject object2;
 	Freeside::RenderObject object3;
+	Freeside::RenderObject object4;
 	Freeside::RenderObject* pObject1;
 	Freeside::RenderObject* pObject2;
 	Freeside::RenderObject* pObject3;
+	Freeside::RenderObject* pObject4;
 	Freeside::Scene::SceneRenderObjectHandle hObject1;
 	Freeside::Scene::SceneRenderObjectHandle hObject2;
 	Freeside::Scene::SceneRenderObjectHandle hObject3;
+	Freeside::Scene::SceneRenderObjectHandle hObject4;
 	object1.mesh = cubeMeshHandle;
 	object1.material = crateMaterialHandle;
-	object1.world = Freeside::Math::Translation(-1.0f, 0.0f, 0.0f);
-	object1.initialTransform = Freeside::Math::Translation(-1.0f, 0.0f, 0.0f);
+	object1.transform.position = Freeside::Math::Vec3(-1.0f, 0.0f, 0.0f);
+	object1.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+	object1.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	object1.world = Freeside::Math::TransformMatrix(object1.transform.position, object1.transform.rotation, object1.transform.scale);
+	object1.initialTransform = object1.world;
 	object1.name = L"Cube";
+
 	object2.mesh = pyramidMeshHandle;
 	object2.material = pyramidMaterialHandle;
 	object2.world = Freeside::Math::Translation(1.0f, 0.0f, 0.0f);
 	object2.initialTransform = Freeside::Math::Translation(1.0f, 0.0f, 0.0f);
 	object2.name = L"Pyramid";
+
 	object3.mesh = sphereMeshHandle;
 	object3.material = earthMaterialHandle;
 	object3.world = Freeside::Math::Translation(0.0f, 1.0f, 0.0f);
 	object3.initialTransform = Freeside::Math::Translation(0.0f, 1.0f, 0.0f);
 	object3.name = L"Sphere";
 
+	object4.mesh = planeMeshHandle;
+	object4.material = grassMaterialHandle;
+	object4.transform.position = Freeside::Math::Vec3(0.0f, -0.5f, 0.0f);
+	object4.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+	object4.transform.scale = Freeside::Math::Vec3(10.0f, 10.0f, 10.0f);
+	object4.world = Freeside::Math::TransformMatrix(object4.transform.position, object4.transform.rotation, object4.transform.scale);
+	object4.initialTransform = object4.world;
+	object4.name =  L"Plane";
+
 
 	hObject1 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object1);
 	hObject2 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object2);
 	hObject3 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object3);
+	hObject4 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object4);
 	pObject1 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject1);
 	pObject2 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject2);
 	pObject3 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject3);
+	pObject4 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject4);
 
 
 	Freeside::Lights::Point pointLight1;
-	pointLight1.color = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
+	pointLight1.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
 	pointLight1.intensity = 2.0f;
 	pointLight1.position = Freeside::Math::Vec3(-1.0f, 0.0f, -2.0f);
 	pointLight1.radius = 5.0f;
 
-	Freeside::PointLightHandle hPointLight1 = sceneManager.AddPointLightToScene(testSceneHandle, pointLight1);
-	Freeside::Lights::Point* pPointLight1 = sceneManager.GetPointLightByHandle(testSceneHandle, hPointLight1);
+	//Freeside::PointLightHandle hPointLight1 = sceneManager.AddPointLightToScene(testSceneHandle, pointLight1);
+	//Freeside::Lights::Point* pPointLight1 = sceneManager.GetPointLightByHandle(testSceneHandle, hPointLight1);
 
 	float angle = 0.0f;
 	float speed = 1.0f;
@@ -159,14 +188,16 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 		Freeside::Math::Mat4 rotation = Freeside::Math::RotationY(angle);
 
-		pPointLight1->color = HSVtoRGB(hue, 1.0f, 1.0f);
+		//pPointLight1->color = HSVtoRGB(hue, 1.0f, 1.0f);
 
+		/*
 		Freeside::Math::Mat4 translation1 = object1.initialTransform;
 		pObject1->world = translation1 * rotation;
         Freeside::Math::Mat4 translation2 = object2.initialTransform;
         pObject2->world = translation2 * rotation;
         Freeside::Math::Mat4 translation3 = object3.initialTransform;
         pObject3->world = translation3 * rotation;
+		*/
 
 		window.PollEvents();
 		sceneManager.RenderScene(testSceneHandle);

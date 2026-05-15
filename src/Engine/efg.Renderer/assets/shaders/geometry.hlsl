@@ -21,6 +21,7 @@ cbuffer MaterialCB : register(b3)
 {
     float4 BaseColor;
     float4 Specular;
+    float2 uvScale;
 }
 
 struct PointLight
@@ -107,7 +108,8 @@ float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, flo
 
 float4 PSMain(VSOutput input) : SV_TARGET
 {
-    float4 sampledBaseColor = gBaseColorTexture.Sample(gLinearSampler, input.uv);
+    float2 uv = input.uv * uvScale;
+    float4 sampledBaseColor = gBaseColorTexture.Sample(gLinearSampler, uv);
     float3 normal = normalize(input.normalWS);
     float3 viewDir = normalize(ViewPosition.xyz - input.worldPosition);
     float3 lightDir = normalize(-LightDirectionAndIntensity.xyz);

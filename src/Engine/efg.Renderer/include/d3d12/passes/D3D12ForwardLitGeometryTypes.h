@@ -1,5 +1,6 @@
 #pragma once
 
+#include "..\..\..\..\efg.Core\include\math\Vec2.h"
 #include "..\..\..\..\efg.Core\include\math\Vec4.h"
 #include "..\..\..\..\efg.Core\include\math\Mat4.h"
 #include "..\..\render\types\Handles.h"
@@ -15,6 +16,7 @@ namespace efg
 	{
 		Freeside::Math::Vec4 baseColor;
 		Freeside::Math::Vec4 specular;
+		Freeside::Math::Vec4 uvScale;
 	};
 
 	struct Material
