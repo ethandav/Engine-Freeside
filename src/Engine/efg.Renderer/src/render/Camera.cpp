@@ -36,6 +36,16 @@ namespace Freeside
         m_farZ = farZ;
     }
 
+    void Camera::SetOrthographic(float width, float height, float nearZ, float farZ)
+    {
+        m_projectionType = ProjectionType::Orthographic;
+
+        m_orthoWidth = width;
+        m_orthoHeight = height;
+        m_nearZ = nearZ;
+        m_farZ = farZ;
+    }
+
     const Math::Vec3& Camera::GetPosition() const
     {
         return m_position;
@@ -78,6 +88,15 @@ namespace Freeside
 
     Math::Mat4 Camera::GetProjectionMatrix() const
     {
+        if (m_projectionType == ProjectionType::Orthographic)
+        {
+            return Math::OrthographicLH(
+                m_orthoWidth,
+                m_orthoHeight,
+                m_nearZ,
+                m_farZ);
+        }
+
         return Math::PerspectiveFovLH(
             m_fovYRadians,
             m_aspectRatio,

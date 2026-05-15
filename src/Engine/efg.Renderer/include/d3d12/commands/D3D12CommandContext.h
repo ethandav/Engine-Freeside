@@ -20,7 +20,7 @@ namespace efg::d3d12
 		void ExecuteDirect();
 		void ExecuteCopy();
 		void SetViewportAndScissor(const D3D12_VIEWPORT& m_viewport, const D3D12_RECT& m_scissorRect);
-		void SetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, const D3D12_CPU_DESCRIPTOR_HANDLE& dsvHandle);
+		void SetRenderTarget(uint32_t numDescriptors, const D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandle, const D3D12_CPU_DESCRIPTOR_HANDLE* dsvHandle);
 		void ClearRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, const float clearColor[]);
 		void ClearDepthStencil(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, float depth, uint8_t stencil);
 	private:

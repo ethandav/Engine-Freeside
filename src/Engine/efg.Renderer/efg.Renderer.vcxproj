@@ -142,6 +142,8 @@
     <ClInclude Include="include\d3d12\passes\D3D12ForwardLitGeometryRenderPass.h" />
     <ClInclude Include="include\d3d12\factories\D3D12TextrureFactory.h" />
     <ClInclude Include="include\d3d12\passes\D3D12ForwardLitGeometryTypes.h" />
+    <ClInclude Include="include\d3d12\passes\D3D12ShadowMapRenderPass.h" />
+    <ClInclude Include="include\d3d12\passes\D3D12ShadowMapRenderPassTypes.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuAlignment.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuArena.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuMesh.h" />
@@ -185,6 +187,7 @@
     <ClCompile Include="src\d3d12\libraries\D3D12MaterialLibrary.cpp" />
     <ClCompile Include="src\d3d12\factories\D3D12ResourceFactory.cpp" />
     <ClCompile Include="src\d3d12\libraries\D3D12TextureLibrary.cpp" />
+    <ClCompile Include="src\d3d12\passes\D3D12ShadowMapRenderPass.cpp" />
     <ClCompile Include="src\render\types\FormatUtils.cpp" />
     <ClCompile Include="src\render\ImageLoader.cpp" />
     <ClCompile Include="src\render\RenderQueue.cpp" />

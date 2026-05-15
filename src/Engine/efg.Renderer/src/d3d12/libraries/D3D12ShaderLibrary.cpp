@@ -31,17 +31,10 @@ namespace efg::d3d12
     void D3D12ShaderLibrary::CompileAllShaders()
     {
         AddShader(
-            ShaderId::TriangleVS,
-            L"..\\Engine\\efg.Renderer\\assets\\shaders\\triangle.hlsl",
+            ShaderId::ShadowMapVS,
+            L"..\\Engine\\efg.Renderer\\assets\\shaders\\shadowMap.hlsl",
             "VSMain",
             "vs_5_0"
-        );
-
-        AddShader(
-            ShaderId::TrianglePS,
-            L"..\\Engine\\efg.Renderer\\assets\\shaders\\triangle.hlsl",
-            "PSMain",
-            "ps_5_0"
         );
 
         AddShader(

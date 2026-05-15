@@ -23,6 +23,7 @@ namespace efg::d3d12
     {
         Microsoft::WRL::ComPtr<ID3D12Resource> resource;
         D3D12_CPU_DESCRIPTOR_HANDLE dsv = {};
+        D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
         DXGI_FORMAT format = DXGI_FORMAT_D32_FLOAT;
     };
 }

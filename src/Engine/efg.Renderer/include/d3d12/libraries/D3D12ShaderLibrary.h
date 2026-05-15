@@ -10,8 +10,7 @@ namespace efg::d3d12
 {
     enum class ShaderId : uint32_t
     {
-        TriangleVS,
-        TrianglePS,
+        ShadowMapVS,
 
         GeometryVS,
         GeometryPS,

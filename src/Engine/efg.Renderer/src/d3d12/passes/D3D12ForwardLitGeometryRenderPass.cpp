@@ -21,11 +21,33 @@ namespace efg::d3d12
         m_bufferFactory = bufferFactory;
     }
 
-    void D3D12ForwardLitGeometryRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene)
+    void D3D12ForwardLitGeometryRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene, const GpuDepthBuffer& shadowMap)
 	{
         ForwardLitPassResources resources = {};
+        resources.shadowMapSRV = shadowMap.gpuSrv;
+
+        Freeside::Camera lightCamera;
+        Freeside::Math::Vec3 sceneCenter = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+        Freeside::Math::Vec3 lightDir = Freeside::Math::Normalize(scene.directionalLight.direction);
+        float lightDistance = 50.0f;
+        Freeside::Math::Vec3 lightPosition = sceneCenter - lightDir * lightDistance;
+
+        float orthoWidth = 40.0f;
+        float orthoHeight = 40.0f;
+        float nearZ = 0.1f;
+        float farZ = 100.0f;
+        lightCamera.LookAt(lightPosition, sceneCenter, Freeside::Math::Vec3(0.0f, 1.0f, 0.0f));
+
+        lightCamera.SetOrthographic(orthoWidth, orthoHeight, nearZ, farZ);
+        Freeside::Math::Mat4 viewProjection = Freeside::Math::Transpose(lightCamera.GetViewProjectionMatrix());
+        ShadowConstants shadowConstants = {};
+        shadowConstants.LightViewProjection = viewProjection;
+        shadowConstants.ShadowParams = Freeside::Math::Vec4(0.001f, 1.0f, 0.0f, 0.0f);
+        resources.shadowCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &shadowConstants, sizeof(ShadowConstants));
+
         UploadPassResources(ctx, scene, resources);
         BindPassResources(ctx, resources);
+        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Shadow), resources.shadowCB);
         DrawAllRenderObjects(ctx, scene);
 	}
 
@@ -44,6 +66,7 @@ namespace efg::d3d12
         ctx.commandList->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv), resources.pointLightsSRV);
         ID3D12DescriptorHeap* heaps[] = { m_descriptorContext->GetCBVSRVUAVHeap() };
         ctx.commandList->SetDescriptorHeaps(_countof(heaps), heaps);
+        ctx.commandList->SetGraphicsRootDescriptorTable(8, resources.shadowMapSRV);
     }
 
     void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)

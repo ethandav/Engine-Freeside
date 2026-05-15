@@ -11,6 +11,7 @@ namespace efg::d3d12
     {
         m_graphicsContext = device;
         CreateForwarLitGeometryPipeline(shaderLibrary);
+        CreateShadowMapPipeline(shaderLibrary);
     }
 
     const GraphicsPipelineState& D3D12GraphicsPipelineLibary::Get(PipelineId id) const
@@ -25,10 +26,10 @@ namespace efg::d3d12
         return m_graphicsPipelines[index];
     }
 
-    void D3D12GraphicsPipelineLibary::CreateRootSignature(ID3D12RootSignature** rootSignature)
+    void D3D12GraphicsPipelineLibary::CreateForwardLitRootSignature(ID3D12RootSignature** rootSignature)
     {
         CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-        CD3DX12_ROOT_PARAMETER rootParameters[8] = {};
+        CD3DX12_ROOT_PARAMETER rootParameters[9] = {};
         ComPtr<ID3DBlob> signature;
         ComPtr<ID3DBlob> error;
 
@@ -41,7 +42,7 @@ namespace efg::d3d12
         );
 
         rootParameters[0].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), 0, D3D12_SHADER_VISIBILITY_ALL);
-        rootParameters[1].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Object), 0, D3D12_SHADER_VISIBILITY_VERTEX);
+        rootParameters[1].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Shadow), 0, D3D12_SHADER_VISIBILITY_PIXEL);
         rootParameters[2].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), 0, D3D12_SHADER_VISIBILITY_PIXEL);
         rootParameters[3].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), 0, D3D12_SHADER_VISIBILITY_PIXEL);
         rootParameters[4].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightConstants), 0, D3D12_SHADER_VISIBILITY_PIXEL);
@@ -53,11 +54,63 @@ namespace efg::d3d12
         baseColorTextureRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
         rootParameters[7].InitAsDescriptorTable(1, &baseColorTextureRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
+        CD3DX12_DESCRIPTOR_RANGE shadowMapRange = {};
+        shadowMapRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
+
+        rootParameters[8].InitAsDescriptorTable(
+            1,
+            &shadowMapRange,
+            D3D12_SHADER_VISIBILITY_PIXEL
+        );
+
+        D3D12_STATIC_SAMPLER_DESC shadowSampler = {};
+        shadowSampler.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+        shadowSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        shadowSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        shadowSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        shadowSampler.MipLODBias = 0.0f;
+        shadowSampler.MaxAnisotropy = 0;
+        shadowSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+        shadowSampler.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
+        shadowSampler.MinLOD = 0.0f;
+        shadowSampler.MaxLOD = D3D12_FLOAT32_MAX;
+        shadowSampler.ShaderRegister = 1;
+        shadowSampler.RegisterSpace = 0;
+        shadowSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+        D3D12_STATIC_SAMPLER_DESC staticSamplers[] =
+        {
+            linearWrapSampler,
+            shadowSampler
+        };
+
         rootSignatureDesc.Init(
             _countof(rootParameters),
             rootParameters,
-            1,
-            &linearWrapSampler,
+            _countof(staticSamplers),
+            staticSamplers,
+            D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
+        );
+
+        D3D12_THROW_IF_FAILED(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
+        D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(rootSignature)));
+    }
+
+    void D3D12GraphicsPipelineLibary::CreateShadowMapRootSignature(ID3D12RootSignature** rootSignature)
+    {
+        CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+        CD3DX12_ROOT_PARAMETER rootParameters[2] = {};
+        ComPtr<ID3DBlob> signature;
+        ComPtr<ID3DBlob> error;
+
+        rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+        rootParameters[1].InitAsShaderResourceView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+
+        rootSignatureDesc.Init(
+            _countof(rootParameters),
+            rootParameters,
+            0,
+            nullptr,
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
         );
 
@@ -80,7 +133,7 @@ namespace efg::d3d12
     void D3D12GraphicsPipelineLibary::CreateForwarLitGeometryPipeline(const D3D12ShaderLibrary& shaderLibrary)
     {
         GraphicsPipelineState pipeline = {};
-        CreateRootSignature(pipeline.rootSignature.GetAddressOf());
+        CreateForwardLitRootSignature(pipeline.rootSignature.GetAddressOf());
         D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
         {
             { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -111,6 +164,40 @@ namespace efg::d3d12
         D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipeline.pipelineState)));
 
         AddGraphicsPipeline(PipelineId::ForwardLitGeometry, pipeline);
+    }
+
+    void D3D12GraphicsPipelineLibary::CreateShadowMapPipeline(const D3D12ShaderLibrary& shaderLibrary)
+    {
+        GraphicsPipelineState pipeline = {};
+        CreateShadowMapRootSignature(pipeline.rootSignature.GetAddressOf());
+        D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
+        {
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+        };
+
+        const ShaderBytecode& vertexShader = shaderLibrary.Get(ShaderId::ShadowMapVS);
+
+        D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+        psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+        psoDesc.pRootSignature = pipeline.rootSignature.Get();
+        psoDesc.VS = vertexShader.GetD3D12Bytecode();
+        psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+        psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+        psoDesc.DepthStencilState.DepthEnable = TRUE;
+        psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+        psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+        psoDesc.DepthStencilState.StencilEnable = FALSE;
+        psoDesc.SampleMask = UINT_MAX;
+        psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        psoDesc.NumRenderTargets = 0;
+        psoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
+        psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+        psoDesc.SampleDesc.Count = 1;
+        D3D12_THROW_IF_FAILED(m_graphicsContext->GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pipeline.pipelineState)));
+
+        AddGraphicsPipeline(PipelineId::ShadowMap, pipeline);
     }
 
     void D3D12GraphicsPipelineLibary::BindPipeline(ID3D12GraphicsCommandList* commandList, PipelineId pipelineId)

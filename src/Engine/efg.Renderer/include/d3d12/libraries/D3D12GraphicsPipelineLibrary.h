@@ -14,13 +14,14 @@ namespace efg::d3d12
 	enum class PipelineId : uint32_t
 	{
 		ForwardLitGeometry,
+		ShadowMap,
 		Count
 	};
 
 	enum class ForwardLitRootParameter : uint32_t
 	{
 		Camera = 0,
-		Object = 1,
+		Shadow = 1,
 		DirectionalLight = 2,
 		Material = 3,
 		PointLightConstants = 4,
@@ -44,10 +45,12 @@ namespace efg::d3d12
 
 	private:
 		const GraphicsPipelineState& Get(PipelineId id) const;
-		void CreateRootSignature(ID3D12RootSignature** rootSignature);
+		void CreateForwardLitRootSignature(ID3D12RootSignature** rootSignature);
+		void CreateShadowMapRootSignature(ID3D12RootSignature** rootSignature);
 		void CreatePipelineStateObject();
 		void AddGraphicsPipeline(PipelineId id, GraphicsPipelineState pipeline);
 		void CreateForwarLitGeometryPipeline(const D3D12ShaderLibrary& shaderLibrary);
+		void CreateShadowMapPipeline(const D3D12ShaderLibrary& shaderLibrary);
 
 		D3D12Context* m_graphicsContext = nullptr;
 		std::array<GraphicsPipelineState, static_cast<size_t>(PipelineId::Count)> m_graphicsPipelines;

@@ -5,6 +5,7 @@
 #include "..\..\render\Lights.h"
 #include "..\..\render\Camera.h"
 #include "..\frame\D3D12FrameContext.h"
+#include "..\..\d3d12\resources\D3D12GpuTexture.h"
 
 #include <d3d12.h>
 
@@ -21,14 +22,16 @@ namespace efg::d3d12
 	{
 	public:
 		void Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12TextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory);
-		void Execute(const FrameContext& ctx, const FramePacket& scene);
+		void Execute(const FrameContext& ctx, const FramePacket& scene, const GpuDepthBuffer& shadowMap);
 	private:
 		struct ForwardLitPassResources
 		{
 			D3D12_GPU_VIRTUAL_ADDRESS cameraCB = 0;
+			D3D12_GPU_VIRTUAL_ADDRESS shadowCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS directionalLightCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS pointLightConstantsCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS pointLightsSRV = 0;
+			D3D12_GPU_DESCRIPTOR_HANDLE shadowMapSRV = {};
 			PointLightConstants pointLightConstants = {};
 		};
 		void UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);

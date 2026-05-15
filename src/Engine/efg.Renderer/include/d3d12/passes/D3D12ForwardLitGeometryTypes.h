@@ -48,4 +48,10 @@ namespace efg
 		Freeside::Math::Vec4 positionAndRadius;
 		Freeside::Math::Vec4 colorAndIntensity;
 	};
+
+	struct ShadowConstants
+	{
+		Freeside::Math::Mat4 LightViewProjection;
+		Freeside::Math::Vec4 ShadowParams; // x = bias, y = strength, etc.
+	};
 }

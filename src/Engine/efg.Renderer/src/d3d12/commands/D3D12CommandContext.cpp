@@ -82,9 +82,9 @@ namespace efg::d3d12
         m_directCommandList->RSSetScissorRects(1, &m_scissorRect);
     }
 
-    void D3D12DirectCommandContext::SetRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& renderTargetDescriptorHandle, const D3D12_CPU_DESCRIPTOR_HANDLE& dsvHandle)
+    void D3D12DirectCommandContext::SetRenderTarget(uint32_t numDescriptors, const D3D12_CPU_DESCRIPTOR_HANDLE* renderTargetDescriptorHandle, const D3D12_CPU_DESCRIPTOR_HANDLE* dsvHandle)
     {
-        m_directCommandList->OMSetRenderTargets(1, &renderTargetDescriptorHandle, FALSE, &dsvHandle);
+        m_directCommandList->OMSetRenderTargets(numDescriptors, renderTargetDescriptorHandle, FALSE, dsvHandle);
     }
 
     void D3D12DirectCommandContext::ClearRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, const float clearColor[])
