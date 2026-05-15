@@ -40,6 +40,7 @@ namespace Freeside
 			SceneRenderObjectHandle AddRenderObjectToRenderQueue(RenderObject object);
 			PointLightHandle AddPointLightToScene(Lights::Point light);
 			RenderObject* GetRenderObjectByHandle(SceneRenderObjectHandle handle);
+			Lights::Directional* GetDirectionalLight();
 			Lights::Point* GetPointLightByHandle(PointLightHandle handle);
 			void CreateScenefromDefault(float aspectRatio);
 			void AddCamera(Camera camera);

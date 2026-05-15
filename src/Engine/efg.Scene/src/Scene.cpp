@@ -51,6 +51,11 @@ namespace Freeside
 			return &m_renderObjectQueue[handle.index];
 		}
 
+		Lights::Directional* Scene::GetDirectionalLight()
+		{
+			return &m_dirLight;
+		}
+
 		Lights::Point* Scene::GetPointLightByHandle(PointLightHandle handle)
 		{
 			if (!handle.IsValid() || handle.index >= m_pointLights.size())

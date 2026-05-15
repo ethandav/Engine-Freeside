@@ -136,8 +136,10 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	object2.mesh = pyramidMeshHandle;
 	object2.material = pyramidMaterialHandle;
-	object2.world = Freeside::Math::Translation(1.0f, 0.0f, 0.0f);
-	object2.initialTransform = Freeside::Math::Translation(1.0f, 0.0f, 0.0f);
+	object2.transform.position = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
+	object2.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+	object2.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	object2.world = Freeside::Math::TransformMatrix(object2.transform.position, object2.transform.rotation, object2.transform.scale);
 	object2.name = L"Pyramid";
 
 	object3.mesh = sphereMeshHandle;
@@ -165,6 +167,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	pObject3 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject3);
 	pObject4 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject4);
 
+	Freeside::Lights::Directional* pDirLight = sceneManager.GetDirectionalLight(testSceneHandle);
 
 	Freeside::Lights::Point pointLight1;
 	pointLight1.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
@@ -177,6 +180,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	float angle = 0.0f;
 	float speed = 1.0f;
+	float daySpeed = 0.1f;
 	float totalTime = 0.0f;
 	while (window.IsOpen())
 	{
@@ -187,6 +191,18 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		float hue = fmodf(totalTime * speed, 1.0f);
 
 		Freeside::Math::Mat4 rotation = Freeside::Math::RotationY(angle);
+
+		float t = fmodf(totalTime * daySpeed, 1.0f); // 0..1
+		float angle = t * Freeside::Math::PI;                        // sunrise to sunset
+
+		Freeside::Math::Vec3 sunPosition =
+		{
+			cosf(angle) * 50.0f,  // east-west
+			sinf(angle) * 50.0f,  // height
+			-20.0f                // slight south/north offset
+		};
+
+		pDirLight->direction = Freeside::Math::Normalize(Freeside::Math::Vec3{ 0,0,0 } - sunPosition);
 
 		//pPointLight1->color = HSVtoRGB(hue, 1.0f, 1.0f);
 
