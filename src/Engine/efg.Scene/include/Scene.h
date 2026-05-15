@@ -38,8 +38,9 @@ namespace Freeside
 		public:
 			Scene(std::wstring name);
 			SceneRenderObjectHandle AddRenderObjectToRenderQueue(RenderObject object);
-			void AddPointLightToScene(Lights::Point light);
+			PointLightHandle AddPointLightToScene(Lights::Point light);
 			RenderObject* GetRenderObjectByHandle(SceneRenderObjectHandle handle);
+			Lights::Point* GetPointLightByHandle(PointLightHandle handle);
 			void CreateScenefromDefault(float aspectRatio);
 			void AddCamera(Camera camera);
 			void Render(Renderer* renderer);

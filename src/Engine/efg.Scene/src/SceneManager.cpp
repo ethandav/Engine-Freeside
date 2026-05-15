@@ -43,7 +43,7 @@ namespace Freeside
 			return scene->AddRenderObjectToRenderQueue(object);
 		}
 
-		void SceneManager::AddPointLightToScene(SceneHandle handle, Lights::Point& light)
+		PointLightHandle SceneManager::AddPointLightToScene(SceneHandle handle, Lights::Point& light)
 		{
 			Scene* scene = GetSceneByHandle(handle);
 			return scene->AddPointLightToScene(light);
@@ -53,6 +53,12 @@ namespace Freeside
 		{
 			Scene* scene = GetSceneByHandle(sceneHandle);
 			return scene->GetRenderObjectByHandle(objectHandle);
+		}
+
+		Lights::Point* SceneManager::GetPointLightByHandle(SceneHandle sceneHandle, PointLightHandle pointLightHandle)
+		{
+			Scene* scene = GetSceneByHandle(sceneHandle);
+			return scene->GetPointLightByHandle(pointLightHandle);
 		}
 
 		void SceneManager::AddCamera(SceneHandle handle, Camera camera)

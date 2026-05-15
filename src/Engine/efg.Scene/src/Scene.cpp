@@ -24,17 +24,21 @@ namespace Freeside
 		SceneRenderObjectHandle Scene::AddRenderObjectToRenderQueue(RenderObject object)
 		{
 			m_renderObjectQueue.push_back(std::move(object));
+			objectCount++;
 			return SceneRenderObjectHandle
 			{
 				static_cast<uint32_t>(m_renderObjectQueue.size() - 1)
 			};
-			objectCount++;
 		}
 
-		void Scene::AddPointLightToScene(Lights::Point light)
+		PointLightHandle Scene::AddPointLightToScene(Lights::Point light)
 		{
 			m_pointLights.push_back(std::move(light));
 			pointLightCount++;
+			return PointLightHandle
+			{
+				static_cast<uint32_t>(m_pointLights.size() - 1)
+			};
 		}
 
 		RenderObject* Scene::GetRenderObjectByHandle(SceneRenderObjectHandle handle)
@@ -45,6 +49,16 @@ namespace Freeside
 			}
 
 			return &m_renderObjectQueue[handle.index];
+		}
+
+		Lights::Point* Scene::GetPointLightByHandle(PointLightHandle handle)
+		{
+			if (!handle.IsValid() || handle.index >= m_pointLights.size())
+			{
+				throw std::runtime_error("Invalid Point Light handle.");
+			}
+
+			return &m_pointLights[handle.index];
 		}
 
 		void Scene::AddCamera(Camera camera)

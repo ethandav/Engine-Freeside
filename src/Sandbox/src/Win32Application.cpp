@@ -5,6 +5,29 @@
 
 constexpr uint32_t ObjectCount = 10000;
 
+Freeside::Math::Vec3 HSVtoRGB(float h, float s, float v)
+{
+	float r = 0, g = 0, b = 0;
+
+	float i = floorf(h * 6.0f);
+	float f = h * 6.0f - i;
+	float p = v * (1.0f - s);
+	float q = v * (1.0f - f * s);
+	float t = v * (1.0f - (1.0f - f) * s);
+
+	switch (static_cast<int>(i) % 6)
+	{
+	case 0: r = v; g = t; b = p; break;
+	case 1: r = q; g = v; b = p; break;
+	case 2: r = p; g = v; b = t; break;
+	case 3: r = p; g = q; b = v; break;
+	case 4: r = t; g = p; b = v; break;
+	case 5: r = v; g = p; b = q; break;
+	}
+
+	return Freeside::Math::Vec3{ r, g, b };
+}
+
 void Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
 	Window window;
@@ -115,19 +138,28 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 
 	Freeside::Lights::Point pointLight1;
-	pointLight1.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	pointLight1.intensity = 1.0f;
+	pointLight1.color = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
+	pointLight1.intensity = 2.0f;
 	pointLight1.position = Freeside::Math::Vec3(-1.0f, 0.0f, -2.0f);
 	pointLight1.radius = 5.0f;
 
-	sceneManager.AddPointLightToScene(testSceneHandle, pointLight1);
+	Freeside::PointLightHandle hPointLight1 = sceneManager.AddPointLightToScene(testSceneHandle, pointLight1);
+	Freeside::Lights::Point* pPointLight1 = sceneManager.GetPointLightByHandle(testSceneHandle, hPointLight1);
 
 	float angle = 0.0f;
+	float speed = 1.0f;
+	float totalTime = 0.0f;
 	while (window.IsOpen())
 	{
 		const float deltaTime = timer.Tick();
 		angle += 1.0f * deltaTime;
+		totalTime += deltaTime;
+
+		float hue = fmodf(totalTime * speed, 1.0f);
+
 		Freeside::Math::Mat4 rotation = Freeside::Math::RotationY(angle);
+
+		pPointLight1->color = HSVtoRGB(hue, 1.0f, 1.0f);
 
 		Freeside::Math::Mat4 translation1 = object1.initialTransform;
 		pObject1->world = translation1 * rotation;

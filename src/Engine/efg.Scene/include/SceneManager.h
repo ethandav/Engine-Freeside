@@ -22,8 +22,9 @@ namespace Freeside
 			SceneHandle CreateScene(std::wstring sceneName);
 			SceneHandle AddSceneToQueue(const Scene& scene);
 			SceneRenderObjectHandle AddRenderObjectToRenderQueue(SceneHandle handle, RenderObject& object);
-			void AddPointLightToScene(SceneHandle handle, Lights::Point& light);
+			PointLightHandle AddPointLightToScene(SceneHandle handle, Lights::Point& light);
 			RenderObject* GetRenderObjectByHandle(SceneHandle sceneHandle, SceneRenderObjectHandle objectHandle);
+			Lights::Point* GetPointLightByHandle(SceneHandle sceneHandle, PointLightHandle pointLightHandle);
 			void AddCamera(SceneHandle handle, Camera camera);
 			void RenderScene(SceneHandle handle);
 		private:
