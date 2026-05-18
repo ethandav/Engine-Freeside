@@ -22,8 +22,8 @@
 #include "..\factories\D3D12BufferFactory.h"
 #include "..\factories\D3D12TextrureFactory.h"
 #include "..\factories\D3D12ResourceFactory.h"
-#include "..\passes\D3D12ForwardLitGeometryRenderPass.h"
-#include "..\passes\D3D12ShadowMapRenderPass.h"
+#include "..\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
+#include "..\passes\ShadowMap\D3D12ShadowMapRenderPass.h"
 #include "..\presentation\D3D12SwapChain.h"
 
 
@@ -74,8 +74,6 @@ namespace efg::d3d12
 
 		D3D12ForwardLitGeometryRenderPass m_forwarLitGeometryRenderPass = {};
 		D3D12ShadowMapRenderPass m_shadowMapRenderPass = {};
-
-		GpuDepthBuffer shadowMap = {};
 
 		std::array<FrameResource, NumFramesInFlight> m_frameResources = {};
 

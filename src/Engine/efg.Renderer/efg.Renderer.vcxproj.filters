@@ -81,7 +81,7 @@
     <ClInclude Include="include\d3d12\factories\D3D12ResourceFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\d3d12\passes\D3D12ForwardLitGeometryRenderPass.h">
+    <ClInclude Include="include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\d3d12\frame\D3D12FrameResouce.h">
@@ -141,7 +141,7 @@
     <ClInclude Include="include\d3d12\resources\D3D12GpuMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\d3d12\passes\D3D12ForwardLitGeometryTypes.h">
+    <ClInclude Include="include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\render\types\FramePacket.h">
@@ -162,10 +162,16 @@
     <ClInclude Include="include\render\types\MaterialTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\d3d12\passes\D3D12ShadowMapRenderPass.h">
+    <ClInclude Include="include\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\d3d12\passes\D3D12ShadowMapRenderPassTypes.h">
+    <ClInclude Include="include\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPassTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\types\D3D12PipelineTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\types\D3D12DrawTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

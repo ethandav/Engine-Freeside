@@ -1,50 +1,77 @@
-#include "..\..\..\include\d3d12\passes\D3D12ShadowMapRenderPass.h"
+#include "..\..\..\include\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPass.h"
 #include "..\..\..\include\d3d12\libraries\D3D12GraphicsPipelineLibrary.h"
 #include "..\..\..\include\d3d12\libraries\D3D12MeshLibrary.h"
-#include "..\..\..\include\d3d12\libraries\D3D12TextureLibrary.h"
-#include "..\..\..\include\d3d12\libraries\D3D12MaterialLibrary.h"
+#include "..\..\..\include\d3d12\factories\D3D12TextrureFactory.h"
 #include "..\..\..\include\d3d12\factories\D3D12BufferFactory.h"
 #include "..\..\..\include\d3d12\descriptors\D3D12DescriptorContext.h"
 #include "..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
+#include "..\..\..\include\d3d12\types\D3D12DrawTypes.h"
 
 #include <algorithm>
 
 namespace efg::d3d12
 {
-    void D3D12ShadowMapRenderPass::Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12TextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory)
+    void D3D12ShadowMapRenderPass::Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12TextureFactory* textureFactory, D3D12BufferFactory* bufferFactory)
     {
         m_pipelineLibrary = pipelineLib;
         m_descriptorContext = descriptorCtx;
         m_meshLibrary = meshLibrary;
-        m_materialLibrary = materialLibrary;
-        m_textureLibrary = textureLibrary;
+        m_textureFactory = textureFactory;
         m_bufferFactory = bufferFactory;
+
+        m_shadowMap = m_textureFactory->CreateDepthBuffer(2048, 2048);
+        m_shadowMap.dsv = m_descriptorContext->CreateDSV(m_shadowMap.resource.Get(), nullptr).cpu;
+        m_shadowMap.gpuSrv = m_descriptorContext->CreateTexture2DSRV(m_shadowMap.resource.Get(), DXGI_FORMAT_R32_FLOAT, 1).gpu;
+
     }
 
-    void D3D12ShadowMapRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene)
+    ShadowMapFrameData D3D12ShadowMapRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene)
     {
+        ShadowMapFrameData output = {};
         ShadowMapPassResources resources = {};
-        UploadPassResources(ctx, scene, resources);
+
+        m_viewport.TopLeftX = 0.0f;
+        m_viewport.TopLeftY = 0.0f;
+        m_viewport.Width = static_cast<float>(2048);
+        m_viewport.Height = static_cast<float>(2048);
+        m_viewport.MinDepth = 0.0f;
+        m_viewport.MaxDepth = 1.0f;
+        m_scissorRect.left = 0;
+        m_scissorRect.top = 0;
+        m_scissorRect.right = static_cast<LONG>(2048);
+        m_scissorRect.bottom = static_cast<LONG>(2048);
+
+        ctx.commandContext->SetViewportAndScissor(m_viewport, m_scissorRect);
+        ctx.commandContext->SetRenderTarget(0, nullptr, &m_shadowMap.dsv);
+        ctx.commandContext->ClearDepthStencil(m_shadowMap.dsv, 1.0f, 0);
+
+        UploadPassResources(ctx, scene, resources, output);
         BindPassResources(ctx, resources);
         DrawAllRenderObjects(ctx, scene);
+
+        output.shadowMap = &m_shadowMap;
+
+        ctx.commandContext->ResourceBarrierTransition(m_shadowMap.resource.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        return output;
     }
 
-    void D3D12ShadowMapRenderPass::UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ShadowMapPassResources& resources)
+    void D3D12ShadowMapRenderPass::UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ShadowMapPassResources& resources, ShadowMapFrameData& output)
     {
-        UploadFrameConstants(ctx, scene, resources);
+        UploadFrameConstants(ctx, scene, resources, output);
     }
 
     void D3D12ShadowMapRenderPass::BindPassResources(const FrameContext& ctx, ShadowMapPassResources& resources)
     {
-        m_pipelineLibrary->BindPipeline(ctx.commandList, PipelineId::ShadowMap);
-        ctx.commandList->SetGraphicsRootConstantBufferView(0, resources.lightViewCB);
+        ctx.commandContext->BindPipeline(m_pipelineLibrary->Get(PipelineId::ShadowMap));
+        ctx.commandContext->SetGraphicsRootConstantBufferView(0, resources.lightViewCB);
         ID3D12DescriptorHeap* heaps[] = { m_descriptorContext->GetCBVSRVUAVHeap() };
-        ctx.commandList->SetDescriptorHeaps(_countof(heaps), heaps);
+        ctx.commandContext->SetDescriptorHeaps(_countof(heaps), heaps);
     }
 
-    void D3D12ShadowMapRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ShadowMapPassResources& resources)
+    void D3D12ShadowMapRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ShadowMapPassResources& resources, ShadowMapFrameData& output)
     {
         LightViewConstants lightViewConstants = BuildLightViewConstants(scene.directionalLight);
+        output.lightViewProjection = lightViewConstants.viewProjection;
         resources.lightViewCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &lightViewConstants, sizeof(LightViewConstants));
     }
 
@@ -85,24 +112,8 @@ namespace efg::d3d12
                 instances[i].world = Freeside::Math::Transpose(object.world);
             }
 
-            ctx.commandList->SetGraphicsRootShaderResourceView(1, instanceAllocation.gpu);
-            DrawMeshInstanced(ctx.commandList, batch.mesh, batch.instanceCount);
-        }
-    }
-
-    void D3D12ShadowMapRenderPass::DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, Freeside::MeshHandle handle, uint32_t instanceCount)
-    {
-        const GpuMesh& mesh = m_meshLibrary->Get(handle);
-        commandList->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);
-        if (mesh.indexCount > 0)
-        {
-            commandList->IASetIndexBuffer(&mesh.indexBufferView);
-            commandList->DrawIndexedInstanced(mesh.indexCount, instanceCount, 0, 0, 0);
-
-        }
-        else
-        {
-            commandList->DrawInstanced(mesh.vertexCount, instanceCount, 0, 0);
+            ctx.commandContext->SetGraphicsRootShaderResourceView(1, instanceAllocation.gpu);
+            ctx.commandContext->DrawMeshInstanced(m_meshLibrary->Get(batch.mesh), batch.instanceCount);
         }
     }
 }

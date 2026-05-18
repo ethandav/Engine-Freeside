@@ -87,6 +87,26 @@ namespace efg::d3d12
         m_directCommandList->OMSetRenderTargets(numDescriptors, renderTargetDescriptorHandle, FALSE, dsvHandle);
     }
 
+    void D3D12DirectCommandContext::SetGraphicsRootConstantBufferView(const uint32_t rootParameterIndex, D3D12_GPU_VIRTUAL_ADDRESS bufferLocation)
+    {
+        m_directCommandList->SetGraphicsRootConstantBufferView(rootParameterIndex, bufferLocation);
+    }
+
+    void D3D12DirectCommandContext::SetGraphicsRootShaderResourceView(const uint32_t rootParameterIndex, D3D12_GPU_VIRTUAL_ADDRESS bufferLocation)
+    {
+        m_directCommandList->SetGraphicsRootShaderResourceView(rootParameterIndex, bufferLocation);
+    }
+
+    void D3D12DirectCommandContext::SetGraphicsRootDescriptorTable(const uint32_t rootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE handle)
+    {
+        m_directCommandList->SetGraphicsRootDescriptorTable(rootParameterIndex, handle);
+    }
+
+    void D3D12DirectCommandContext::SetDescriptorHeaps(uint32_t numDescriptorHeaps, ID3D12DescriptorHeap* heaps[])
+    {
+        m_directCommandList->SetDescriptorHeaps(numDescriptorHeaps, heaps);
+    }
+
     void D3D12DirectCommandContext::ClearRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, const float clearColor[])
     {
         m_directCommandList->ClearRenderTargetView(handle, clearColor, 0, nullptr);
@@ -95,5 +115,27 @@ namespace efg::d3d12
     void D3D12DirectCommandContext::ClearDepthStencil(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, float depth, uint8_t stencil)
     {
         m_directCommandList->ClearDepthStencilView(handle, D3D12_CLEAR_FLAG_DEPTH, depth, stencil, 0, nullptr);
+    }
+
+    void D3D12DirectCommandContext::BindPipeline(const GraphicsPipelineState& pipeline)
+    {
+        m_directCommandList->SetGraphicsRootSignature(pipeline.rootSignature.Get());
+        m_directCommandList->SetPipelineState(pipeline.pipelineState.Get());
+        m_directCommandList->IASetPrimitiveTopology(pipeline.primitiveTopology);
+    }
+
+    void D3D12DirectCommandContext::DrawMeshInstanced(const GpuMesh& mesh, uint32_t instanceCount)
+    {
+        m_directCommandList->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);
+        if (mesh.indexCount > 0)
+        {
+            m_directCommandList->IASetIndexBuffer(&mesh.indexBufferView);
+            m_directCommandList->DrawIndexedInstanced(mesh.indexCount, instanceCount, 0, 0, 0);
+
+        }
+        else
+        {
+            m_directCommandList->DrawInstanced(mesh.vertexCount, instanceCount, 0, 0);
+        }
     }
 }

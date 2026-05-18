@@ -14,7 +14,7 @@ namespace efg::d3d12
         FrameContext ctx = {};
         ctx.frameIndex = frameIndex;
         ctx.frame = &frame;
-        ctx.commandList = m_commandContext.GetDirectCommandList();
+        ctx.commandContext = &m_commandContext;
         ctx.backBuffer = m_swapChain.GetCurrentBackBuffer();
         ctx.backBufferHandle = m_swapChain.GetCurrentBackBufferHandle();
         ctx.renderQueue = &m_renderQueue;

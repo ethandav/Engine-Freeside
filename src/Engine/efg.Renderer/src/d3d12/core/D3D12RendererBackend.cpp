@@ -6,6 +6,7 @@
 #include "..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
 #include "..\..\..\include\d3d12\core\D3D12Pix.h"
 #include "..\..\..\include\d3d12\core\D3D12Format.h"
+#include "..\..\..\include\d3d12\types\D3D12DrawTypes.h"
 
 namespace efg::d3d12
 {
@@ -17,10 +18,6 @@ namespace efg::d3d12
         InitializeRenderPasses();
         CreateFrameResources();
         m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
-
-        shadowMap = m_textureFactory.CreateDepthBuffer(2048, 2048);
-        shadowMap.dsv = m_descriptorContext.CreateDSV(shadowMap.resource.Get(), nullptr).cpu;
-        shadowMap.gpuSrv = m_descriptorContext.CreateTexture2DSRV(shadowMap.resource.Get(), DXGI_FORMAT_R32_FLOAT, 1).gpu;
     }
 
     void D3D12RendererBackend::CreateViewportAndScissor(uint32_t width, uint32_t height)
@@ -66,7 +63,7 @@ namespace efg::d3d12
     void D3D12RendererBackend::InitializeRenderPasses()
     {
         m_forwarLitGeometryRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_materialLibrary, &m_textureLibrary, &m_bufferFactory);
-        m_shadowMapRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_materialLibrary, &m_textureLibrary, &m_bufferFactory);
+        m_shadowMapRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_textureFactory, &m_bufferFactory);
     }
 
     void D3D12RendererBackend::CreateFrameResources()
@@ -97,39 +94,25 @@ namespace efg::d3d12
     void D3D12RendererBackend::Render(const FramePacket& scene)
     {
         FrameContext ctx = BeginFrame();
-        PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"BeginFrame");
+        ID3D12GraphicsCommandList* commandList = ctx.commandContext->GetDirectCommandList();
+        PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"BeginFrame");
         ProcessUploads();
         m_renderQueue.BuildForwardGeometryBatches(scene.renderObjects);
 
 
-        D3D12_VIEWPORT shadowViewport = {};
-        shadowViewport.TopLeftX = 0.0f;
-        shadowViewport.TopLeftY = 0.0f;
-        shadowViewport.Width = static_cast<float>(2048);
-        shadowViewport.Height = static_cast<float>(2048);
-        shadowViewport.MinDepth = 0.0f;
-        shadowViewport.MaxDepth = 1.0f;
-        D3D12_RECT shadowScissor = {};
-        shadowScissor.left = 0;
-        shadowScissor.top = 0;
-        shadowScissor.right = static_cast<LONG>(2048);
-        shadowScissor.bottom = static_cast<LONG>(2048);
-        m_commandContext.SetViewportAndScissor(shadowViewport, shadowScissor);
-        m_commandContext.SetRenderTarget(0, nullptr, &shadowMap.dsv);
-        m_commandContext.ClearDepthStencil(shadowMap.dsv, 1.0f, 0);
-        PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"ShadowMapPass");
-        m_shadowMapRenderPass.Execute(ctx, scene);
-        PIXEndEvent(ctx.commandList); // ShadowMapPass End
-        m_commandContext.ResourceBarrierTransition(shadowMap.resource.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-        PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"BackBufferSetup");
+        PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"ShadowMapPass");
+        ShadowMapFrameData shadowMapFrameData = m_shadowMapRenderPass.Execute(ctx, scene);
+        PIXEndEvent(commandList); // ShadowMapPass End
+
+        PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"BackBufferSetup");
         RecordBackBufferSetup(ctx);
-        PIXEndEvent(ctx.commandList); // BackBufferSetup End
-        PIXBeginEvent(ctx.commandList, PIX_COLOR(100, 100, 255), L"ForwardLitGeometryPass");
-        m_forwarLitGeometryRenderPass.Execute(ctx, scene, shadowMap);
-        PIXEndEvent(ctx.commandList); // ForwardLitGeometryPass End
-        PIXEndEvent(ctx.commandList); // BeginFrame End
-        m_commandContext.ResourceBarrierTransition(shadowMap.resource.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+        PIXEndEvent(commandList); // BackBufferSetup End
+        PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"ForwardLitGeometryPass");
+        m_forwarLitGeometryRenderPass.Execute(ctx, scene, shadowMapFrameData);
+        PIXEndEvent(commandList); // ForwardLitGeometryPass End
+        PIXEndEvent(commandList); // BeginFrame End
+        m_commandContext.ResourceBarrierTransition(shadowMapFrameData.shadowMap->resource.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
         EndFrame(ctx);
     }

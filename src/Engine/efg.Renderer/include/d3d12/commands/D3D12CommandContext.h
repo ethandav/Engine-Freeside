@@ -1,4 +1,8 @@
 #pragma once
+
+#include "..\resources\D3D12GpuMesh.h"
+#include "..\types\D3D12PipelineTypes.h"
+
 #include <wrl.h>
 #include <d3d12.h>
 #include <cstdint>
@@ -21,8 +25,14 @@ namespace efg::d3d12
 		void ExecuteCopy();
 		void SetViewportAndScissor(const D3D12_VIEWPORT& m_viewport, const D3D12_RECT& m_scissorRect);
 		void SetRenderTarget(uint32_t numDescriptors, const D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandle, const D3D12_CPU_DESCRIPTOR_HANDLE* dsvHandle);
+		void SetGraphicsRootConstantBufferView(const uint32_t rootParameterIndex, D3D12_GPU_VIRTUAL_ADDRESS bufferLocation);
+		void SetGraphicsRootShaderResourceView(const uint32_t rootParameterIndex, D3D12_GPU_VIRTUAL_ADDRESS bufferLocation);
+		void SetGraphicsRootDescriptorTable(const uint32_t rootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE handle);
+		void SetDescriptorHeaps(uint32_t numDescriptorHeaps, ID3D12DescriptorHeap* heaps[]);
 		void ClearRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, const float clearColor[]);
 		void ClearDepthStencil(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, float depth, uint8_t stencil);
+		void BindPipeline(const GraphicsPipelineState& pipeline);
+		void DrawMeshInstanced(const GpuMesh& mesh, uint32_t instanceCount);
 	private:
 		void CreateCommandObjects();
 		void CreateCommandList(ID3D12GraphicsCommandList** list, ID3D12CommandAllocator*, D3D12_COMMAND_LIST_TYPE type);

@@ -1,4 +1,4 @@
-#include "..\..\..\include\d3d12\passes\D3D12ForwardLitGeometryRenderPass.h"
+#include "..\..\..\include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
 #include "..\..\..\include\d3d12\libraries\D3D12GraphicsPipelineLibrary.h"
 #include "..\..\..\include\d3d12\libraries\D3D12MeshLibrary.h"
 #include "..\..\..\include\d3d12\libraries\D3D12TextureLibrary.h"
@@ -6,6 +6,7 @@
 #include "..\..\..\include\d3d12\factories\D3D12BufferFactory.h"
 #include "..\..\..\include\d3d12\descriptors\D3D12DescriptorContext.h"
 #include "..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
+#include "..\..\..\include\d3d12\types\D3D12DrawTypes.h"
 
 #include <algorithm>
 
@@ -21,10 +22,10 @@ namespace efg::d3d12
         m_bufferFactory = bufferFactory;
     }
 
-    void D3D12ForwardLitGeometryRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene, const GpuDepthBuffer& shadowMap)
+    void D3D12ForwardLitGeometryRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData)
 	{
         ForwardLitPassResources resources = {};
-        resources.shadowMapSRV = shadowMap.gpuSrv;
+        resources.shadowMapSRV = shadowMapFrameData.shadowMap->gpuSrv;
 
         Freeside::Camera lightCamera;
         Freeside::Math::Vec3 sceneCenter = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
@@ -47,7 +48,7 @@ namespace efg::d3d12
 
         UploadPassResources(ctx, scene, resources);
         BindPassResources(ctx, resources);
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Shadow), resources.shadowCB);
+        ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Shadow), resources.shadowCB);
         DrawAllRenderObjects(ctx, scene);
 	}
 
@@ -59,14 +60,14 @@ namespace efg::d3d12
 
     void D3D12ForwardLitGeometryRenderPass::BindPassResources(const FrameContext& ctx, ForwardLitPassResources& resources)
     {
-        m_pipelineLibrary->BindPipeline(ctx.commandList, PipelineId::ForwardLitGeometry);
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), resources.cameraCB);
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), resources.directionalLightCB);
-        ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightConstants), resources.pointLightConstantsCB);
-        ctx.commandList->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv), resources.pointLightsSRV);
+        ctx.commandContext->BindPipeline(m_pipelineLibrary->Get(PipelineId::ForwardLitGeometry));
+        ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), resources.cameraCB);
+        ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), resources.directionalLightCB);
+        ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightConstants), resources.pointLightConstantsCB);
+        ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv), resources.pointLightsSRV);
         ID3D12DescriptorHeap* heaps[] = { m_descriptorContext->GetCBVSRVUAVHeap() };
-        ctx.commandList->SetDescriptorHeaps(_countof(heaps), heaps);
-        ctx.commandList->SetGraphicsRootDescriptorTable(8, resources.shadowMapSRV);
+        ctx.commandContext->SetDescriptorHeaps(_countof(heaps), heaps);
+        ctx.commandContext->SetGraphicsRootDescriptorTable(8, resources.shadowMapSRV);
     }
 
     void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
@@ -103,10 +104,10 @@ namespace efg::d3d12
             const Freeside::RenderObject& first = scene.renderObjects[ctx.renderQueue->sortedIndices[batch.firstSortedIndex]];
             const Material& material = batch.material.IsValid() ? m_materialLibrary->GetMaterialByHandle(batch.material) : m_materialLibrary->GetDefaultMaterial();
             D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &material.constants, sizeof(MaterialConstants));
-            ctx.commandList->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
+            ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
 
             const GpuTexture2D& baseColorTexture = m_textureLibrary->GetTextureByHandle(material.baseColorTexture);
-            ctx.commandList->SetGraphicsRootDescriptorTable(7, baseColorTexture.gpuSrv);
+            ctx.commandContext->SetGraphicsRootDescriptorTable(7, baseColorTexture.gpuSrv);
 
             const UINT64 instanceBufferSize = static_cast<UINT64>(batch.instanceCount) * sizeof(InstanceData);
             GpuUploadBufferAllocation instanceAllocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, instanceBufferSize, InstanceDataAlignment);
@@ -118,8 +119,8 @@ namespace efg::d3d12
                 instances[i].world = Freeside::Math::Transpose(object.world);
             }
 
-            ctx.commandList->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::InstanceData), instanceAllocation.gpu);
-            DrawMeshInstanced(ctx.commandList, batch.mesh, batch.instanceCount);
+            ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::InstanceData), instanceAllocation.gpu);
+            ctx.commandContext->DrawMeshInstanced(m_meshLibrary->Get(batch.mesh), batch.instanceCount);
         }
     }
 
@@ -143,21 +144,5 @@ namespace efg::d3d12
         }
 
         resources.pointLightConstants.pointLightCount = count;
-    }
-
-    void D3D12ForwardLitGeometryRenderPass::DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, Freeside::MeshHandle handle, uint32_t instanceCount)
-    {
-        const GpuMesh& mesh = m_meshLibrary->Get(handle);
-        commandList->IASetVertexBuffers(0, 1, &mesh.vertexBufferView);
-        if (mesh.indexCount > 0)
-        {
-            commandList->IASetIndexBuffer(&mesh.indexBufferView);
-            commandList->DrawIndexedInstanced(mesh.indexCount, instanceCount, 0, 0, 0);
-
-        }
-        else
-        {
-            commandList->DrawInstanced(mesh.vertexCount, instanceCount, 0, 0);
-        }
     }
 }

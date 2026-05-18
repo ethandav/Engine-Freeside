@@ -1,15 +1,23 @@
 #pragma once
 
-#include "..\..\..\..\efg.Core\include\math\Vec2.h"
-#include "..\..\..\..\efg.Core\include\math\Vec4.h"
-#include "..\..\..\..\efg.Core\include\math\Mat4.h"
-#include "..\..\render\types\Handles.h"
+#include "..\..\..\..\..\efg.Core\include\math\Vec2.h"
+#include "..\..\..\..\..\efg.Core\include\math\Vec4.h"
+#include "..\..\..\..\..\efg.Core\include\math\Mat4.h"
+#include "..\..\..\render\types\Handles.h"
+#include "..\..\..\render\RenderQueue.h"
+#include "..\ShadowMap\D3D12ShadowMapRenderPassTypes.h"
 
-namespace efg
+namespace efg::d3d12
 {
-	struct InstanceData
+	struct ForwardLitGeometryRenderPassInputs
 	{
-		Freeside::Math::Mat4 world;
+		const RenderQueue* renderQueue = nullptr;
+		const ShadowMapFrameData* shadowMapData = nullptr;
+	};
+
+	struct ForwardLitGeometryRenderPassOutputs
+	{
+
 	};
 
 	struct MaterialConstants

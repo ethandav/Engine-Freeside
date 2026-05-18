@@ -2,7 +2,7 @@
 
 #include "..\..\render\types\MaterialTypes.h"
 #include "..\..\render\types\Handles.h"
-#include "..\passes\D3D12ForwardLitGeometryTypes.h"
+#include "..\passes\ForwardLitGeometry\D3D12ForwardLitGeometryTypes.h"
 
 #include <vector>
 
