@@ -25,24 +25,9 @@ namespace efg::d3d12
     void D3D12ForwardLitGeometryRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData)
 	{
         ForwardLitPassResources resources = {};
-        resources.shadowMapSRV = shadowMapFrameData.shadowMap->gpuSrv;
-
-        Freeside::Camera lightCamera;
-        Freeside::Math::Vec3 sceneCenter = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
-        Freeside::Math::Vec3 lightDir = Freeside::Math::Normalize(scene.directionalLight.direction);
-        float lightDistance = 50.0f;
-        Freeside::Math::Vec3 lightPosition = sceneCenter - lightDir * lightDistance;
-
-        float orthoWidth = 40.0f;
-        float orthoHeight = 40.0f;
-        float nearZ = 0.1f;
-        float farZ = 100.0f;
-        lightCamera.LookAt(lightPosition, sceneCenter, Freeside::Math::Vec3(0.0f, 1.0f, 0.0f));
-
-        lightCamera.SetOrthographic(orthoWidth, orthoHeight, nearZ, farZ);
-        Freeside::Math::Mat4 viewProjection = Freeside::Math::Transpose(lightCamera.GetViewProjectionMatrix());
         ShadowConstants shadowConstants = {};
-        shadowConstants.LightViewProjection = viewProjection;
+        resources.shadowMapSRV = shadowMapFrameData.shadowMap->gpuSrv;
+        shadowConstants.LightViewProjection = shadowMapFrameData.lightViewProjection;
         shadowConstants.ShadowParams = Freeside::Math::Vec4(0.001f, 1.0f, 0.0f, 0.0f);
         resources.shadowCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &shadowConstants, sizeof(ShadowConstants));
 
