@@ -1,6 +1,7 @@
 #pragma once
 
 #include "..\descriptors\D3D12DescriptorAllocation.h"
+#include "..\resources\D3D12GpuTexture.h"
 
 #include <d3d12.h>
 
@@ -17,8 +18,9 @@ namespace efg::d3d12
 		DescriptorAllocation CreateCBV(ID3D12Resource* resource, uint32_t sizeInBytes);
 		DescriptorAllocation CreateUAV(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride, ID3D12Resource* counterResource);
 		DescriptorAllocation CreateStructuredBufferSRV(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride);
-		DescriptorAllocation CreateTexture2DSRV(ID3D12Resource* resource, DXGI_FORMAT format, uint32_t mipLevels);
-		DescriptorAllocation CreateTextureCubeSRV(ID3D12Resource* resource, DXGI_FORMAT format, uint32_t mipLevels);
+		void CreateTexture2DSRV(GpuTexture2D* texture, DXGI_FORMAT format, uint32_t mipLevels);
+		void CreateTextureCubeSRV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t mipLevels);
+		void CreateTextureCubeFaceDSV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex);
 		DescriptorAllocation CreateSampler(const D3D12_SAMPLER_DESC& samplerDesc);
 	private:
 		ID3D12Device* m_device = nullptr;

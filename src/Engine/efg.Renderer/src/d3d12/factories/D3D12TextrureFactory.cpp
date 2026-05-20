@@ -18,12 +18,8 @@ namespace efg::d3d12
         texture.height = height;
         texture.mipLevels = 1;
         texture.format = format;
-
         texture.resource = m_resourceFactory->CreateCommittedTexture2DResource(width, height, format, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
-
-        DescriptorAllocation alloc = m_descriptorFactory->CreateTexture2DSRV(texture.resource.Get(), texture.format, texture.mipLevels);
-        texture.gpuSrv = alloc.gpu;
-        texture.cpuSrv = alloc.cpu;
+        m_descriptorFactory->CreateTexture2DSRV(&texture, texture.format, texture.mipLevels);
 
         return texture;
     }
@@ -35,7 +31,13 @@ namespace efg::d3d12
         texture.height = height;
         texture.format = format;
 
-        texture.resource = m_resourceFactory->CreateCommittedTextureCubeResource(width, height, format, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
+        m_resourceFactory->CreateCommittedTextureCubeResource(width, height, format, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
+        m_descriptorFactory->CreateTextureCubeSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1);
+
+        for (uint32_t face = 0; face < 6; ++face)
+        {
+            m_descriptorFactory->CreateTextureCubeFaceDSV(&texture, DXGI_FORMAT_D32_FLOAT, face);
+        }
 
         return texture;
     }
@@ -54,9 +56,7 @@ namespace efg::d3d12
 
         if (shaderVisible)
         {
-            DescriptorAllocation alloc = m_descriptorFactory->CreateTexture2DSRV(texture.resource.Get(), DXGI_FORMAT_R32_FLOAT, 1);
-            texture.gpuSrv = alloc.gpu;
-            texture.cpuSrv = alloc.cpu;
+            m_descriptorFactory->CreateTexture2DSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1);
         }
 
         return texture;

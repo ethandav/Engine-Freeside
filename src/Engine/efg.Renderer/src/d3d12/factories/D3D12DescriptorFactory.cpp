@@ -75,7 +75,7 @@ namespace efg::d3d12
         return allocation;
     }
 
-    DescriptorAllocation D3D12DescriptorFactory::CreateTexture2DSRV(ID3D12Resource* resource, DXGI_FORMAT format, uint32_t mipLevels)
+    void D3D12DescriptorFactory::CreateTexture2DSRV(GpuTexture2D* texture, DXGI_FORMAT format, uint32_t mipLevels)
     {
         DescriptorAllocation allocation = m_descriptorContext->AllocateCBVSRVUAV();
         D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -86,12 +86,12 @@ namespace efg::d3d12
         srvDesc.Texture2D.MostDetailedMip = 0;
         srvDesc.Texture2D.PlaneSlice = 0;
         srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-        m_device->CreateShaderResourceView(resource, &srvDesc, allocation.cpu);
-
-        return allocation;
+        m_device->CreateShaderResourceView(texture->resource.Get(), &srvDesc, allocation.cpu);
+        texture->cpuSrv = allocation.cpu;
+        texture->gpuSrv = allocation.gpu;
     }
 
-    DescriptorAllocation D3D12DescriptorFactory::CreateTextureCubeSRV(ID3D12Resource* resource, DXGI_FORMAT format, uint32_t mipLevels)
+    void D3D12DescriptorFactory::CreateTextureCubeSRV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t mipLevels)
     {
         DescriptorAllocation allocation = m_descriptorContext->AllocateCBVSRVUAV();
         D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
@@ -101,9 +101,22 @@ namespace efg::d3d12
         desc.TextureCube.MostDetailedMip = 0;
         desc.TextureCube.MipLevels = mipLevels;
         desc.TextureCube.ResourceMinLODClamp = 0.0f;
-        m_device->CreateShaderResourceView(resource, &desc, allocation.cpu);
+        m_device->CreateShaderResourceView(texture->resource.Get(), &desc, allocation.cpu);
+        texture->srv = allocation.gpu;
+    }
 
-        return allocation;
+    void D3D12DescriptorFactory::CreateTextureCubeFaceDSV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex)
+    {
+        DescriptorAllocation allocation = m_descriptorContext->AllocateDSV();
+        D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
+        desc.Format = format;
+        desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
+        desc.Flags = D3D12_DSV_FLAG_NONE;
+        desc.Texture2DArray.MipSlice = 0;
+        desc.Texture2DArray.FirstArraySlice = faceIndex;
+        desc.Texture2DArray.ArraySize = 1;
+        m_device->CreateDepthStencilView(texture->resource.Get(), &desc, allocation.cpu);
+        texture->dsv[faceIndex] = allocation.cpu;
     }
 
     DescriptorAllocation D3D12DescriptorFactory::CreateSampler(const D3D12_SAMPLER_DESC& samplerDesc)
