@@ -37,7 +37,7 @@ namespace efg::d3d12
 
 		D3D12_VIEWPORT m_viewport = {};
 		D3D12_RECT m_scissorRect = {};
-		GpuDepthBuffer m_shadowMap = {};
+		GpuTexture2D m_shadowMap = {};
 
 
 		D3D12GraphicsPipelineLibary* m_pipelineLibrary = nullptr;

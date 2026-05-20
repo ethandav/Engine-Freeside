@@ -38,7 +38,6 @@ namespace efg::d3d12
     void D3D12RendererBackend::CreateRenderTargets(uint32_t width, uint32_t height)
     {
         m_renderTargets.sceneDepth = m_textureFactory.CreateDepthBuffer(width, height);
-        m_renderTargets.sceneDepth.dsv = m_descriptorContext.CreateDSV(m_renderTargets.sceneDepth.resource.Get(), nullptr).cpu;
     }
 
     void D3D12RendererBackend::InitializeD3D12Systems(const Freeside::RendererDesc& desc)
@@ -46,11 +45,12 @@ namespace efg::d3d12
         m_graphicsContext.Initialize(false);
         m_commandContext.Initialize(&m_graphicsContext);
         m_descriptorContext.Initialize(m_graphicsContext.GetDevice());
-        m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorContext);
+        m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorFactory);
         m_resourceFactory.Initialize(m_graphicsContext.GetDevice());
         m_uploadContext.Initialize(&m_graphicsContext, &m_resourceFactory);
         m_bufferFactory.Initialize(&m_resourceFactory);
-        m_textureFactory.Initialize(m_graphicsContext.GetDevice(), &m_resourceFactory);
+        m_textureFactory.Initialize(m_graphicsContext.GetDevice(), &m_resourceFactory, &m_descriptorFactory);
+        m_descriptorFactory.Initialize(m_graphicsContext.GetDevice(), &m_descriptorContext);
         m_directFence.Initialize(&m_graphicsContext);
         m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
         m_descriptorContext.CreateAllHeaps();
@@ -58,6 +58,7 @@ namespace efg::d3d12
         m_directFence.CreateFence(0);
         m_shaderLibrary.Initialize();
         m_graphicsPipelineLibrary.Initialize(&m_graphicsContext, m_shaderLibrary);
+        m_shadowSystem.Initialize(&m_textureFactory);
     }
 
     void D3D12RendererBackend::InitializeRenderPasses()
@@ -99,12 +100,10 @@ namespace efg::d3d12
         ProcessUploads();
         m_renderQueue.BuildForwardGeometryBatches(scene.renderObjects);
 
-
-
         PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"ShadowMapPass");
         ShadowMapFrameData shadowMapFrameData = m_shadowMapRenderPass.Execute(ctx, scene);
         PIXEndEvent(commandList); // ShadowMapPass End
-
+        m_commandContext.FlushPendingBarrierTransitions();
         PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"BackBufferSetup");
         RecordBackBufferSetup(ctx);
         PIXEndEvent(commandList); // BackBufferSetup End
@@ -112,8 +111,7 @@ namespace efg::d3d12
         m_forwarLitGeometryRenderPass.Execute(ctx, scene, shadowMapFrameData);
         PIXEndEvent(commandList); // ForwardLitGeometryPass End
         PIXEndEvent(commandList); // BeginFrame End
-        m_commandContext.ResourceBarrierTransition(shadowMapFrameData.shadowMap->resource.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-
+        m_commandContext.FlushPendingBarrierTransitions();
         EndFrame(ctx);
     }
 
@@ -140,9 +138,7 @@ namespace efg::d3d12
         DecodedImage image = m_imageLoader.LoadImageWithWIC(filename);
         GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format));
         m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-        DescriptorAllocation alloc = m_descriptorContext.CreateTexture2DSRV(texture.resource.Get(), texture.format, texture.mipLevels);
-        texture.gpuSrv = alloc.gpu;
-        texture.cpuSrv = alloc.cpu;
+
         Freeside::TextureHandle handle = m_textureLibrary.RegisterTexture2D(texture);
 
         return handle;

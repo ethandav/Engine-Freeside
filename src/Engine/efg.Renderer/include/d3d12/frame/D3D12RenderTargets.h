@@ -6,6 +6,6 @@ namespace efg::d3d12
 	struct RenderTargets
 	{
 		GpuTexture2D sceneColor;
-		GpuDepthBuffer sceneDepth;
+		GpuTexture2D sceneDepth;
 	};
 }

@@ -12,6 +12,8 @@ namespace efg::d3d12
 
         D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
         D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
+        D3D12_CPU_DESCRIPTOR_HANDLE dsv = {};
+        D3D12_CPU_DESCRIPTOR_HANDLE rtv = {};
 
         uint32_t width = 0;
         uint32_t height = 0;
@@ -19,11 +21,16 @@ namespace efg::d3d12
         DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
     };
 
-    struct GpuDepthBuffer
+    struct GpuTextureCube
     {
         Microsoft::WRL::ComPtr<ID3D12Resource> resource;
-        D3D12_CPU_DESCRIPTOR_HANDLE dsv = {};
-        D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
-        DXGI_FORMAT format = DXGI_FORMAT_D32_FLOAT;
+
+        uint32_t width = 0;
+        uint32_t height = 0;
+        DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;
+
+        D3D12_CPU_DESCRIPTOR_HANDLE rtv[6] = {};
+        D3D12_CPU_DESCRIPTOR_HANDLE dsv[6] = {};
+        D3D12_GPU_DESCRIPTOR_HANDLE srv = {};
     };
 }

@@ -22,9 +22,11 @@
 #include "..\factories\D3D12BufferFactory.h"
 #include "..\factories\D3D12TextrureFactory.h"
 #include "..\factories\D3D12ResourceFactory.h"
+#include "..\factories\D3D12DescriptorFactory.h"
 #include "..\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
 #include "..\passes\ShadowMap\D3D12ShadowMapRenderPass.h"
 #include "..\presentation\D3D12SwapChain.h"
+#include "..\systems\D3D12ShadowSystem.h"
 
 
 namespace efg::d3d12
@@ -66,9 +68,11 @@ namespace efg::d3d12
 		D3D12BufferFactory m_bufferFactory = {};
 		D3D12TextureFactory m_textureFactory = {};
 		D3D12ResourceFactory m_resourceFactory = {};
+		D3D12DescriptorFactory m_descriptorFactory = {};
 		D3D12MeshLibrary m_meshLibrary;
 		D3D12SwapChain m_swapChain = {};
 		D3D12QueueFence m_directFence = {};
+		D3D12ShadowSystem m_shadowSystem = {};
 
 		RenderTargets m_renderTargets = {};
 

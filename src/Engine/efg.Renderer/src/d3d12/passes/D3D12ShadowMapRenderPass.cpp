@@ -19,10 +19,7 @@ namespace efg::d3d12
         m_textureFactory = textureFactory;
         m_bufferFactory = bufferFactory;
 
-        m_shadowMap = m_textureFactory->CreateDepthBuffer(2048, 2048);
-        m_shadowMap.dsv = m_descriptorContext->CreateDSV(m_shadowMap.resource.Get(), nullptr).cpu;
-        m_shadowMap.gpuSrv = m_descriptorContext->CreateTexture2DSRV(m_shadowMap.resource.Get(), DXGI_FORMAT_R32_FLOAT, 1).gpu;
-
+        m_shadowMap = m_textureFactory->CreateDepthBuffer(2048, 2048, true);
     }
 
     ShadowMapFrameData D3D12ShadowMapRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene)
@@ -51,7 +48,7 @@ namespace efg::d3d12
 
         output.shadowMap = &m_shadowMap;
 
-        ctx.commandContext->ResourceBarrierTransition(m_shadowMap.resource.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        ctx.commandContext->QueueBarrierTransition(m_shadowMap.resource.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         return output;
     }
 

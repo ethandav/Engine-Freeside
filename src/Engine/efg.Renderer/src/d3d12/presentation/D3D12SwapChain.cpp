@@ -1,16 +1,16 @@
 #include "..\..\..\include\d3d12\presentation\D3D12SwapChain.h"
 #include "..\..\..\include\d3d12\core\D3D12Context.h"
 #include "..\..\..\include\d3d12\commands\D3D12CommandContext.h"
-#include "..\..\..\include\d3d12\descriptors\D3D12DescriptorContext.h"
+#include "..\..\..\include\d3d12\factories\D3D12DescriptorFactory.h"
 #include "..\..\..\include\d3d12\core\D3D12Error.h"
 
 namespace efg::d3d12
 {
-    void D3D12SwapChain::Initialize(D3D12Context* graphicsContext, D3D12DirectCommandContext* commandContext, D3D12DescriptorContext* descriptorContext)
+    void D3D12SwapChain::Initialize(D3D12Context* graphicsContext, D3D12DirectCommandContext* commandContext, D3D12DescriptorFactory* descriptorFactory)
     {
         m_graphicsContext = graphicsContext;
         m_commandContext = commandContext;
-        m_descriptorContext = descriptorContext;
+        m_descriptorFactory = descriptorFactory;
     }
 
     void D3D12SwapChain::CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height)
@@ -44,7 +44,7 @@ namespace efg::d3d12
         for (uint32_t i = 0; i < FrameCount; ++i)
         {
             D3D12_THROW_IF_FAILED(m_swapChain->GetBuffer(i, IID_PPV_ARGS(m_backBuffers[i].GetAddressOf())));
-            m_backBufferHandles[i] = m_descriptorContext->CreateRTV(m_backBuffers[i].Get(), nullptr);
+            m_backBufferHandles[i] = m_descriptorFactory->CreateRTV(m_backBuffers[i].Get(), nullptr);
         }
     }
 

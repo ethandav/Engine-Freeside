@@ -23,9 +23,7 @@ namespace efg::d3d12
 
 	struct ShadowMapFrameData
 	{
-		const GpuDepthBuffer* shadowMap = nullptr;
+		const GpuTexture2D* shadowMap = nullptr;
 		Freeside::Math::Mat4 lightViewProjection = {};
-		uint32_t width = 0;
-		uint32_t height = 0;
 	};
 }

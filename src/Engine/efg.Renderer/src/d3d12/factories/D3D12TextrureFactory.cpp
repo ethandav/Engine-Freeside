@@ -1,11 +1,13 @@
 #include "..\..\..\include\d3d12\factories\D3D12TextrureFactory.h"
 #include "..\..\..\include\d3d12\factories\D3D12ResourceFactory.h"
+#include "..\..\..\include\d3d12\factories\D3D12DescriptorFactory.h"
 
 namespace efg::d3d12
 {
-    void D3D12TextureFactory::Initialize(ID3D12Device* device, D3D12ResourceFactory* resourceFactory)
+    void D3D12TextureFactory::Initialize(ID3D12Device* device, D3D12ResourceFactory* resourceFactory, D3D12DescriptorFactory* descriptorFactory)
     {
         m_resourceFactory = resourceFactory;
+        m_descriptorFactory = descriptorFactory;
         m_device = device;
     }
 
@@ -19,18 +21,48 @@ namespace efg::d3d12
 
         texture.resource = m_resourceFactory->CreateCommittedTexture2DResource(width, height, format, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
 
+        DescriptorAllocation alloc = m_descriptorFactory->CreateTexture2DSRV(texture.resource.Get(), texture.format, texture.mipLevels);
+        texture.gpuSrv = alloc.gpu;
+        texture.cpuSrv = alloc.cpu;
+
         return texture;
     }
 
-    GpuDepthBuffer D3D12TextureFactory::CreateDepthBuffer(uint32_t width, uint32_t height)
+    GpuTextureCube D3D12TextureFactory::CreateTextureCube(uint32_t width, uint32_t height, DXGI_FORMAT format)
     {
-        GpuDepthBuffer buffer = {};
-        buffer.resource = m_resourceFactory->CreateCommittedDepthTexture2DResource(width, height);
+        GpuTextureCube texture = {};
+        texture.width = width;
+        texture.height = height;
+        texture.format = format;
 
-        return buffer;
+        texture.resource = m_resourceFactory->CreateCommittedTextureCubeResource(width, height, format, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
+
+        return texture;
     }
 
-    void D3D12TextureFactory::DestroyDepthBuffer(GpuDepthBuffer& buffer)
+    GpuTexture2D D3D12TextureFactory::CreateDepthBuffer(uint32_t width, uint32_t height, bool shaderVisible)
+    {
+        GpuTexture2D texture = {};
+        texture.width = width;
+        texture.height = height;
+        texture.mipLevels = 1;
+        texture.format = DXGI_FORMAT_D32_FLOAT;
+         
+        texture.resource = m_resourceFactory->CreateCommittedDepthTexture2DResource(width, height);
+
+        texture.dsv = m_descriptorFactory->CreateDSV(texture.resource.Get(), nullptr).cpu;
+
+        if (shaderVisible)
+        {
+            DescriptorAllocation alloc = m_descriptorFactory->CreateTexture2DSRV(texture.resource.Get(), DXGI_FORMAT_R32_FLOAT, 1);
+            texture.gpuSrv = alloc.gpu;
+            texture.cpuSrv = alloc.cpu;
+        }
+
+        return texture;
+    }
+
+    void D3D12TextureFactory::DestroyTexture2D(GpuTexture2D& buffer)
     {
         if (buffer.resource)
         {
@@ -38,6 +70,7 @@ namespace efg::d3d12
         }
 
         buffer.resource.Reset();
-        buffer.dsv.ptr = 0;
+        buffer.cpuSrv.ptr = 0;
+        buffer.gpuSrv.ptr = 0; 
     }
 }

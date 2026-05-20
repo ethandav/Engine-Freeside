@@ -6,6 +6,7 @@
 #include <wrl.h>
 #include <d3d12.h>
 #include <cstdint>
+#include <vector>
 
 namespace efg::d3d12
 {
@@ -33,14 +34,25 @@ namespace efg::d3d12
 		void ClearDepthStencil(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, float depth, uint8_t stencil);
 		void BindPipeline(const GraphicsPipelineState& pipeline);
 		void DrawMeshInstanced(const GpuMesh& mesh, uint32_t instanceCount);
+		void QueueBarrierTransition(ID3D12Resource* pResource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
+		void FlushPendingBarrierTransitions();
 	private:
 		void CreateCommandObjects();
 		void CreateCommandList(ID3D12GraphicsCommandList** list, ID3D12CommandAllocator*, D3D12_COMMAND_LIST_TYPE type);
 		void CreateCommandQueue(ID3D12CommandQueue** queue, D3D12_COMMAND_LIST_TYPE type);
 
+		struct PendingBarrierTransition
+		{
+			ID3D12Resource* pResource = nullptr;
+			D3D12_RESOURCE_STATES before = {};
+			D3D12_RESOURCE_STATES after = {};
+		};
+
 		D3D12Context* m_graphicsContext = {};
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_directCommandAllocator;
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_directQueue;
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_directCommandList;
+
+		std::vector<PendingBarrierTransition> m_pendingBarrierTransitions = {};
 	};
 }

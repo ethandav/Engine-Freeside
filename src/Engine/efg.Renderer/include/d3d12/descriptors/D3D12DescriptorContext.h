@@ -18,13 +18,6 @@ namespace efg::d3d12
 		DescriptorAllocation AllocateDSV();
 		DescriptorAllocation AllocateCBVSRVUAV();
 		DescriptorAllocation AllocateSampler();
-		DescriptorAllocation CreateRTV(ID3D12Resource* resource, const D3D12_RENDER_TARGET_VIEW_DESC* desc);
-		DescriptorAllocation CreateDSV(ID3D12Resource* resource, const D3D12_DEPTH_STENCIL_VIEW_DESC* desc);
-		DescriptorAllocation CreateCBV(ID3D12Resource* resource, uint32_t sizeInBytes);
-		DescriptorAllocation CreateUAV(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride, ID3D12Resource* counterResource);
-		DescriptorAllocation CreateStructuredBufferSRV(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride);
-		DescriptorAllocation CreateTexture2DSRV(ID3D12Resource* resource, DXGI_FORMAT format, uint32_t mipLevels);
-		DescriptorAllocation CreateSampler(const D3D12_SAMPLER_DESC& samplerDesc);
 		ID3D12DescriptorHeap* GetCBVSRVUAVHeap() const;
 		ID3D12DescriptorHeap* GetSamplerHeap() const;
 

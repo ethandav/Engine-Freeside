@@ -35,6 +35,8 @@ namespace efg::d3d12
         BindPassResources(ctx, resources);
         ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Shadow), resources.shadowCB);
         DrawAllRenderObjects(ctx, scene);
+
+        ctx.commandContext->QueueBarrierTransition(shadowMapFrameData.shadowMap->resource.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 	}
 
     void D3D12ForwardLitGeometryRenderPass::UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)

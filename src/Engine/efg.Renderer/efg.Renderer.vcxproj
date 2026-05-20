@@ -132,6 +132,7 @@
     <ClInclude Include="include\d3d12\commands\D3D12UploadTypes.h" />
     <ClInclude Include="include\d3d12\core\D3D12Format.h" />
     <ClInclude Include="include\d3d12\descriptors\D3D12DescriptorAllocation.h" />
+    <ClInclude Include="include\d3d12\factories\D3D12DescriptorFactory.h" />
     <ClInclude Include="include\d3d12\frame\D3D12FrameConfig.h" />
     <ClInclude Include="include\d3d12\frame\D3D12FrameContext.h" />
     <ClInclude Include="include\d3d12\frame\D3D12FrameResouce.h" />
@@ -149,6 +150,7 @@
     <ClInclude Include="include\d3d12\resources\D3D12GpuMesh.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuResourceData.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuTexture.h" />
+    <ClInclude Include="include\d3d12\systems\D3D12ShadowSystem.h" />
     <ClInclude Include="include\d3d12\types\D3D12DrawTypes.h" />
     <ClInclude Include="include\d3d12\types\D3D12PipelineTypes.h" />
     <ClInclude Include="include\render\Camera.h" />
@@ -183,6 +185,7 @@
   <ItemGroup>
     <ClInclude Include="include\d3d12\factories\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\libraries\D3D12MeshLibrary.h" />
+    <ClCompile Include="src\d3d12\factories\D3D12DescriptorFactory.cpp" />
     <ClCompile Include="src\d3d12\factories\D3D12TextrureFactory.cpp" />
     <ClCompile Include="src\d3d12\core\D3D12Format.cpp" />
     <ClCompile Include="src\d3d12\passes\D3D12ForwardLitGeometryRenderPass.cpp" />
@@ -190,6 +193,7 @@
     <ClCompile Include="src\d3d12\factories\D3D12ResourceFactory.cpp" />
     <ClCompile Include="src\d3d12\libraries\D3D12TextureLibrary.cpp" />
     <ClCompile Include="src\d3d12\passes\D3D12ShadowMapRenderPass.cpp" />
+    <ClCompile Include="src\d3d12\systems\D3D12ShadowSystem.cpp" />
     <ClCompile Include="src\render\types\FormatUtils.cpp" />
     <ClCompile Include="src\render\ImageLoader.cpp" />
     <ClCompile Include="src\render\RenderQueue.cpp" />

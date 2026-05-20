@@ -138,4 +138,22 @@ namespace efg::d3d12
             m_directCommandList->DrawInstanced(mesh.vertexCount, instanceCount, 0, 0);
         }
     }
+
+    void D3D12DirectCommandContext::QueueBarrierTransition(ID3D12Resource* pResource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
+    {
+        PendingBarrierTransition request = {};
+        request.pResource = pResource;
+        request.before = before;
+        request.after = after;
+        m_pendingBarrierTransitions.push_back(std::move(request));
+    }
+
+    void D3D12DirectCommandContext::FlushPendingBarrierTransitions()
+    {
+        for (const auto& transition : m_pendingBarrierTransitions)
+        {
+            ResourceBarrierTransition(transition.pResource, transition.before, transition.after);
+        }
+        m_pendingBarrierTransitions.clear();
+    }
 }
