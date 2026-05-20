@@ -59,7 +59,7 @@ namespace efg::d3d12
         return allocation;
     }
 
-    DescriptorAllocation D3D12DescriptorFactory::CreateStructuredBufferSRV(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride)
+    void D3D12DescriptorFactory::CreateStructuredBufferSRV(GpuStructuredBuffer* buffer, uint32_t elementCount, uint32_t elementStride)
     {
         DescriptorAllocation allocation = m_descriptorContext->AllocateCBVSRVUAV();
         D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -70,9 +70,9 @@ namespace efg::d3d12
         srvDesc.Buffer.NumElements = elementCount;
         srvDesc.Buffer.StructureByteStride = elementStride;
         srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-        m_device->CreateShaderResourceView(resource, &srvDesc, allocation.cpu);
-
-        return allocation;
+        m_device->CreateShaderResourceView(buffer->resource.Get(), &srvDesc, allocation.cpu);
+        buffer->cpuSrv = allocation.cpu;
+        buffer->gpuSrv = allocation.gpu;
     }
 
     void D3D12DescriptorFactory::CreateTexture2DSRV(GpuTexture2D* texture, DXGI_FORMAT format, uint32_t mipLevels)
