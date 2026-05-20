@@ -41,8 +41,8 @@ namespace efg::d3d12
 
 	struct DirectionalLightConstants
 	{
-		Freeside::Math::Vec4 directionAndIntensity; // xyz = direction, w = intensity
-		Freeside::Math::Vec4 colorAndPadding;       // rgb = color, w unused
+		uint32_t directionalLightCount = 0;
+		float padding[3] = {};
 	};
 
 	struct PointLightConstants
@@ -55,6 +55,12 @@ namespace efg::d3d12
 	{
 		Freeside::Math::Vec4 positionAndRadius;
 		Freeside::Math::Vec4 colorAndIntensity;
+	};
+
+	struct GpuDirectionalLight
+	{
+		Freeside::Math::Vec4 directionAndIntensity;
+		Freeside::Math::Vec4 colorAndPadding;
 	};
 
 	struct ShadowConstants

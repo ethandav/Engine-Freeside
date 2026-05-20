@@ -28,15 +28,18 @@ namespace efg::d3d12
 		{
 			D3D12_GPU_VIRTUAL_ADDRESS cameraCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS shadowCB = 0;
-			D3D12_GPU_VIRTUAL_ADDRESS directionalLightCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS pointLightConstantsCB = 0;
+			D3D12_GPU_VIRTUAL_ADDRESS directionalLightConstantsCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS pointLightsSRV = 0;
+			D3D12_GPU_VIRTUAL_ADDRESS directionalLightsSRV = 0;
 			D3D12_GPU_DESCRIPTOR_HANDLE shadowMapSRV = {};
 			PointLightConstants pointLightConstants = {};
+			DirectionalLightConstants directionalLightConstants = {};
 		};
 		void UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
 		void BindPassResources(const FrameContext& ctx, ForwardLitPassResources& resources);
 		void UploadPointLights(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
+		void UploadDirectionalLights(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
 		void UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
 		CameraConstants BuildCameraConstants(const Freeside::Camera& camera);
 		DirectionalLightConstants BuildDirectionalLightConstants(const Freeside::Lights::Directional& light);

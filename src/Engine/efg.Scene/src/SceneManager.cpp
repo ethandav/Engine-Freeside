@@ -55,10 +55,10 @@ namespace Freeside
 			return scene->GetRenderObjectByHandle(objectHandle);
 		}
 
-		Lights::Directional* SceneManager::GetDirectionalLight(SceneHandle sceneHandle)
+		Lights::Directional* Freeside::Scene::SceneManager::GetDirectionalLightByHandle(SceneHandle sceneHandle, DirectionalLightHandle handle)
 		{
 			Scene* scene = GetSceneByHandle(sceneHandle);
-			return scene->GetDirectionalLight();
+			return scene->GetDirectionalLightByHandle(handle);
 		}
 
 		Lights::Point* SceneManager::GetPointLightByHandle(SceneHandle sceneHandle, PointLightHandle pointLightHandle)

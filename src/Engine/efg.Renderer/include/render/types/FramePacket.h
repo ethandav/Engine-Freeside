@@ -13,8 +13,8 @@ namespace efg
 	{
 		uint64_t frameId = 0;
 		Freeside::Camera camera = {};
-		Freeside::Lights::Directional directionalLight = {};
 		std::vector<Freeside::RenderObject> renderObjects = {};
+		std::vector<Freeside::Lights::Directional> directionalLights = {};
 		std::vector<Freeside::Lights::Point> pointLights = {};
 	};
 }

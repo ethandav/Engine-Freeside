@@ -29,7 +29,7 @@ namespace efg::d3d12
     void D3D12GraphicsPipelineLibary::CreateForwardLitRootSignature(ID3D12RootSignature** rootSignature)
     {
         CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-        CD3DX12_ROOT_PARAMETER rootParameters[9] = {};
+        CD3DX12_ROOT_PARAMETER rootParameters[10] = {};
         ComPtr<ID3DBlob> signature;
         ComPtr<ID3DBlob> error;
 
@@ -56,12 +56,10 @@ namespace efg::d3d12
 
         CD3DX12_DESCRIPTOR_RANGE shadowMapRange = {};
         shadowMapRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
+        rootParameters[8].InitAsDescriptorTable(1, &shadowMapRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
-        rootParameters[8].InitAsDescriptorTable(
-            1,
-            &shadowMapRange,
-            D3D12_SHADER_VISIBILITY_PIXEL
-        );
+        rootParameters[9].InitAsShaderResourceView(4, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+
 
         D3D12_STATIC_SAMPLER_DESC shadowSampler = {};
         shadowSampler.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;

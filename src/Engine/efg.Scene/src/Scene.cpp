@@ -17,8 +17,10 @@ namespace Freeside
 			m_camera.LookAt(Freeside::Math::Vec3(0.0f, 1.0f, -5.0f), Freeside::Math::Vec3(0.0f, 0.0f, 0.0f));
 			m_camera.SetPerspective(0.78539816339f, aspectRatio, 0.1f, 1000.0f);
 
-			m_dirLight.color = Math::Vec3(1.0f, 1.0f, 1.0f);
-			m_dirLight.direction = Math::Vec3(-0.2f, -1.0f, -0.3f);
+			Lights::Directional dir = {};
+			dir.color = Math::Vec3(1.0f, 1.0f, 1.0f);
+			dir.direction = Math::Vec3(-0.2f, -1.0f, -0.3f);
+			AddDirectionalLightToScene(dir);
 		}
 
 		SceneRenderObjectHandle Scene::AddRenderObjectToRenderQueue(RenderObject object)
@@ -41,6 +43,16 @@ namespace Freeside
 			};
 		}
 
+		DirectionalLightHandle Scene::AddDirectionalLightToScene(Lights::Directional light)
+		{
+			m_directionalLights.push_back(std::move(light));
+			directionalLightCount++;
+			return DirectionalLightHandle
+			{
+				static_cast<uint32_t>(m_directionalLights.size() - 1)
+			};
+		}
+
 		RenderObject* Scene::GetRenderObjectByHandle(SceneRenderObjectHandle handle)
 		{
 			if (!handle.IsValid() || handle.index >= m_renderObjectQueue.size())
@@ -51,9 +63,14 @@ namespace Freeside
 			return &m_renderObjectQueue[handle.index];
 		}
 
-		Lights::Directional* Scene::GetDirectionalLight()
+		Lights::Directional* Scene::GetDirectionalLightByHandle(DirectionalLightHandle handle)
 		{
-			return &m_dirLight;
+			if (!handle.IsValid() || handle.index >= m_directionalLights.size())
+			{
+				throw std::runtime_error("Invalid Directional Light handle.");
+			}
+
+			return &m_directionalLights[handle.index];
 		}
 
 		Lights::Point* Scene::GetPointLightByHandle(PointLightHandle handle)
@@ -76,9 +93,10 @@ namespace Freeside
 			efg::FramePacket renderData = {};
 			renderData.renderObjects.reserve(objectCount);
 			renderData.pointLights.reserve(pointLightCount);
+			renderData.directionalLights.reserve(directionalLightCount);
 
 			renderData.camera = m_camera;
-			renderData.directionalLight = m_dirLight;
+			renderData.directionalLights = m_directionalLights;
 			renderData.renderObjects = m_renderObjectQueue;
 			renderData.pointLights = m_pointLights;
 

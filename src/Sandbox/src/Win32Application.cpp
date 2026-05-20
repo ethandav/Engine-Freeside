@@ -167,7 +167,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	pObject3 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject3);
 	pObject4 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject4);
 
-	Freeside::Lights::Directional* pDirLight = sceneManager.GetDirectionalLight(testSceneHandle);
+	Freeside::DirectionalLightHandle hDirLight = Freeside::DirectionalLightHandle(0);
+	Freeside::Lights::Directional* pDirLight = sceneManager.GetDirectionalLightByHandle(testSceneHandle, hDirLight);
 
 	Freeside::Lights::Point pointLight1;
 	pointLight1.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);

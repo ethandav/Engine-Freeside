@@ -67,7 +67,7 @@ namespace efg::d3d12
 
     void D3D12ShadowMapRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ShadowMapPassResources& resources, ShadowMapFrameData& output)
     {
-        LightViewConstants lightViewConstants = BuildLightViewConstants(scene.directionalLight);
+        LightViewConstants lightViewConstants = BuildLightViewConstants(scene.directionalLights[0]);
         output.lightViewProjection = lightViewConstants.viewProjection;
         resources.lightViewCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &lightViewConstants, sizeof(LightViewConstants));
     }

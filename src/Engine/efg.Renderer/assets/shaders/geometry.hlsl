@@ -12,12 +12,6 @@ cbuffer ShadowCB : register(b1)
     float4 ShadowParams; // x = bias, y = strength, etc.
 };
 
-cbuffer DirectionalLightCB : register(b2)
-{
-    float4 LightDirectionAndIntensity;
-    float4 LightColor;
-};
-
 cbuffer MaterialCB : register(b3)
 {
     float4 BaseColor;
@@ -31,6 +25,12 @@ struct PointLight
     float4 colorAndIntensity; // rgb = color, w = intensity
 };
 
+struct DirectionalLight
+{
+    float4 lightDirectionAndIntensity;
+    float4 lightColor;
+};
+
 struct InstanceData
 {
     float4x4 World;
@@ -40,6 +40,7 @@ StructuredBuffer<PointLight> gPointLights : register(t0);
 StructuredBuffer<InstanceData> Instances : register(t1);
 Texture2D gBaseColorTexture : register(t2);
 Texture2D<float> ShadowMap : register(t3);
+StructuredBuffer<DirectionalLight> gDirectionalLights : register(t4);
 SamplerState gLinearSampler : register(s0);
 SamplerComparisonState ShadowSampler : register(s1);
 
@@ -47,6 +48,12 @@ cbuffer PointLightMetadata : register(b4)
 {
     uint gPointLightCount;
     float3 _pointLightPadding;
+};
+
+cbuffer DirectionalLightMetadata : register(b2)
+{
+    uint gDirectionalLightCount;
+    float3 _directionalLightPadding;
 };
 
 struct VSInput
@@ -144,47 +151,40 @@ float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, flo
     return result;
 }
 
+float3 AccumulateDirectionalLights(float3 normal, float3 viewDir, float4 materialColor, float shadowFactor)
+{
+    float3 result = float3(0.0f, 0.0f, 0.0f);
+
+    [loop]
+    for (uint i = 0; i < gDirectionalLightCount; ++i)
+    {
+        DirectionalLight light = gDirectionalLights[i];
+        
+        float3 lightDir = normalize(-light.lightDirectionAndIntensity.xyz);
+        float ndotl = saturate(dot(normal, lightDir));
+        float3 diffuse = materialColor.rgb * light.lightColor.rgb * ndotl * light.lightDirectionAndIntensity.w;
+        float3 halfVector = normalize(lightDir + viewDir);
+        float specularAmount = pow(saturate(dot(normal, halfVector)), Specular.y);
+        float3 specular = light.lightColor.rgb * specularAmount * Specular.x * light.lightDirectionAndIntensity.w;
+        result += shadowFactor * (diffuse + specular);
+    }
+    
+    return result;
+}
+
 float4 PSMain(VSOutput input) : SV_TARGET
 {
     float2 uv = input.uv * uvScale;
     float4 sampledBaseColor = gBaseColorTexture.Sample(gLinearSampler, uv);
-
     float3 normal = normalize(input.normalWS);
     float3 viewDir = normalize(ViewPosition.xyz - input.worldPosition);
-
-    float3 lightDir = normalize(-LightDirectionAndIntensity.xyz);
-    float ndotl = saturate(dot(normal, lightDir));
-
     float shadow = ComputeShadowFactor(input.worldPosition);
-
     float3 ambient = sampledBaseColor.rgb * 0.1f;
 
-    float3 diffuse =
-        sampledBaseColor.rgb *
-        LightColor.rgb *
-        ndotl *
-        LightDirectionAndIntensity.w;
+    float3 directionalLighting = AccumulateDirectionalLights(normal, viewDir, sampledBaseColor, shadow);
+    float3 pointLights = AccumulatePointLights(input.worldPosition, normal, viewDir, sampledBaseColor);
 
-    float3 halfVector = normalize(lightDir + viewDir);
-
-    float specularAmount =
-        pow(saturate(dot(normal, halfVector)), Specular.y);
-
-    float3 specular =
-        LightColor.rgb *
-        specularAmount *
-        Specular.x *
-        LightDirectionAndIntensity.w;
-
-    float3 pointLights =
-        AccumulatePointLights(input.worldPosition, normal, viewDir, sampledBaseColor);
-
-    float3 directionalLighting = shadow * (diffuse + specular);
-
-    float3 finalColor =
-        ambient +
-        directionalLighting +
-        pointLights;
+    float3 finalColor = ambient + directionalLighting + pointLights;
 
     return float4(finalColor, BaseColor.a);
 }

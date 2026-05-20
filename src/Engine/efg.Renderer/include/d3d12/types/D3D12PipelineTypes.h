@@ -21,7 +21,8 @@ namespace efg::d3d12
 		Material = 3,
 		PointLightConstants = 4,
 		PointLightsSrv = 5,
-		InstanceData = 6
+		InstanceData = 6,
+		DirectionalLightsSrv = 9
 	};
 
 	struct GraphicsPipelineState

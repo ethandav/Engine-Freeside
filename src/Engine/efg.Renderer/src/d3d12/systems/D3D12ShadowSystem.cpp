@@ -7,4 +7,9 @@ namespace efg::d3d12
 	{
 		m_textureFactory = textureFactory;
 	}
+
+	void D3D12ShadowSystem::Update(const FramePacket& scene)
+	{
+
+	}
 }

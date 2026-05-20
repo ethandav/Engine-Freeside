@@ -41,6 +41,7 @@ namespace efg::d3d12
 
     void D3D12ForwardLitGeometryRenderPass::UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
     {
+        UploadDirectionalLights(ctx, scene, resources);
         UploadPointLights(ctx, scene, resources);
         UploadFrameConstants(ctx, scene, resources);
     }
@@ -49,9 +50,10 @@ namespace efg::d3d12
     {
         ctx.commandContext->BindPipeline(m_pipelineLibrary->Get(PipelineId::ForwardLitGeometry));
         ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), resources.cameraCB);
-        ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), resources.directionalLightCB);
+        ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), resources.directionalLightConstantsCB);
         ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightConstants), resources.pointLightConstantsCB);
         ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv), resources.pointLightsSRV);
+        ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLightsSrv), resources.directionalLightsSRV);
         ID3D12DescriptorHeap* heaps[] = { m_descriptorContext->GetCBVSRVUAVHeap() };
         ctx.commandContext->SetDescriptorHeaps(_countof(heaps), heaps);
         ctx.commandContext->SetGraphicsRootDescriptorTable(8, resources.shadowMapSRV);
@@ -60,9 +62,8 @@ namespace efg::d3d12
     void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
     {
         CameraConstants cameraConstants = BuildCameraConstants(scene.camera);
-        DirectionalLightConstants dirLightConstants = BuildDirectionalLightConstants(scene.directionalLight);
         resources.cameraCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &cameraConstants, sizeof(CameraConstants));
-        resources.directionalLightCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &dirLightConstants, sizeof(DirectionalLightConstants));
+        resources.directionalLightConstantsCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.directionalLightConstants, sizeof(DirectionalLightConstants));
         resources.pointLightConstantsCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.pointLightConstants, sizeof(PointLightConstants));
     }
 
@@ -74,14 +75,6 @@ namespace efg::d3d12
         cameraConstants.viewPosition = Freeside::Math::Vec4(camPosition.x, camPosition.y, camPosition.z, 0.0f);
 
         return cameraConstants;
-    }
-
-    DirectionalLightConstants D3D12ForwardLitGeometryRenderPass::BuildDirectionalLightConstants(const Freeside::Lights::Directional& light)
-    {
-        DirectionalLightConstants constants = {};
-        constants.directionAndIntensity = {light.direction.x, light.direction.y, light.direction.z, 1.0f};
-        constants.colorAndPadding = {light.color.x, light.color.y, light.color.z, 1.0f};
-        return constants;
     }
 
     void D3D12ForwardLitGeometryRenderPass::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
@@ -131,5 +124,27 @@ namespace efg::d3d12
         }
 
         resources.pointLightConstants.pointLightCount = count;
+    }
+
+    void D3D12ForwardLitGeometryRenderPass::UploadDirectionalLights(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
+    {
+        uint32_t count = 0;
+
+        if (!scene.directionalLights.empty())
+        {
+            count = static_cast<uint32_t>(scene.directionalLights.size());
+            GpuUploadBufferAllocation allocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, count * sizeof(GpuDirectionalLight), StructuredBufferAlignment);
+            GpuDirectionalLight* instances = reinterpret_cast<GpuDirectionalLight*>(allocation.cpu);
+            resources.directionalLightsSRV = allocation.gpu;
+
+            for (uint32_t i = 0; i < count; ++i)
+            {
+                const Freeside::Lights::Directional& light = (scene.directionalLights)[i];
+                instances[i].directionAndIntensity = { light.direction.x, light.direction.y, light.direction.z, light.intensity };
+                instances[i].colorAndPadding = { light.color.x, light.color.y, light.color.z, 0.0f };
+            }
+        }
+
+        resources.directionalLightConstants.directionalLightCount = count;
     }
 }

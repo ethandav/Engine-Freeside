@@ -17,6 +17,7 @@ namespace Freeside
 
 			Freeside::Math::Vec3 direction = Freeside::Math::Vec3(0.0f, 01.0f, 0.0f);
 			Freeside::Math::Vec3 color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+			float intensity = 1.0f;
 		};
 
 		class Point

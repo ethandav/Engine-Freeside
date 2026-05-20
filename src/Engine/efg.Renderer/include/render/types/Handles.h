@@ -44,6 +44,16 @@ namespace Freeside
 		}
 	};
 
+	struct DirectionalLightHandle
+	{
+		uint32_t index = UINT32_MAX;
+
+		bool IsValid() const
+		{
+			return index != UINT32_MAX;
+		}
+	};
+
 	struct MeshHandle
 	{
 		uint32_t index = UINT32_MAX;
