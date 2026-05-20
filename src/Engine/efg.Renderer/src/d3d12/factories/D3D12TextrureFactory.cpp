@@ -18,7 +18,7 @@ namespace efg::d3d12
         texture.height = height;
         texture.mipLevels = 1;
         texture.format = format;
-        texture.resource = m_resourceFactory->CreateCommittedTexture2DResource(width, height, format, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
+        m_resourceFactory->CreateCommittedTexture2DResource(&texture, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
         m_descriptorFactory->CreateTexture2DSRV(&texture, texture.format, texture.mipLevels);
 
         return texture;
@@ -31,7 +31,7 @@ namespace efg::d3d12
         texture.height = height;
         texture.format = format;
 
-        m_resourceFactory->CreateCommittedTextureCubeResource(width, height, format, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
+        m_resourceFactory->CreateCommittedTextureCubeResource(&texture, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
         m_descriptorFactory->CreateTextureCubeSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1);
 
         for (uint32_t face = 0; face < 6; ++face)
@@ -50,7 +50,7 @@ namespace efg::d3d12
         texture.mipLevels = 1;
         texture.format = DXGI_FORMAT_D32_FLOAT;
          
-        texture.resource = m_resourceFactory->CreateCommittedDepthTexture2DResource(width, height);
+        m_resourceFactory->CreateCommittedDepthTexture2DResource(&texture);
 
         texture.dsv = m_descriptorFactory->CreateDSV(texture.resource.Get(), nullptr).cpu;
 

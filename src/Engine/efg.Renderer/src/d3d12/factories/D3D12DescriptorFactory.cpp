@@ -107,7 +107,6 @@ namespace efg::d3d12
 
     void D3D12DescriptorFactory::CreateTextureCubeFaceDSV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex)
     {
-        DescriptorAllocation allocation = m_descriptorContext->AllocateDSV();
         D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
         desc.Format = format;
         desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
@@ -115,7 +114,7 @@ namespace efg::d3d12
         desc.Texture2DArray.MipSlice = 0;
         desc.Texture2DArray.FirstArraySlice = faceIndex;
         desc.Texture2DArray.ArraySize = 1;
-        m_device->CreateDepthStencilView(texture->resource.Get(), &desc, allocation.cpu);
+        DescriptorAllocation allocation = CreateDSV(texture->resource.Get(), &desc);
         texture->dsv[faceIndex] = allocation.cpu;
     }
 
