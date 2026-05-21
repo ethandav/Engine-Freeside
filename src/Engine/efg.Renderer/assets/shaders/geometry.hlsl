@@ -142,6 +142,23 @@ float ComputeDirectionalShadowFactor(float3 worldPosition, int shadowIndex)
     return lerp(1.0f, visibility, gShadowStrength);
 }
 
+uint GetCubeFaceIndex(float3 dir)
+{
+    float3 absDir = abs(dir);
+
+    if (absDir.x >= absDir.y && absDir.x >= absDir.z)
+    {
+        return dir.x >= 0.0f ? 0 : 1; // +X, -X
+    }
+
+    if (absDir.y >= absDir.x && absDir.y >= absDir.z)
+    {
+        return dir.y >= 0.0f ? 2 : 3; // +Y, -Y
+    }
+
+    return dir.z >= 0.0f ? 4 : 5; // +Z, -Z
+}
+
 float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int shadowIndex)
 {
     if (shadowIndex < 0 || shadowIndex >= (int) gPointShadowCount)
@@ -149,16 +166,34 @@ float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int s
         return 1.0f;
     }
 
-    PointShadowData shadowData = gPointShadows[shadowIndex];
-
     float3 lightToPixel = worldPosition - lightPosition;
-    float currentDistance = length(lightToPixel);
     float3 sampleDir = normalize(lightToPixel);
 
-    float sampledDepth = gPointShadowCubes[NonUniformResourceIndex(shadowIndex)].Sample(gLinearSampler, sampleDir);
-    float closestDistance = sampledDepth * shadowData.farPlane;
+    uint faceIndex = GetCubeFaceIndex(sampleDir);
 
-    float visibility = currentDistance - gShadowBias <= closestDistance ? 1.0f : 0.0f;
+    PointShadowData shadowData = gPointShadows[shadowIndex];
+
+    float4 lightClip = mul(
+        shadowData.faceViewProjection[faceIndex],
+        float4(worldPosition, 1.0f)
+    );
+
+    float3 lightNdc = lightClip.xyz / lightClip.w;
+    float currentDepth = lightNdc.z;
+
+    if (currentDepth < 0.0f || currentDepth > 1.0f)
+    {
+        return 1.0f;
+    }
+
+    float sampledDepth =
+        gPointShadowCubes[NonUniformResourceIndex(shadowIndex)]
+            .Sample(gLinearSampler, sampleDir);
+
+    float visibility =
+        currentDepth - gShadowBias <= sampledDepth
+            ? 1.0f
+            : 0.0f;
 
     return lerp(1.0f, visibility, gShadowStrength);
 }
@@ -254,11 +289,9 @@ float4 PSMain(VSOutput input) : SV_TARGET
 
     float3 ambient = sampledBaseColor.rgb * 0.1f;
 
-    float3 directionalLighting =
-        AccumulateDirectionalLights(input.worldPosition, normal, viewDir, sampledBaseColor);
+    float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, sampledBaseColor);
 
-    float3 pointLighting =
-        AccumulatePointLights(input.worldPosition, normal, viewDir, sampledBaseColor);
+    float3 pointLighting = AccumulatePointLights(input.worldPosition, normal, viewDir, sampledBaseColor);
 
     float3 finalColor = ambient + directionalLighting + pointLighting;
 

@@ -117,14 +117,17 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::RenderObject object2;
 	Freeside::RenderObject object3;
 	Freeside::RenderObject object4;
+	Freeside::RenderObject object5;
 	Freeside::RenderObject* pObject1;
 	Freeside::RenderObject* pObject2;
 	Freeside::RenderObject* pObject3;
 	Freeside::RenderObject* pObject4;
+	Freeside::RenderObject* pObject5;
 	Freeside::Scene::SceneRenderObjectHandle hObject1;
 	Freeside::Scene::SceneRenderObjectHandle hObject2;
 	Freeside::Scene::SceneRenderObjectHandle hObject3;
 	Freeside::Scene::SceneRenderObjectHandle hObject4;
+	Freeside::Scene::SceneRenderObjectHandle hObject5;
 	object1.mesh = cubeMeshHandle;
 	object1.material = crateMaterialHandle;
 	object1.transform.position = Freeside::Math::Vec3(-1.0f, 0.0f, 0.0f);
@@ -150,31 +153,43 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	object4.mesh = planeMeshHandle;
 	object4.material = grassMaterialHandle;
-	object4.transform.position = Freeside::Math::Vec3(0.0f, -0.5f, 0.0f);
-	object4.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+	object4.transform.position = Freeside::Math::Vec3(0.0f, 0.0f, 5.0f);
+	object4.transform.rotation = Freeside::Math::Vec3(-3.14159265f * 0.5f, 0.0f, 0.0f);
 	object4.transform.scale = Freeside::Math::Vec3(10.0f, 10.0f, 10.0f);
 	object4.world = Freeside::Math::TransformMatrix(object4.transform.position, object4.transform.rotation, object4.transform.scale);
 	object4.initialTransform = object4.world;
 	object4.name =  L"Plane";
+
+	object5.mesh = planeMeshHandle;
+	object5.material = grassMaterialHandle;
+	object5.transform.position = Freeside::Math::Vec3(0.0f, -0.5f, 0.0f);
+	object5.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+	object5.transform.scale = Freeside::Math::Vec3(10.0f, 10.0f, 10.0f);
+	object5.world = Freeside::Math::TransformMatrix(object5.transform.position, object5.transform.rotation, object5.transform.scale);
+	object5.initialTransform = object5.world;
+	object5.name = L"Plane";
 
 
 	hObject1 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object1);
 	hObject2 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object2);
 	hObject3 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object3);
 	hObject4 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object4);
+	hObject5 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object5);
 	pObject1 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject1);
 	pObject2 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject2);
 	pObject3 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject3);
 	pObject4 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject4);
+	pObject5 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject5);
 
 	Freeside::DirectionalLightHandle hDirLight = Freeside::DirectionalLightHandle(0);
 	Freeside::Lights::Directional* pDirLight = sceneManager.GetDirectionalLightByHandle(testSceneHandle, hDirLight);
+	pDirLight->intensity = 0.0f;
 
 	Freeside::Lights::Point pointLight1;
 	pointLight1.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	pointLight1.intensity = 2.0f;
-	pointLight1.position = Freeside::Math::Vec3(-1.0f, 0.0f, -2.0f);
-	pointLight1.radius = 5.0f;
+	pointLight1.intensity = 1.0f;
+	pointLight1.position = Freeside::Math::Vec3(-1.0f, 0.0f, -3.0f);
+	pointLight1.radius = 20.0f;
 
 	Freeside::PointLightHandle hPointLight1 = sceneManager.AddPointLightToScene(testSceneHandle, pointLight1);
 	Freeside::Lights::Point* pPointLight1 = sceneManager.GetPointLightByHandle(testSceneHandle, hPointLight1);

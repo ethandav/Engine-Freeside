@@ -14,7 +14,7 @@ namespace Freeside
 
 		void Scene::CreateScenefromDefault(float aspectRatio)
 		{
-			m_camera.LookAt(Freeside::Math::Vec3(0.0f, 1.0f, -5.0f), Freeside::Math::Vec3(0.0f, 0.0f, 0.0f));
+			m_camera.LookAt(Freeside::Math::Vec3(2.0f, 1.0f, -5.0f), Freeside::Math::Vec3(0.0f, 0.0f, 0.0f));
 			m_camera.SetPerspective(0.78539816339f, aspectRatio, 0.1f, 1000.0f);
 
 			Lights::Directional dir = {};
