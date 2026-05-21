@@ -49,10 +49,7 @@ namespace efg::d3d12
         m_bufferFactory = bufferFactory;
     }
 
-    void D3D12ForwardLitGeometryRenderPass::Execute(
-        const FrameContext& ctx,
-        const FramePacket& scene,
-        const ShadowMapFrameData& shadowMapFrameData)
+    void D3D12ForwardLitGeometryRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData)
     {
         ForwardLitPassResources resources = {};
 
@@ -88,7 +85,7 @@ namespace efg::d3d12
         ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowDataSrv), resources.directionalShadowDataSRV);
         ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointShadowDataSrv), resources.pointShadowDataSRV);
         ctx.commandContext->SetGraphicsRootDescriptorTable(static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowMaps), resources.directionalShadowMapsTable);
-        //ctx.commandContext->SetGraphicsRootDescriptorTable(static_cast<UINT>(ForwardLitRootParameter::PointShadowCubes), resources.pointShadowCubesTable);
+        ctx.commandContext->SetGraphicsRootDescriptorTable(static_cast<UINT>(ForwardLitRootParameter::PointShadowCubes), resources.pointShadowCubesTable);
     }
 
     void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)

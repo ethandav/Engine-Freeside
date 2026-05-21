@@ -49,8 +49,35 @@ namespace efg::d3d12
             resources.lightViewCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &constants, sizeof(LightViewConstants));
             BindPassResources(ctx, resources);
             DrawAllRenderObjects(ctx, scene);
+        }
 
-            ctx.commandContext->QueueBarrierTransition(m_shadowMap.resource.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        for (const auto& pointShadow : shadowMapFrameData.pointShadows)
+        {
+            GpuTextureCube* shadowCube = pointShadow.shadowCube;
+
+            for (uint32_t face = 0; face < 6; ++face)
+            {
+                ShadowMapPassResources resources = {};
+                m_viewport.TopLeftX = 0.0f;
+                m_viewport.TopLeftY = 0.0f;
+                m_viewport.Width = static_cast<float>(2048);
+                m_viewport.Height = static_cast<float>(2048);
+                m_viewport.MinDepth = 0.0f;
+                m_viewport.MaxDepth = 1.0f;
+                m_scissorRect.left = 0;
+                m_scissorRect.top = 0;
+                m_scissorRect.right = static_cast<LONG>(2048);
+                m_scissorRect.bottom = static_cast<LONG>(2048);
+
+                ctx.commandContext->SetViewportAndScissor(m_viewport, m_scissorRect);
+                ctx.commandContext->SetRenderTarget(0, nullptr, &shadowCube->dsv[face]);
+                ctx.commandContext->ClearDepthStencil(shadowCube->dsv[face], 1.0f, 0);
+                LightViewConstants constants = {};
+                constants.viewProjection = pointShadow.faceViewProjection[face];
+                resources.lightViewCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &constants, sizeof(LightViewConstants));
+                BindPassResources(ctx, resources);
+                DrawAllRenderObjects(ctx, scene);
+            }
         }
     }
 

@@ -17,6 +17,7 @@ namespace efg::d3d12
 	private:
 		void EnsureShadowMapResources(const FramePacket& scene);
 		Freeside::Math::Mat4 CalculateDirectionalLightViewProjectionMatrix(Freeside::Lights::Directional light);
+		void CalculatePointLightViewProjectionMatrices(const Freeside::Lights::Point& light, Freeside::Math::Mat4 outFaceViewProjection[6], float farPlane);
 
 		D3D12TextureFactory* m_textureFactory = nullptr;
 		std::vector<GpuTexture2D> m_directionalShadowMaps;

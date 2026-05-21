@@ -30,6 +30,8 @@ namespace Freeside
         float nearZ,
         float farZ)
     {
+        m_projectionType = ProjectionType::Perspective;
+
         m_fovYRadians = fovYRadians;
         m_aspectRatio = aspectRatio;
         m_nearZ = nearZ;
