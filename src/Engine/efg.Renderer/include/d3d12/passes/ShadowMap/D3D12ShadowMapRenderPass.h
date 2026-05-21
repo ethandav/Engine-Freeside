@@ -7,6 +7,7 @@
 #include "..\..\..\render\Lights.h"
 #include "..\..\..\render\Camera.h"
 #include "..\..\frame\D3D12FrameContext.h"
+#include "..\..\types\ShadowFrameData.h"
 
 #include <d3d12.h>
 
@@ -22,16 +23,13 @@ namespace efg::d3d12
 	{
 	public:
 		void Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12TextureFactory* textureFactory, D3D12BufferFactory* bufferFactory);
-		ShadowMapFrameData Execute(const FrameContext& ctx, const FramePacket& scene);
+		void Execute(const FrameContext& ctx, const FramePacket& scene, ShadowMapFrameData& shadowMapFrameData);
 	private:
 		struct ShadowMapPassResources
 		{
 			D3D12_GPU_VIRTUAL_ADDRESS lightViewCB = 0;
 		};
-		void UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ShadowMapPassResources& resources, ShadowMapFrameData& output);
 		void BindPassResources(const FrameContext& ctx, ShadowMapPassResources& resources);
-		void UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ShadowMapPassResources& resources, ShadowMapFrameData& output);
-		LightViewConstants BuildLightViewConstants(const Freeside::Lights::Directional& dirLight);
 		void DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene);
 		void DrawMeshInstanced(ID3D12GraphicsCommandList* commandList, Freeside::MeshHandle handle, uint32_t instanceCount);
 

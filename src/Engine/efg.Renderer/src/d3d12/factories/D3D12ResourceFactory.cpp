@@ -72,7 +72,7 @@ namespace efg::d3d12
     void D3D12ResourceFactory::CreateCommittedDepthTexture2DResource(GpuTexture2D* texture)
     {
         D3D12_CLEAR_VALUE clearValue = {};
-        clearValue.Format = texture->format;
+        clearValue.Format = DXGI_FORMAT_D32_FLOAT;
         clearValue.DepthStencil.Depth = 1.0f;
         clearValue.DepthStencil.Stencil = 0;
 
@@ -82,7 +82,7 @@ namespace efg::d3d12
     void D3D12ResourceFactory::CreateCommittedDepthTextureCubeResource(GpuTextureCube* texture)
     {
         D3D12_CLEAR_VALUE clearValue = {};
-        clearValue.Format = texture->format;
+        clearValue.Format = DXGI_FORMAT_D32_FLOAT;
         clearValue.DepthStencil.Depth = 1.0f;
         clearValue.DepthStencil.Stencil = 0;
 

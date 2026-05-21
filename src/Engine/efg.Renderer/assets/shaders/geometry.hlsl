@@ -1,4 +1,7 @@
 #define MAX_POINT_LIGHTS 1024
+#define MAX_DIRECTIONAL_LIGHTS 16
+#define MAX_DIRECTIONAL_SHADOWS 16
+#define MAX_POINT_SHADOWS 64
 
 cbuffer CameraCB : register(b0)
 {
@@ -6,43 +9,12 @@ cbuffer CameraCB : register(b0)
     float4x4 ViewProjection;
 };
 
-cbuffer ShadowCB : register(b1)
-{
-    float4x4 LightViewProjection;
-    float4 ShadowParams; // x = bias, y = strength, etc.
-};
-
 cbuffer MaterialCB : register(b3)
 {
     float4 BaseColor;
     float4 Specular;
     float2 uvScale;
-}
-
-struct PointLight
-{
-    float4 positionAndRadius; // xyz = position, w = radius
-    float4 colorAndIntensity; // rgb = color, w = intensity
 };
-
-struct DirectionalLight
-{
-    float4 lightDirectionAndIntensity;
-    float4 lightColor;
-};
-
-struct InstanceData
-{
-    float4x4 World;
-};
-
-StructuredBuffer<PointLight> gPointLights : register(t0);
-StructuredBuffer<InstanceData> Instances : register(t1);
-Texture2D gBaseColorTexture : register(t2);
-Texture2D<float> ShadowMap : register(t3);
-StructuredBuffer<DirectionalLight> gDirectionalLights : register(t4);
-SamplerState gLinearSampler : register(s0);
-SamplerComparisonState ShadowSampler : register(s1);
 
 cbuffer PointLightMetadata : register(b4)
 {
@@ -55,6 +27,58 @@ cbuffer DirectionalLightMetadata : register(b2)
     uint gDirectionalLightCount;
     float3 _directionalLightPadding;
 };
+
+cbuffer ShadowMetadataCB : register(b5)
+{
+    uint gDirectionalShadowCount;
+    uint gPointShadowCount;
+    float gShadowBias;
+    float gShadowStrength;
+};
+
+struct PointLight
+{
+    float4 positionAndRadius; // xyz = position, w = radius
+    float4 colorAndIntensity; // rgb = color, w = intensity
+    int shadowIndex; // -1 = no shadow
+    float3 _padding;
+};
+
+struct DirectionalLight
+{
+    float4 lightDirectionAndIntensity;
+    float4 lightColor;
+    int shadowIndex; // -1 = no shadow
+    float3 _padding;
+};
+
+struct DirectionalShadowData
+{
+    float4x4 lightViewProjection;
+};
+
+struct PointShadowData
+{
+    float4x4 faceViewProjection[6];
+    float farPlane;
+    float3 _padding;
+};
+
+struct InstanceData
+{
+    float4x4 World;
+};
+
+StructuredBuffer<PointLight> gPointLights : register(t0);
+StructuredBuffer<InstanceData> Instances : register(t1);
+Texture2D gBaseColorTexture : register(t2);
+StructuredBuffer<DirectionalLight> gDirectionalLights : register(t4);
+StructuredBuffer<DirectionalShadowData> gDirectionalShadows : register(t5);
+StructuredBuffer<PointShadowData> gPointShadows : register(t6);
+Texture2D<float> gDirectionalShadowMaps[MAX_DIRECTIONAL_SHADOWS] : register(t16);
+TextureCube<float> gPointShadowCubes[MAX_POINT_SHADOWS] : register(t32);
+SamplerState gLinearSampler : register(s0);
+SamplerComparisonState ShadowSampler : register(s1);
 
 struct VSInput
 {
@@ -86,24 +110,22 @@ VSOutput VSMain(VSInput input, uint instanceId : SV_InstanceID)
     return output;
 }
 
-float ComputeShadowFactor(float3 worldPosition)
+float ComputeDirectionalShadowFactor(float3 worldPosition, int shadowIndex)
 {
-    float bias = ShadowParams.x;
-    float strength = ShadowParams.y;
+    if (shadowIndex < 0 || shadowIndex >= (int) gDirectionalShadowCount)
+    {
+        return 1.0f;
+    }
 
-    float4 lightClip = mul(LightViewProjection, float4(worldPosition, 1.0f));
-
-    // If using orthographic projection, w should usually be 1, but keep this for safety.
+    float4 lightClip = mul(gDirectionalShadows[shadowIndex].lightViewProjection, float4(worldPosition, 1.0f));
     float3 lightNdc = lightClip.xyz / lightClip.w;
 
-    // Convert NDC [-1, 1] to texture UV [0, 1].
     float2 shadowUV;
     shadowUV.x = lightNdc.x * 0.5f + 0.5f;
     shadowUV.y = -lightNdc.y * 0.5f + 0.5f;
 
     float currentDepth = lightNdc.z;
 
-    // Outside the shadow map: treat as lit.
     if (shadowUV.x < 0.0f || shadowUV.x > 1.0f ||
         shadowUV.y < 0.0f || shadowUV.y > 1.0f ||
         currentDepth < 0.0f || currentDepth > 1.0f)
@@ -111,21 +133,40 @@ float ComputeShadowFactor(float3 worldPosition)
         return 1.0f;
     }
 
-    float visibility = ShadowMap.SampleCmpLevelZero(
+    float visibility = gDirectionalShadowMaps[NonUniformResourceIndex(shadowIndex)].SampleCmpLevelZero(
         ShadowSampler,
         shadowUV,
-        currentDepth - bias
+        currentDepth - gShadowBias
     );
 
-    // visibility is 1 when lit, 0 when shadowed.
-    return lerp(1.0f, visibility, strength);
+    return lerp(1.0f, visibility, gShadowStrength);
+}
+
+float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int shadowIndex)
+{
+    if (shadowIndex < 0 || shadowIndex >= (int) gPointShadowCount)
+    {
+        return 1.0f;
+    }
+
+    PointShadowData shadowData = gPointShadows[shadowIndex];
+
+    float3 lightToPixel = worldPosition - lightPosition;
+    float currentDistance = length(lightToPixel);
+    float3 sampleDir = normalize(lightToPixel);
+
+    float sampledDepth = gPointShadowCubes[NonUniformResourceIndex(shadowIndex)].Sample(gLinearSampler, sampleDir);
+    float closestDistance = sampledDepth * shadowData.farPlane;
+
+    float visibility = currentDistance - gShadowBias <= closestDistance ? 1.0f : 0.0f;
+
+    return lerp(1.0f, visibility, gShadowStrength);
 }
 
 float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, float4 baseColor)
 {
     float3 result = float3(0.0f, 0.0f, 0.0f);
 
-    [loop]
     for (uint i = 0; i < gPointLightCount; ++i)
     {
         PointLight light = gPointLights[i];
@@ -134,41 +175,72 @@ float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, flo
         float radius = max(light.positionAndRadius.w, 0.0001f);
         float3 lightColor = light.colorAndIntensity.rgb;
         float intensity = light.colorAndIntensity.w;
+
         float3 toLight = lightPos - worldPos;
         float distanceToLight = length(toLight);
         float3 lightDir = toLight / max(distanceToLight, 0.0001f);
+
         float attenuation = saturate(1.0f - distanceToLight / radius);
         attenuation *= attenuation;
+
+        float shadowFactor = ComputePointShadowFactor(worldPos, lightPos, light.shadowIndex);
+
         float ndotl = saturate(dot(normal, lightDir));
-        float3 diffuse = baseColor.rgb * lightColor * ndotl * intensity * attenuation;
+
+        float3 diffuse =
+            baseColor.rgb *
+            lightColor *
+            ndotl *
+            intensity *
+            attenuation;
+
         float3 halfVector = normalize(lightDir + viewDir);
         float specularAmount = pow(saturate(dot(normal, halfVector)), Specular.y);
-        float3 specular = lightColor * specularAmount * Specular.x * intensity * attenuation;
 
-        result += diffuse + specular;
+        float3 specular =
+            lightColor *
+            specularAmount *
+            Specular.x *
+            intensity *
+            attenuation;
+
+        result += shadowFactor * (diffuse + specular);
     }
 
     return result;
 }
 
-float3 AccumulateDirectionalLights(float3 normal, float3 viewDir, float4 materialColor, float shadowFactor)
+float3 AccumulateDirectionalLights(float3 worldPos, float3 normal, float3 viewDir, float4 materialColor)
 {
     float3 result = float3(0.0f, 0.0f, 0.0f);
 
-    [loop]
     for (uint i = 0; i < gDirectionalLightCount; ++i)
     {
         DirectionalLight light = gDirectionalLights[i];
-        
+
+        float shadowFactor = ComputeDirectionalShadowFactor(worldPos, light.shadowIndex);
+
         float3 lightDir = normalize(-light.lightDirectionAndIntensity.xyz);
         float ndotl = saturate(dot(normal, lightDir));
-        float3 diffuse = materialColor.rgb * light.lightColor.rgb * ndotl * light.lightDirectionAndIntensity.w;
+
+        float3 diffuse =
+            materialColor.rgb *
+            light.lightColor.rgb *
+            ndotl *
+            light.lightDirectionAndIntensity.w;
+
         float3 halfVector = normalize(lightDir + viewDir);
         float specularAmount = pow(saturate(dot(normal, halfVector)), Specular.y);
-        float3 specular = light.lightColor.rgb * specularAmount * Specular.x * light.lightDirectionAndIntensity.w;
+
+        float3 specular =
+            light.lightColor.rgb *
+            specularAmount *
+            Specular.x *
+            light.lightDirectionAndIntensity.w;
+
         result += shadowFactor * (diffuse + specular);
     }
-    
+
     return result;
 }
 
@@ -176,15 +248,19 @@ float4 PSMain(VSOutput input) : SV_TARGET
 {
     float2 uv = input.uv * uvScale;
     float4 sampledBaseColor = gBaseColorTexture.Sample(gLinearSampler, uv);
+
     float3 normal = normalize(input.normalWS);
     float3 viewDir = normalize(ViewPosition.xyz - input.worldPosition);
-    float shadow = ComputeShadowFactor(input.worldPosition);
+
     float3 ambient = sampledBaseColor.rgb * 0.1f;
 
-    float3 directionalLighting = AccumulateDirectionalLights(normal, viewDir, sampledBaseColor, shadow);
-    float3 pointLights = AccumulatePointLights(input.worldPosition, normal, viewDir, sampledBaseColor);
+    float3 directionalLighting =
+        AccumulateDirectionalLights(input.worldPosition, normal, viewDir, sampledBaseColor);
 
-    float3 finalColor = ambient + directionalLighting + pointLights;
+    float3 pointLighting =
+        AccumulatePointLights(input.worldPosition, normal, viewDir, sampledBaseColor);
+
+    float3 finalColor = ambient + directionalLighting + pointLighting;
 
     return float4(finalColor, BaseColor.a);
 }

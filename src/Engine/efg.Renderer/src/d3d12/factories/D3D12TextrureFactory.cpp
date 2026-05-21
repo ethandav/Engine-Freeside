@@ -24,14 +24,14 @@ namespace efg::d3d12
         return texture;
     }
 
-    GpuTextureCube D3D12TextureFactory::CreateTextureCube(uint32_t width, uint32_t height, DXGI_FORMAT format)
+    GpuTextureCube D3D12TextureFactory::CreateDepthTextureCube(uint32_t width, uint32_t height, DXGI_FORMAT format)
     {
         GpuTextureCube texture = {};
         texture.width = width;
         texture.height = height;
         texture.format = format;
 
-        m_resourceFactory->CreateCommittedTextureCubeResource(&texture, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
+        m_resourceFactory->CreateCommittedDepthTextureCubeResource(&texture);
         m_descriptorFactory->CreateTextureCubeSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1);
 
         for (uint32_t face = 0; face < 6; ++face)

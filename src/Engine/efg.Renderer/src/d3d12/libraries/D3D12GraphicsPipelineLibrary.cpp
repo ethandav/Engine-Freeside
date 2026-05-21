@@ -29,7 +29,6 @@ namespace efg::d3d12
     void D3D12GraphicsPipelineLibary::CreateForwardLitRootSignature(ID3D12RootSignature** rootSignature)
     {
         CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-        CD3DX12_ROOT_PARAMETER rootParameters[10] = {};
         ComPtr<ID3DBlob> signature;
         ComPtr<ID3DBlob> error;
 
@@ -41,24 +40,33 @@ namespace efg::d3d12
             D3D12_TEXTURE_ADDRESS_MODE_WRAP
         );
 
-        rootParameters[0].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), 0, D3D12_SHADER_VISIBILITY_ALL);
-        rootParameters[1].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Shadow), 0, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[2].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLight), 0, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[3].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), 0, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[4].InitAsConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightConstants), 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        std::array<CD3DX12_ROOT_PARAMETER, static_cast<size_t>(ForwardLitRootParameter::Count)> rootParameters = {};
 
-        rootParameters[5].InitAsShaderResourceView(0, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[6].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::Camera)].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_ALL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalLightMetadata)].InitAsConstantBufferView(2, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::Material)].InitAsConstantBufferView(3, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointLightMetadata)].InitAsConstantBufferView(4, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::ShadowMetadata)].InitAsConstantBufferView(5, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv)].InitAsShaderResourceView(0, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::InstanceData)].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
         CD3DX12_DESCRIPTOR_RANGE baseColorTextureRange = {};
         baseColorTextureRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
-        rootParameters[7].InitAsDescriptorTable(1, &baseColorTextureRange, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::BaseColorTexture)].InitAsDescriptorTable(1, &baseColorTextureRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
-        CD3DX12_DESCRIPTOR_RANGE shadowMapRange = {};
-        shadowMapRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
-        rootParameters[8].InitAsDescriptorTable(1, &shadowMapRange, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalLightsSrv)].InitAsShaderResourceView(4, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowDataSrv)].InitAsShaderResourceView(5, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointShadowDataSrv)].InitAsShaderResourceView(6, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
-        rootParameters[9].InitAsShaderResourceView(4, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        CD3DX12_DESCRIPTOR_RANGE directionalShadowMapRange = {};
+        directionalShadowMapRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 16, 16);
+
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowMaps)].InitAsDescriptorTable(1, &directionalShadowMapRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
+        CD3DX12_DESCRIPTOR_RANGE pointShadowCubeRange = {};
+        pointShadowCubeRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 64, 32);
+
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointShadowCubes)].InitAsDescriptorTable(1, &pointShadowCubeRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
 
         D3D12_STATIC_SAMPLER_DESC shadowSampler = {};
@@ -83,8 +91,8 @@ namespace efg::d3d12
         };
 
         rootSignatureDesc.Init(
-            _countof(rootParameters),
-            rootParameters,
+            static_cast<UINT>(rootParameters.size()),
+            rootParameters.data(),
             _countof(staticSamplers),
             staticSamplers,
             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
@@ -145,8 +153,8 @@ namespace efg::d3d12
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
         psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
         psoDesc.pRootSignature = pipeline.rootSignature.Get();
-        psoDesc.VS = vertexShader.GetD3D12Bytecode();
-        psoDesc.PS = pixelShader.GetD3D12Bytecode();
+        psoDesc.VS = vertexShader.GetBytecode();
+        psoDesc.PS = pixelShader.GetBytecode();
         psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
         psoDesc.DepthStencilState.DepthEnable = TRUE;
@@ -180,7 +188,7 @@ namespace efg::d3d12
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
         psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
         psoDesc.pRootSignature = pipeline.rootSignature.Get();
-        psoDesc.VS = vertexShader.GetD3D12Bytecode();
+        psoDesc.VS = vertexShader.GetBytecode();
         psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
         psoDesc.DepthStencilState.DepthEnable = TRUE;

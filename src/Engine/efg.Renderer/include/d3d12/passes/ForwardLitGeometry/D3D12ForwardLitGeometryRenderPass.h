@@ -6,6 +6,7 @@
 #include "..\..\..\render\Camera.h"
 #include "..\..\frame\D3D12FrameContext.h"
 #include "..\..\..\d3d12\resources\D3D12GpuTexture.h"
+#include "..\..\types\ShadowFrameData.h"
 
 #include <d3d12.h>
 
@@ -27,20 +28,25 @@ namespace efg::d3d12
 		struct ForwardLitPassResources
 		{
 			D3D12_GPU_VIRTUAL_ADDRESS cameraCB = 0;
-			D3D12_GPU_VIRTUAL_ADDRESS shadowCB = 0;
-			D3D12_GPU_VIRTUAL_ADDRESS pointLightConstantsCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS directionalLightConstantsCB = 0;
-			D3D12_GPU_VIRTUAL_ADDRESS pointLightsSRV = 0;
+			D3D12_GPU_VIRTUAL_ADDRESS pointLightConstantsCB = 0;
 			D3D12_GPU_VIRTUAL_ADDRESS directionalLightsSRV = 0;
-			D3D12_GPU_DESCRIPTOR_HANDLE shadowMapSRV = {};
-			PointLightConstants pointLightConstants = {};
+			D3D12_GPU_VIRTUAL_ADDRESS pointLightsSRV = 0;
+			D3D12_GPU_VIRTUAL_ADDRESS directionalShadowDataSRV = 0;
+			D3D12_GPU_VIRTUAL_ADDRESS pointShadowDataSRV = 0;
+			D3D12_GPU_VIRTUAL_ADDRESS shadowMetadataCB = 0;
+			D3D12_GPU_DESCRIPTOR_HANDLE directionalShadowMapsTable = {};
+			D3D12_GPU_DESCRIPTOR_HANDLE pointShadowCubesTable = {};
 			DirectionalLightConstants directionalLightConstants = {};
+			PointLightConstants pointLightConstants = {};
+			ShadowMetadataConstants shadowMetadata = {};
 		};
-		void UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
+		void UploadPassResources(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
 		void BindPassResources(const FrameContext& ctx, ForwardLitPassResources& resources);
-		void UploadPointLights(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
-		void UploadDirectionalLights(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
+		void UploadPointLights(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
+		void UploadDirectionalLights(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
 		void UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
+		void UploadShadowResources(const FrameContext& ctx, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
 		CameraConstants BuildCameraConstants(const Freeside::Camera& camera);
 		DirectionalLightConstants BuildDirectionalLightConstants(const Freeside::Lights::Directional& light);
 		void DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene);

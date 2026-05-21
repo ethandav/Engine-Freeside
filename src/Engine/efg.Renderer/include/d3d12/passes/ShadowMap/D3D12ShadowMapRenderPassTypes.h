@@ -10,20 +10,4 @@ namespace efg::d3d12
 	{
 		Freeside::Math::Mat4 viewProjection;
 	};
-
-	struct ShaderMapRenderPassInputs
-	{
-
-	};
-
-	struct ShaderMapRenderPassOutputs
-	{
-
-	};
-
-	struct ShadowMapFrameData
-	{
-		const GpuTexture2D* shadowMap = nullptr;
-		Freeside::Math::Mat4 lightViewProjection = {};
-	};
 }

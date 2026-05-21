@@ -99,8 +99,9 @@ namespace efg::d3d12
         PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"BeginFrame");
         ProcessUploads();
         m_renderQueue.BuildForwardGeometryBatches(scene.renderObjects);
+        ShadowMapFrameData shadowMapFrameData = m_shadowSystem.Update(scene);
         PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"ShadowMapPass");
-        ShadowMapFrameData shadowMapFrameData = m_shadowMapRenderPass.Execute(ctx, scene);
+        m_shadowMapRenderPass.Execute(ctx, scene, shadowMapFrameData);
         PIXEndEvent(commandList); // ShadowMapPass End
         m_commandContext.FlushPendingBarrierTransitions();
         PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"BackBufferSetup");

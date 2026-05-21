@@ -1,6 +1,7 @@
 #pragma once
-#include "..\..\d3d12\resources\D3D12GpuTexture.h"
-#include "..\..\..\include\render\types\FramePacket.h"
+#include "..\resources\D3D12GpuTexture.h"
+#include "..\types\ShadowFrameData.h"
+#include "..\..\render\types\FramePacket.h"
 
 #include <vector>
 
@@ -12,8 +13,11 @@ namespace efg::d3d12
 	{
 	public:
 		void Initialize(D3D12TextureFactory* textureFactory);
-		void Update(const FramePacket& scene);
+		ShadowMapFrameData Update(const FramePacket& scene);
 	private:
+		void EnsureShadowMapResources(const FramePacket& scene);
+		Freeside::Math::Mat4 CalculateDirectionalLightViewProjectionMatrix(Freeside::Lights::Directional light);
+
 		D3D12TextureFactory* m_textureFactory = nullptr;
 		std::vector<GpuTexture2D> m_directionalShadowMaps;
 		std::vector<GpuTextureCube> m_pointShadowCubes;

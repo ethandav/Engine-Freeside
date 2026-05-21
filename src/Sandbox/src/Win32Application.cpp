@@ -176,8 +176,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	pointLight1.position = Freeside::Math::Vec3(-1.0f, 0.0f, -2.0f);
 	pointLight1.radius = 5.0f;
 
-	//Freeside::PointLightHandle hPointLight1 = sceneManager.AddPointLightToScene(testSceneHandle, pointLight1);
-	//Freeside::Lights::Point* pPointLight1 = sceneManager.GetPointLightByHandle(testSceneHandle, hPointLight1);
+	Freeside::PointLightHandle hPointLight1 = sceneManager.AddPointLightToScene(testSceneHandle, pointLight1);
+	Freeside::Lights::Point* pPointLight1 = sceneManager.GetPointLightByHandle(testSceneHandle, hPointLight1);
 
 	float angle = 0.0f;
 	float speed = 1.0f;

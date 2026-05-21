@@ -22,76 +22,42 @@ namespace efg::d3d12
         m_shadowMap = m_textureFactory->CreateDepthBuffer(2048, 2048, true);
     }
 
-    ShadowMapFrameData D3D12ShadowMapRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene)
+    void D3D12ShadowMapRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene, ShadowMapFrameData& shadowMapFrameData)
     {
-        ShadowMapFrameData output = {};
-        ShadowMapPassResources resources = {};
 
-        m_viewport.TopLeftX = 0.0f;
-        m_viewport.TopLeftY = 0.0f;
-        m_viewport.Width = static_cast<float>(2048);
-        m_viewport.Height = static_cast<float>(2048);
-        m_viewport.MinDepth = 0.0f;
-        m_viewport.MaxDepth = 1.0f;
-        m_scissorRect.left = 0;
-        m_scissorRect.top = 0;
-        m_scissorRect.right = static_cast<LONG>(2048);
-        m_scissorRect.bottom = static_cast<LONG>(2048);
+        for (const auto& dirShadowMap : shadowMapFrameData.directionalShadows)
+        {
 
-        ctx.commandContext->SetViewportAndScissor(m_viewport, m_scissorRect);
-        ctx.commandContext->SetRenderTarget(0, nullptr, &m_shadowMap.dsv);
-        ctx.commandContext->ClearDepthStencil(m_shadowMap.dsv, 1.0f, 0);
+            ShadowMapPassResources resources = {};
+            m_viewport.TopLeftX = 0.0f;
+            m_viewport.TopLeftY = 0.0f;
+            m_viewport.Width = static_cast<float>(2048);
+            m_viewport.Height = static_cast<float>(2048);
+            m_viewport.MinDepth = 0.0f;
+            m_viewport.MaxDepth = 1.0f;
+            m_scissorRect.left = 0;
+            m_scissorRect.top = 0;
+            m_scissorRect.right = static_cast<LONG>(2048);
+            m_scissorRect.bottom = static_cast<LONG>(2048);
 
-        UploadPassResources(ctx, scene, resources, output);
-        BindPassResources(ctx, resources);
-        DrawAllRenderObjects(ctx, scene);
+            ctx.commandContext->SetViewportAndScissor(m_viewport, m_scissorRect);
+            ctx.commandContext->SetRenderTarget(0, nullptr, &dirShadowMap.shadowMap->dsv);
+            ctx.commandContext->ClearDepthStencil(dirShadowMap.shadowMap->dsv, 1.0f, 0);
 
-        output.shadowMap = &m_shadowMap;
+            LightViewConstants constants = {};
+            constants.viewProjection = dirShadowMap.lightViewProjection;
+            resources.lightViewCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &constants, sizeof(LightViewConstants));
+            BindPassResources(ctx, resources);
+            DrawAllRenderObjects(ctx, scene);
 
-        ctx.commandContext->QueueBarrierTransition(m_shadowMap.resource.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-        return output;
-    }
-
-    void D3D12ShadowMapRenderPass::UploadPassResources(const FrameContext& ctx, const FramePacket& scene, ShadowMapPassResources& resources, ShadowMapFrameData& output)
-    {
-        UploadFrameConstants(ctx, scene, resources, output);
+            ctx.commandContext->QueueBarrierTransition(m_shadowMap.resource.Get(), D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        }
     }
 
     void D3D12ShadowMapRenderPass::BindPassResources(const FrameContext& ctx, ShadowMapPassResources& resources)
     {
         ctx.commandContext->BindPipeline(m_pipelineLibrary->Get(PipelineId::ShadowMap));
         ctx.commandContext->SetGraphicsRootConstantBufferView(0, resources.lightViewCB);
-        ID3D12DescriptorHeap* heaps[] = { m_descriptorContext->GetCBVSRVUAVHeap() };
-        ctx.commandContext->SetDescriptorHeaps(_countof(heaps), heaps);
-    }
-
-    void D3D12ShadowMapRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ShadowMapPassResources& resources, ShadowMapFrameData& output)
-    {
-        LightViewConstants lightViewConstants = BuildLightViewConstants(scene.directionalLights[0]);
-        output.lightViewProjection = lightViewConstants.viewProjection;
-        resources.lightViewCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &lightViewConstants, sizeof(LightViewConstants));
-    }
-
-    LightViewConstants D3D12ShadowMapRenderPass::BuildLightViewConstants(const Freeside::Lights::Directional& dirLight)
-    {
-        LightViewConstants lightViewConstants = {};
-
-        Freeside::Camera lightCamera;
-        Freeside::Math::Vec3 sceneCenter = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
-        Freeside::Math::Vec3 lightDir = Freeside::Math::Normalize(dirLight.direction);
-        float lightDistance = 50.0f;
-        Freeside::Math::Vec3 lightPosition = sceneCenter - lightDir * lightDistance;
-
-        float orthoWidth = 40.0f;
-        float orthoHeight = 40.0f;
-        float nearZ = 0.1f;
-        float farZ = 100.0f;
-        lightCamera.LookAt(lightPosition, sceneCenter, Freeside::Math::Vec3(0.0f, 1.0f, 0.0f));
-
-        lightCamera.SetOrthographic(orthoWidth, orthoHeight, nearZ, farZ);
-        lightViewConstants.viewProjection = Freeside::Math::Transpose(lightCamera.GetViewProjectionMatrix());
-
-        return lightViewConstants;
     }
 
     void D3D12ShadowMapRenderPass::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)

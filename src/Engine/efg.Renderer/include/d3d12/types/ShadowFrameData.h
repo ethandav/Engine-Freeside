@@ -1,0 +1,30 @@
+#pragma once
+
+#include "..\resources\D3D12GpuTexture.h"
+#include "..\..\..\..\efg.Core\include\math\Mat4.h"
+#include <cstdint>
+#include <vector>
+
+namespace efg::d3d12
+{
+    struct DirectionalShadowEntry
+    {
+        uint32_t lightIndex = 0;
+        GpuTexture2D* shadowMap = nullptr;
+        Freeside::Math::Mat4 lightViewProjection = {};
+    };
+
+    struct PointShadowEntry
+    {
+        uint32_t lightIndex = 0;
+        GpuTextureCube* shadowCube = nullptr;
+        Freeside::Math::Mat4 faceViewProjection[6] = {};
+        float farPlane = 0.0f;
+    };
+
+    struct ShadowMapFrameData
+    {
+        std::vector<DirectionalShadowEntry> directionalShadows;
+        std::vector<PointShadowEntry> pointShadows;
+    };
+}

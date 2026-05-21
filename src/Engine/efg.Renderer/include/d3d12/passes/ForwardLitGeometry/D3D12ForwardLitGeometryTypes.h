@@ -9,17 +9,6 @@
 
 namespace efg::d3d12
 {
-	struct ForwardLitGeometryRenderPassInputs
-	{
-		const RenderQueue* renderQueue = nullptr;
-		const ShadowMapFrameData* shadowMapData = nullptr;
-	};
-
-	struct ForwardLitGeometryRenderPassOutputs
-	{
-
-	};
-
 	struct MaterialConstants
 	{
 		Freeside::Math::Vec4 baseColor;
@@ -51,21 +40,45 @@ namespace efg::d3d12
 		float padding[3] = {};
 	};
 
-	struct GpuPointLight
+	struct ShadowConstants
 	{
-		Freeside::Math::Vec4 positionAndRadius;
-		Freeside::Math::Vec4 colorAndIntensity;
+		Freeside::Math::Mat4 LightViewProjection;
+		Freeside::Math::Vec4 ShadowParams; // x = bias, y = strength, etc.
 	};
 
 	struct GpuDirectionalLight
 	{
 		Freeside::Math::Vec4 directionAndIntensity;
 		Freeside::Math::Vec4 colorAndPadding;
+		int32_t shadowIndex = -1;
+		float padding[3] = {};
 	};
 
-	struct ShadowConstants
+	struct GpuPointLight
 	{
-		Freeside::Math::Mat4 LightViewProjection;
-		Freeside::Math::Vec4 ShadowParams; // x = bias, y = strength, etc.
+		Freeside::Math::Vec4 positionAndRadius;
+		Freeside::Math::Vec4 colorAndIntensity;
+		int32_t shadowIndex = -1;
+		float padding[3] = {};
+	};
+
+	struct GpuDirectionalShadowData
+	{
+		Freeside::Math::Mat4 lightViewProjection;
+	};
+
+	struct GpuPointShadowData
+	{
+		Freeside::Math::Mat4 faceViewProjection[6];
+		float farPlane = 0.0f;
+		float padding[3] = {};
+	};
+
+	struct ShadowMetadataConstants
+	{
+		uint32_t directionalShadowCount = 0;
+		uint32_t pointShadowCount = 0;
+		float shadowBias = 0.001f;
+		float shadowStrength = 1.0f;
 	};
 }

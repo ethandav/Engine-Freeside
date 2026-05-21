@@ -13,17 +13,26 @@ namespace efg::d3d12
 		Count
 	};
 
-	enum class ForwardLitRootParameter : uint32_t
-	{
-		Camera = 0,
-		Shadow = 1,
-		DirectionalLight = 2,
-		Material = 3,
-		PointLightConstants = 4,
-		PointLightsSrv = 5,
-		InstanceData = 6,
-		DirectionalLightsSrv = 9
-	};
+    enum class ForwardLitRootParameter : uint32_t
+    {
+        Camera = 0,                    // b0
+        DirectionalLightMetadata = 1,  // b2
+        Material = 2,                  // b3
+        PointLightMetadata = 3,        // b4
+        ShadowMetadata = 4,            // b5
+
+        PointLightsSrv = 5,            // t0
+        InstanceData = 6,              // t1
+        BaseColorTexture = 7,          // t2 descriptor table
+        DirectionalLightsSrv = 8,      // t4
+        DirectionalShadowDataSrv = 9,  // t5
+        PointShadowDataSrv = 10,       // t6
+
+        DirectionalShadowMaps = 11,    // t16 descriptor table
+        PointShadowCubes = 12,         // t32 descriptor table
+
+        Count
+    };
 
 	struct GraphicsPipelineState
 	{
