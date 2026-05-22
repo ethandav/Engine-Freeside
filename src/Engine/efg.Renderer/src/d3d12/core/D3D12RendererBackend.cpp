@@ -97,21 +97,26 @@ namespace efg::d3d12
     {
         FrameContext ctx = BeginFrame();
         ID3D12GraphicsCommandList* commandList = ctx.commandContext->GetDirectCommandList();
-        PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"BeginFrame");
+
+        PIXBeginEvent(commandList, PIX_COLOR(0, 0, 0), L"Begin Frame");
         ProcessUploads();
+        PIXBeginEvent(PixColors::ShadowMapPass, L"");
         m_renderQueue.BuildForwardGeometryBatches(scene.renderObjects);
+        PIXEndEvent();
+        PIXBeginEvent(PixColors::ShadowMapPass, L"Shadow System Update");
         ShadowMapFrameData shadowMapFrameData = m_shadowSystem.Update(scene);
-        PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"ShadowMapPass");
+        PIXEndEvent();
+        PIXBeginEvent(commandList, PixColors::ShadowMapPass, L"Shadow Map Pass");
         m_shadowMapRenderPass.Execute(ctx, scene, shadowMapFrameData);
-        PIXEndEvent(commandList); // ShadowMapPass End
+        PIXEndEvent(commandList);
         m_commandContext.FlushPendingBarrierTransitions();
-        PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"BackBufferSetup");
+        PIXBeginEvent(commandList, PixColors::BackbufferSetup, L"BackBuffer Setup");
         RecordBackBufferSetup(ctx);
-        PIXEndEvent(commandList); // BackBufferSetup End
-        PIXBeginEvent(commandList, PIX_COLOR(100, 100, 255), L"ForwardLitGeometryPass");
+        PIXEndEvent(commandList);
+        PIXBeginEvent(commandList, PixColors::ForwardLitPass, L"Forward Lit Geometry Pass");
         m_forwarLitGeometryRenderPass.Execute(ctx, scene, shadowMapFrameData);
-        PIXEndEvent(commandList); // ForwardLitGeometryPass End
-        PIXEndEvent(commandList); // BeginFrame End
+        PIXEndEvent(commandList);
+        PIXEndEvent(commandList);
         m_commandContext.FlushPendingBarrierTransitions();
         EndFrame(ctx);
     }
