@@ -13,6 +13,7 @@ namespace efg::d3d12
 		uint64_t frameIndex = 0;
 		FrameResource* frame = nullptr;
 		D3D12DirectCommandContext* commandContext = nullptr;
+		D3D12Context* graphicsContext = nullptr;
 		D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = {};
 		ID3D12Resource* backBuffer = nullptr;
 		RenderQueue* renderQueue = nullptr;

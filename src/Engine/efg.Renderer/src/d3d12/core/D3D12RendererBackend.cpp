@@ -74,6 +74,7 @@ namespace efg::d3d12
             m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
             m_frameResources[i].uploadBufferArena = m_bufferFactory.CreateUploadBufferArena(100000 * sizeof(InstanceData));
             m_frameResources[i].constantBufferArena = m_bufferFactory.CreateConstantBufferArena(ConstantArenaSize);
+            m_frameResources[i].descriptorArena = m_descriptorContext.CreateDescriptorArena(i);
         }
     }
 

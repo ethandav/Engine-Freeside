@@ -13,11 +13,13 @@ namespace efg::d3d12
 
 		GpuUploadBufferArena uploadBufferArena = {};
 		GpuConstantBufferArena constantBufferArena = {};
+		GpuDescriptorArena descriptorArena = {};
 
 		void ResetTransientAllocators()
 		{
 			uploadBufferArena.Reset();
 			constantBufferArena.Reset();
+			descriptorArena.Reset();
 		}
 	};
 

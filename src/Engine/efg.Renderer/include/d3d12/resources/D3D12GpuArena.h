@@ -6,6 +6,9 @@
 
 namespace efg::d3d12
 {
+    static constexpr uint64_t ConstantArenaSize = 1024 * 1024;
+    static constexpr uint64_t ShaderVisibleDescriptorsPerFrame = 2048;
+
     struct GpuConstantBufferArena
     {
         Microsoft::WRL::ComPtr<ID3D12Resource> resource;
@@ -42,6 +45,21 @@ namespace efg::d3d12
         void Reset()
         {
             currentOffset = 0;
+        }
+    };
+
+    struct GpuDescriptorArena
+    {
+        uint32_t startIndex = 0;
+        uint32_t capacity = 0;
+        uint32_t used = 0;
+
+        D3D12_CPU_DESCRIPTOR_HANDLE cpuStart = {};
+        D3D12_GPU_DESCRIPTOR_HANDLE gpuStart = {};
+
+        void Reset()
+        {
+            used = 0;
         }
     };
 

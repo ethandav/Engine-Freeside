@@ -11,7 +11,8 @@ namespace efg::d3d12
     void D3D12DescriptorContext::CreateAllHeaps()
     {
         CreateRTVDescriptorHeap();
-        CreateCBVSRVUAVDescriptorHeap();
+        CreateShaderVisibleCBVSRVUAVDescriptorHeap();
+        CreateCPUOnlyCBVSRVUAVDescriptorHeap();
         CreateDSVDescriptorHeap();
         CreateSamplerDescriptorHeap();
     }
@@ -30,7 +31,7 @@ namespace efg::d3d12
         return m_rtvDescriptorSize;
     }
 
-    UINT D3D12DescriptorContext::CreateCBVSRVUAVDescriptorHeap(const UINT Count)
+    UINT D3D12DescriptorContext::CreateShaderVisibleCBVSRVUAVDescriptorHeap(const UINT Count)
     {
         D3D12_DESCRIPTOR_HEAP_DESC shaderVisibleHeapDesc = {};
         shaderVisibleHeapDesc.NumDescriptors = Count;
@@ -43,6 +44,20 @@ namespace efg::d3d12
         m_shaderVisibleCapacity = Count;
         m_shaderVisibleUsed = 0;
         return m_shaderVisibleDescriptorSize;
+    }
+
+    UINT D3D12DescriptorContext::CreateCPUOnlyCBVSRVUAVDescriptorHeap(const UINT Count)
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC cpuOnlyCbvSrvUavHeapDesc = {};
+        cpuOnlyCbvSrvUavHeapDesc.NumDescriptors = Count;
+        cpuOnlyCbvSrvUavHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        cpuOnlyCbvSrvUavHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        D3D12_THROW_IF_FAILED(m_device->CreateDescriptorHeap(&cpuOnlyCbvSrvUavHeapDesc, IID_PPV_ARGS(&m_cpuOnlyCbvSrvUavHeap)));
+        m_cpuOnlyCbvSrvUavDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        m_cpuOnlyCbvSrvUavHeapCpuStart = m_cpuOnlyCbvSrvUavHeap->GetCPUDescriptorHandleForHeapStart();
+        m_cpuOnlyCbvSrvUavCapacity = Count;
+        m_cpuOnlyCbvSrvUavUsed = 0;
+        return m_cpuOnlyCbvSrvUavDescriptorSize;
     }
 
     UINT D3D12DescriptorContext::CreateDSVDescriptorHeap(const UINT Count)
@@ -72,6 +87,23 @@ namespace efg::d3d12
         m_samplerCapacity = Count;
         m_samplerUsed = 0;
         return m_samplerDescriptorSize;
+    }
+
+    GpuDescriptorArena D3D12DescriptorContext::CreateDescriptorArena(const uint32_t frame)
+    {
+        const uint32_t frameArenaBase = PersistentShaderVisibleDescriptorCapacity;
+        const uint32_t startIndex = frameArenaBase + frame * ShaderVisibleDescriptorsPerFrame;
+
+        GpuDescriptorArena arena = {};
+        arena.startIndex = startIndex;
+        arena.capacity = ShaderVisibleDescriptorsPerFrame;
+        arena.used = 0;
+        arena.cpuStart = m_shaderVisibleHeapCpuStart;
+        arena.cpuStart.ptr += static_cast<SIZE_T>(startIndex) * m_shaderVisibleDescriptorSize;
+        arena.gpuStart = m_shaderVisibleHeapGpuStart;
+        arena.gpuStart.ptr += static_cast<UINT64>(startIndex) * m_shaderVisibleDescriptorSize;
+
+        return arena;
     }
 
     DescriptorAllocation D3D12DescriptorContext::AllocateRTV()
@@ -106,7 +138,7 @@ namespace efg::d3d12
         return allocation;
     }
 
-    DescriptorAllocation D3D12DescriptorContext::AllocateCBVSRVUAV()
+    DescriptorAllocation D3D12DescriptorContext::AllocateShaderVisibleCBVSRVUAV()
     {
         if (m_shaderVisibleUsed >= m_shaderVisibleCapacity)
         {
@@ -120,6 +152,22 @@ namespace efg::d3d12
         allocation.gpu = m_shaderVisibleHeapGpuStart;
         allocation.gpu.ptr += static_cast<UINT64>(m_shaderVisibleUsed) * m_shaderVisibleDescriptorSize;
         ++m_shaderVisibleUsed;
+
+        return allocation;
+    }
+
+    DescriptorAllocation D3D12DescriptorContext::AllocateCpuOnlyCBVSRVUAV()
+    {
+        if (m_cpuOnlyCbvSrvUavUsed >= m_cpuOnlyCbvSrvUavCapacity)
+        {
+            throw std::runtime_error("CBV/SRV/UAV heap is full.");
+        }
+
+        DescriptorAllocation allocation = {};
+        allocation.index = m_cpuOnlyCbvSrvUavUsed;
+        allocation.cpu = m_cpuOnlyCbvSrvUavHeapCpuStart;
+        allocation.cpu.ptr += static_cast<SIZE_T>(m_cpuOnlyCbvSrvUavUsed) * m_cpuOnlyCbvSrvUavDescriptorSize;
+        ++m_cpuOnlyCbvSrvUavUsed;
 
         return allocation;
     }
@@ -142,6 +190,45 @@ namespace efg::d3d12
         return allocation;
     }
 
+    GpuDescriptorTable D3D12DescriptorContext::AllocateCBVSRVUAVTable(uint32_t count)
+    {
+        if (m_shaderVisibleUsed >= m_shaderVisibleCapacity)
+        {
+            throw std::runtime_error("CBV/SRV/UAV heap is full.");
+        }
+
+        GpuDescriptorTable table = {};
+        table.count = count;
+        table.cpuStart = m_shaderVisibleHeapCpuStart;
+        table.cpuStart.ptr += static_cast<SIZE_T>(m_shaderVisibleUsed) * m_shaderVisibleDescriptorSize;
+        table.gpuStart = m_shaderVisibleHeapGpuStart;
+        table.gpuStart.ptr += static_cast<UINT64>(m_shaderVisibleUsed) * m_shaderVisibleDescriptorSize;
+        ++m_shaderVisibleUsed;
+
+        return table;
+    }
+
+    GpuDescriptorTable D3D12DescriptorContext::AllocateShaderVisibleTableFromFrameArena(GpuDescriptorArena& arena, uint32_t count)
+    {
+        if (arena.used + count > arena.capacity)
+        {
+            throw std::runtime_error("Frame shader-visible descriptor arena is full.");
+        }
+
+        const uint32_t localOffset = arena.used;
+        arena.used += count;
+
+        GpuDescriptorTable table = {};
+        table.startIndex = arena.startIndex + localOffset;
+        table.count = count;
+        table.cpuStart = arena.cpuStart;
+        table.cpuStart.ptr += static_cast<SIZE_T>(localOffset) * m_shaderVisibleDescriptorSize;
+        table.gpuStart = arena.gpuStart;
+        table.gpuStart.ptr += static_cast<UINT64>(localOffset) * m_shaderVisibleDescriptorSize;
+
+        return table;
+    }
+
     ID3D12DescriptorHeap* D3D12DescriptorContext::GetCBVSRVUAVHeap()const
     {
         return m_shaderVisibleHeap.Get();
@@ -150,5 +237,10 @@ namespace efg::d3d12
     ID3D12DescriptorHeap* D3D12DescriptorContext::GetSamplerHeap() const
     {
         return m_samplerHeap.Get();
+    }
+
+    UINT D3D12DescriptorContext::GetCBVSRVUAVDescriptorSize()
+    {
+        return m_shaderVisibleDescriptorSize;
     }
 }

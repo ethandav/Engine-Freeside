@@ -143,6 +143,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	object2.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
 	object2.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
 	object2.world = Freeside::Math::TransformMatrix(object2.transform.position, object2.transform.rotation, object2.transform.scale);
+	object2.initialTransform = object2.world;
 	object2.name = L"Pyramid";
 
 	object3.mesh = sphereMeshHandle;
@@ -220,16 +221,14 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 		pDirLight->direction = Freeside::Math::Normalize(Freeside::Math::Vec3{ 0,0,0 } - sunPosition);
 
-		//pPointLight1->color = HSVtoRGB(hue, 1.0f, 1.0f);
+		pPointLight1->color = HSVtoRGB(hue, 1.0f, 1.0f);
 
-		/*
 		Freeside::Math::Mat4 translation1 = object1.initialTransform;
 		pObject1->world = translation1 * rotation;
         Freeside::Math::Mat4 translation2 = object2.initialTransform;
         pObject2->world = translation2 * rotation;
         Freeside::Math::Mat4 translation3 = object3.initialTransform;
         pObject3->world = translation3 * rotation;
-		*/
 
 		window.PollEvents();
 		sceneManager.RenderScene(testSceneHandle);

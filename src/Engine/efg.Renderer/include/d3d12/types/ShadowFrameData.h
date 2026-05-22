@@ -7,6 +7,9 @@
 
 namespace efg::d3d12
 {
+    static constexpr uint32_t MaxDirectionalShadows = 16;
+    static constexpr uint32_t MaxPointShadows = 64;
+
     struct DirectionalShadowEntry
     {
         uint32_t lightIndex = 0;

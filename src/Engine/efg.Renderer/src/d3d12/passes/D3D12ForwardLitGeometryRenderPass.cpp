@@ -5,6 +5,7 @@
 #include "..\..\..\include\d3d12\libraries\D3D12MaterialLibrary.h"
 #include "..\..\..\include\d3d12\factories\D3D12BufferFactory.h"
 #include "..\..\..\include\d3d12\descriptors\D3D12DescriptorContext.h"
+#include "..\..\..\include\d3d12\core\D3D12Context.h"
 #include "..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
 #include "..\..\..\include\d3d12\types\D3D12DrawTypes.h"
 
@@ -13,27 +14,27 @@
 namespace efg::d3d12
 {
 
-    static int32_t FindDirectionalShadowIndex(
-        const ShadowMapFrameData& shadowMapFrameData,
-        uint32_t lightIndex)
+    static int32_t FindDirectionalShadowIndex(const ShadowMapFrameData& shadowMapFrameData, uint32_t lightIndex)
     {
         for (uint32_t i = 0; i < shadowMapFrameData.directionalShadows.size(); ++i)
         {
             if (shadowMapFrameData.directionalShadows[i].lightIndex == lightIndex)
+            {
                 return static_cast<int32_t>(i);
+            }
         }
 
         return -1;
     }
 
-    static int32_t FindPointShadowIndex(
-        const ShadowMapFrameData& shadowMapFrameData,
-        uint32_t lightIndex)
+    static int32_t FindPointShadowIndex(const ShadowMapFrameData& shadowMapFrameData, uint32_t lightIndex)
     {
         for (uint32_t i = 0; i < shadowMapFrameData.pointShadows.size(); ++i)
         {
             if (shadowMapFrameData.pointShadows[i].lightIndex == lightIndex)
+            {
                 return static_cast<int32_t>(i);
+            }
         }
 
         return -1;
@@ -133,6 +134,42 @@ namespace efg::d3d12
         }
     }
 
+    void D3D12ForwardLitGeometryRenderPass::BuildDirectionalShadowMapTable(const FrameContext& ctx, const ShadowMapFrameData& shadowMapFrameData, uint32_t activeShadowCount, ForwardLitPassResources& resources)
+    {
+        GpuDescriptorTable table = m_descriptorContext->AllocateShaderVisibleTableFromFrameArena(ctx.frame->descriptorArena, MaxDirectionalShadows);
+        const uint32_t descriptorSize = m_descriptorContext->GetCBVSRVUAVDescriptorSize();
+
+        for (uint32_t i = 0; i < activeShadowCount; ++i)
+        {
+            D3D12_CPU_DESCRIPTOR_HANDLE dst = table.cpuStart;
+            D3D12_CPU_DESCRIPTOR_HANDLE src = {};
+
+            dst.ptr += static_cast<SIZE_T>(i) * descriptorSize;
+            src = shadowMapFrameData.directionalShadows[i].shadowMap->cpuSrv;
+            ctx.graphicsContext->GetDevice()->CopyDescriptorsSimple(1, dst, src, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        }
+
+        resources.directionalShadowMapsTable = table.gpuStart;
+    }
+
+    void D3D12ForwardLitGeometryRenderPass::BuildPointShadowCubeTable(const FrameContext& ctx, const ShadowMapFrameData& shadowMapFrameData, uint32_t activeShadowCount, ForwardLitPassResources& resources)
+    {
+        GpuDescriptorTable table = m_descriptorContext->AllocateShaderVisibleTableFromFrameArena(ctx.frame->descriptorArena, MaxPointShadows);
+        const uint32_t descriptorSize = m_descriptorContext->GetCBVSRVUAVDescriptorSize();
+
+        for (uint32_t i = 0; i < activeShadowCount; ++i)
+        {
+            D3D12_CPU_DESCRIPTOR_HANDLE dst = table.cpuStart;
+            D3D12_CPU_DESCRIPTOR_HANDLE src = {};
+
+            dst.ptr += static_cast<SIZE_T>(i) * descriptorSize;
+            src = shadowMapFrameData.pointShadows[i].shadowCube->cpuSrv;
+            ctx.graphicsContext->GetDevice()->CopyDescriptorsSimple(1, dst, src, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        }
+
+        resources.pointShadowCubesTable = table.gpuStart;
+    }
+
     void D3D12ForwardLitGeometryRenderPass::UploadPointLights(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources)
     {
         uint32_t count = 0;
@@ -212,8 +249,9 @@ namespace efg::d3d12
 
     void D3D12ForwardLitGeometryRenderPass::UploadShadowResources(const FrameContext& ctx, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources)
     {
-        const uint32_t directionalShadowCount = static_cast<uint32_t>(shadowMapFrameData.directionalShadows.size());
-        const uint32_t pointShadowCount = static_cast<uint32_t>(shadowMapFrameData.pointShadows.size());
+        const uint32_t directionalShadowCount = std::min<uint32_t>(static_cast<uint32_t>(shadowMapFrameData.directionalShadows.size()), MaxDirectionalShadows);
+        const uint32_t pointShadowCount = std::min<uint32_t>(static_cast<uint32_t>(shadowMapFrameData.pointShadows.size()), MaxPointShadows);
+
         resources.shadowMetadata.directionalShadowCount = directionalShadowCount;
         resources.shadowMetadata.pointShadowCount = pointShadowCount;
         resources.shadowMetadata.shadowBias = 0.001f;
@@ -228,9 +266,12 @@ namespace efg::d3d12
 
             for (uint32_t i = 0; i < directionalShadowCount; ++i)
             {
-                shadowData[i].lightViewProjection =
-                    shadowMapFrameData.directionalShadows[i].lightViewProjection;
+                shadowData[i].lightViewProjection = shadowMapFrameData.directionalShadows[i].lightViewProjection;
             }
+        }
+        else
+        {
+            //resources.directionalShadowDataSRV = m_dummyStructuredBufferGpuVA;
         }
 
         if (pointShadowCount > 0)
@@ -251,15 +292,12 @@ namespace efg::d3d12
                 shadowData[i].farPlane = entry.farPlane;
             }
         }
-
-        if (directionalShadowCount > 0)
+        else
         {
-            resources.directionalShadowMapsTable = shadowMapFrameData.directionalShadows[0].shadowMap->gpuSrv;
+            //resources.pointShadowDataSRV = m_dummyStructuredBufferGpuVA;
         }
 
-        if (pointShadowCount > 0)
-        {
-            resources.pointShadowCubesTable = shadowMapFrameData.pointShadows[0].shadowCube->srv;
-        }
+        BuildDirectionalShadowMapTable(ctx, shadowMapFrameData, directionalShadowCount, resources);
+        BuildPointShadowCubeTable(ctx, shadowMapFrameData, pointShadowCount, resources);
     }
 }

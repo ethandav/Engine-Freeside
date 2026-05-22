@@ -38,9 +38,9 @@ cbuffer ShadowMetadataCB : register(b5)
 
 struct PointLight
 {
-    float4 positionAndRadius; // xyz = position, w = radius
-    float4 colorAndIntensity; // rgb = color, w = intensity
-    int shadowIndex; // -1 = no shadow
+    float4 positionAndRadius;
+    float4 colorAndIntensity;
+    int shadowIndex;
     float3 _padding;
 };
 
@@ -48,7 +48,7 @@ struct DirectionalLight
 {
     float4 lightDirectionAndIntensity;
     float4 lightColor;
-    int shadowIndex; // -1 = no shadow
+    int shadowIndex;
     float3 _padding;
 };
 
@@ -133,11 +133,7 @@ float ComputeDirectionalShadowFactor(float3 worldPosition, int shadowIndex)
         return 1.0f;
     }
 
-    float visibility = gDirectionalShadowMaps[NonUniformResourceIndex(shadowIndex)].SampleCmpLevelZero(
-        ShadowSampler,
-        shadowUV,
-        currentDepth - gShadowBias
-    );
+    float visibility = gDirectionalShadowMaps[NonUniformResourceIndex(shadowIndex)].SampleCmpLevelZero(ShadowSampler, shadowUV, currentDepth - gShadowBias);
 
     return lerp(1.0f, visibility, gShadowStrength);
 }
@@ -148,15 +144,15 @@ uint GetCubeFaceIndex(float3 dir)
 
     if (absDir.x >= absDir.y && absDir.x >= absDir.z)
     {
-        return dir.x >= 0.0f ? 0 : 1; // +X, -X
+        return dir.x >= 0.0f ? 0 : 1;
     }
 
     if (absDir.y >= absDir.x && absDir.y >= absDir.z)
     {
-        return dir.y >= 0.0f ? 2 : 3; // +Y, -Y
+        return dir.y >= 0.0f ? 2 : 3;
     }
 
-    return dir.z >= 0.0f ? 4 : 5; // +Z, -Z
+    return dir.z >= 0.0f ? 4 : 5;
 }
 
 float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int shadowIndex)
@@ -168,9 +164,7 @@ float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int s
 
     float3 lightToPixel = worldPosition - lightPosition;
     float3 sampleDir = normalize(lightToPixel);
-
     uint faceIndex = GetCubeFaceIndex(sampleDir);
-
     PointShadowData shadowData = gPointShadows[shadowIndex];
 
     float4 lightClip = mul(
@@ -186,14 +180,8 @@ float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int s
         return 1.0f;
     }
 
-    float sampledDepth =
-        gPointShadowCubes[NonUniformResourceIndex(shadowIndex)]
-            .Sample(gLinearSampler, sampleDir);
-
-    float visibility =
-        currentDepth - gShadowBias <= sampledDepth
-            ? 1.0f
-            : 0.0f;
+    float sampledDepth = gPointShadowCubes[NonUniformResourceIndex(shadowIndex)].Sample(gLinearSampler, sampleDir);
+    float visibility = currentDepth - gShadowBias <= sampledDepth ? 1.0f : 0.0f;
 
     return lerp(1.0f, visibility, gShadowStrength);
 }
@@ -205,39 +193,21 @@ float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, flo
     for (uint i = 0; i < gPointLightCount; ++i)
     {
         PointLight light = gPointLights[i];
-
         float3 lightPos = light.positionAndRadius.xyz;
         float radius = max(light.positionAndRadius.w, 0.0001f);
         float3 lightColor = light.colorAndIntensity.rgb;
         float intensity = light.colorAndIntensity.w;
-
         float3 toLight = lightPos - worldPos;
         float distanceToLight = length(toLight);
         float3 lightDir = toLight / max(distanceToLight, 0.0001f);
-
         float attenuation = saturate(1.0f - distanceToLight / radius);
         attenuation *= attenuation;
-
         float shadowFactor = ComputePointShadowFactor(worldPos, lightPos, light.shadowIndex);
-
         float ndotl = saturate(dot(normal, lightDir));
-
-        float3 diffuse =
-            baseColor.rgb *
-            lightColor *
-            ndotl *
-            intensity *
-            attenuation;
-
+        float3 diffuse = baseColor.rgb * lightColor * ndotl * intensity * attenuation;
         float3 halfVector = normalize(lightDir + viewDir);
         float specularAmount = pow(saturate(dot(normal, halfVector)), Specular.y);
-
-        float3 specular =
-            lightColor *
-            specularAmount *
-            Specular.x *
-            intensity *
-            attenuation;
+        float3 specular = lightColor * specularAmount * Specular.x * intensity * attenuation;
 
         result += shadowFactor * (diffuse + specular);
     }
@@ -252,26 +222,13 @@ float3 AccumulateDirectionalLights(float3 worldPos, float3 normal, float3 viewDi
     for (uint i = 0; i < gDirectionalLightCount; ++i)
     {
         DirectionalLight light = gDirectionalLights[i];
-
         float shadowFactor = ComputeDirectionalShadowFactor(worldPos, light.shadowIndex);
-
         float3 lightDir = normalize(-light.lightDirectionAndIntensity.xyz);
         float ndotl = saturate(dot(normal, lightDir));
-
-        float3 diffuse =
-            materialColor.rgb *
-            light.lightColor.rgb *
-            ndotl *
-            light.lightDirectionAndIntensity.w;
-
+        float3 diffuse = materialColor.rgb * light.lightColor.rgb * ndotl * light.lightDirectionAndIntensity.w;
         float3 halfVector = normalize(lightDir + viewDir);
         float specularAmount = pow(saturate(dot(normal, halfVector)), Specular.y);
-
-        float3 specular =
-            light.lightColor.rgb *
-            specularAmount *
-            Specular.x *
-            light.lightDirectionAndIntensity.w;
+        float3 specular = light.lightColor.rgb * specularAmount * Specular.x * light.lightDirectionAndIntensity.w;
 
         result += shadowFactor * (diffuse + specular);
     }
@@ -283,16 +240,11 @@ float4 PSMain(VSOutput input) : SV_TARGET
 {
     float2 uv = input.uv * uvScale;
     float4 sampledBaseColor = gBaseColorTexture.Sample(gLinearSampler, uv);
-
     float3 normal = normalize(input.normalWS);
     float3 viewDir = normalize(ViewPosition.xyz - input.worldPosition);
-
     float3 ambient = sampledBaseColor.rgb * 0.1f;
-
     float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, sampledBaseColor);
-
     float3 pointLighting = AccumulatePointLights(input.worldPosition, normal, viewDir, sampledBaseColor);
-
     float3 finalColor = ambient + directionalLighting + pointLighting;
 
     return float4(finalColor, BaseColor.a);

@@ -42,7 +42,7 @@ namespace efg::d3d12
 	{
 		if (scene.directionalLights.size() > m_directionalShadowMaps.size())
 		{
-			for (uint32_t i = m_directionalShadowMaps.size(); i < scene.directionalLights.size(); i++)
+			for (uint32_t i = static_cast<uint32_t>(m_directionalShadowMaps.size()); i < scene.directionalLights.size(); i++)
 			{
 				GpuTexture2D texture = m_textureFactory->CreateDepthBuffer(2048, 2048, true);
 				m_directionalShadowMaps.push_back(std::move(texture));
@@ -51,7 +51,7 @@ namespace efg::d3d12
 
 		if (scene.pointLights.size() > m_pointShadowCubes.size())
 		{
-			for (uint32_t i = m_pointShadowCubes.size(); i < scene.pointLights.size(); i++)
+			for (uint32_t i = static_cast<uint32_t>(m_pointShadowCubes.size()); i < scene.pointLights.size(); i++)
 			{
 				GpuTextureCube texture = m_textureFactory->CreateDepthTextureCube(2048, 2048);
 				m_pointShadowCubes.push_back(std::move(texture));

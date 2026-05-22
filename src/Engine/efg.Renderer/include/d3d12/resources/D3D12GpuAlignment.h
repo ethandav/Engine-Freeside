@@ -5,7 +5,7 @@
 
 namespace efg::d3d12
 {
-    static constexpr uint64_t ConstantArenaSize = 1024 * 1024;
+
     static constexpr uint64_t InstanceDataAlignment = 16;
     static constexpr uint64_t StructuredBufferAlignment = 16;
 

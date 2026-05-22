@@ -50,6 +50,8 @@ namespace efg::d3d12
 		CameraConstants BuildCameraConstants(const Freeside::Camera& camera);
 		DirectionalLightConstants BuildDirectionalLightConstants(const Freeside::Lights::Directional& light);
 		void DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene);
+		void BuildDirectionalShadowMapTable(const FrameContext& ctx, const ShadowMapFrameData& shadowMapFrameData, uint32_t activeShadowCount, ForwardLitPassResources& resources);
+		void BuildPointShadowCubeTable(const FrameContext& ctx, const ShadowMapFrameData& shadowMapFrameData, uint32_t activeShadowCount, ForwardLitPassResources& resources);
 
 		D3D12GraphicsPipelineLibary* m_pipelineLibrary = nullptr;
 		D3D12DescriptorContext* m_descriptorContext = nullptr;

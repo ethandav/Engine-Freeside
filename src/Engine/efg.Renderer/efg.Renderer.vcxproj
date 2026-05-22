@@ -133,6 +133,7 @@
     <ClInclude Include="include\d3d12\commands\D3D12UploadTypes.h" />
     <ClInclude Include="include\d3d12\core\D3D12Format.h" />
     <ClInclude Include="include\d3d12\descriptors\D3D12DescriptorAllocation.h" />
+    <ClInclude Include="include\d3d12\descriptors\D3D12GpuDescriptorTable.h" />
     <ClInclude Include="include\d3d12\factories\D3D12DescriptorFactory.h" />
     <ClInclude Include="include\d3d12\frame\D3D12FrameConfig.h" />
     <ClInclude Include="include\d3d12\frame\D3D12FrameContext.h" />

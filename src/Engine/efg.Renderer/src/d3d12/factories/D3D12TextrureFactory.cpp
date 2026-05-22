@@ -19,7 +19,7 @@ namespace efg::d3d12
         texture.mipLevels = 1;
         texture.format = format;
         m_resourceFactory->CreateCommittedTexture2DResource(&texture, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
-        m_descriptorFactory->CreateTexture2DSRV(&texture, texture.format, texture.mipLevels);
+        m_descriptorFactory->CreateTexture2DSRV(&texture, texture.format, texture.mipLevels, DescriptorVisibility::CpuOnlyAndShaderVisible);
 
         return texture;
     }
@@ -30,9 +30,8 @@ namespace efg::d3d12
         texture.width = width;
         texture.height = height;
         texture.format = format;
-
         m_resourceFactory->CreateCommittedDepthTextureCubeResource(&texture);
-        m_descriptorFactory->CreateTextureCubeSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1);
+        m_descriptorFactory->CreateTextureCubeSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1, DescriptorVisibility::CpuOnlyAndShaderVisible);
 
         for (uint32_t face = 0; face < 6; ++face)
         {
@@ -56,7 +55,7 @@ namespace efg::d3d12
 
         if (shaderVisible)
         {
-            m_descriptorFactory->CreateTexture2DSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1);
+            m_descriptorFactory->CreateTexture2DSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1, DescriptorVisibility::CpuOnlyAndShaderVisible);
         }
 
         return texture;
