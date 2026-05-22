@@ -8,6 +8,7 @@ namespace efg::d3d12
 {
 	struct LightViewConstants
 	{
+		Freeside::Math::Vec4 viewPosition;
 		Freeside::Math::Mat4 viewProjection;
 	};
 }

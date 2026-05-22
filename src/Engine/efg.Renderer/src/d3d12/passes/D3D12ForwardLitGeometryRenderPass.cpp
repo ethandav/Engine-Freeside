@@ -1,7 +1,7 @@
 #include "..\..\..\include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
 #include "..\..\..\include\d3d12\libraries\D3D12GraphicsPipelineLibrary.h"
 #include "..\..\..\include\d3d12\libraries\D3D12MeshLibrary.h"
-#include "..\..\..\include\d3d12\libraries\D3D12TextureLibrary.h"
+#include "..\..\..\include\d3d12\libraries\D3D12MaterialTextureLibrary.h"
 #include "..\..\..\include\d3d12\libraries\D3D12MaterialLibrary.h"
 #include "..\..\..\include\d3d12\factories\D3D12BufferFactory.h"
 #include "..\..\..\include\d3d12\descriptors\D3D12DescriptorContext.h"
@@ -40,7 +40,7 @@ namespace efg::d3d12
         return -1;
     }
 
-    void D3D12ForwardLitGeometryRenderPass::Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12TextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory)
+    void D3D12ForwardLitGeometryRenderPass::Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12MaterialTextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory)
     {
         m_pipelineLibrary = pipelineLib;
         m_descriptorContext = descriptorCtx;
@@ -116,7 +116,7 @@ namespace efg::d3d12
             D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &material.constants, sizeof(MaterialConstants));
             ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
 
-            const GpuTexture2D& baseColorTexture = m_textureLibrary->GetTextureByHandle(material.baseColorTexture);
+            const GpuTexture2D& baseColorTexture = material.baseColorTexture.IsValid() ? m_textureLibrary->GetTextureByHandle(material.baseColorTexture) : m_textureLibrary->GetDefaultMaterialTexture();
             ctx.commandContext->SetGraphicsRootDescriptorTable(7, baseColorTexture.gpuSrv);
 
             const UINT64 instanceBufferSize = static_cast<UINT64>(batch.instanceCount) * sizeof(InstanceData);

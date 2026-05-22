@@ -21,8 +21,8 @@ namespace efg::d3d12
         PointLightMetadata = 3,        // b4
         ShadowMetadata = 4,            // b5
 
-        PointLightsSrv = 5,            // t0
-        InstanceData = 6,              // t1
+        InstanceData = 5,              // t0
+        PointLightsSrv = 6,            // t1
         BaseColorTexture = 7,          // t2 descriptor table
         DirectionalLightsSrv = 8,      // t4
         DirectionalShadowDataSrv = 9,  // t5

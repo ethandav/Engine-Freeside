@@ -47,8 +47,8 @@ namespace efg::d3d12
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::Material)].InitAsConstantBufferView(3, 0, D3D12_SHADER_VISIBILITY_PIXEL);
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointLightMetadata)].InitAsConstantBufferView(4, 0, D3D12_SHADER_VISIBILITY_PIXEL);
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::ShadowMetadata)].InitAsConstantBufferView(5, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv)].InitAsShaderResourceView(0, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[static_cast<UINT>(ForwardLitRootParameter::InstanceData)].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::InstanceData)].InitAsShaderResourceView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv)].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
         CD3DX12_DESCRIPTOR_RANGE baseColorTextureRange = {};
         baseColorTextureRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
@@ -148,7 +148,7 @@ namespace efg::d3d12
         };
 
         const ShaderBytecode& vertexShader = shaderLibrary.Get(ShaderId::GeometryVS);
-        const ShaderBytecode& pixelShader = shaderLibrary.Get(ShaderId::GeometryPS);
+        const ShaderBytecode& pixelShader = shaderLibrary.Get(ShaderId::ForwardLightingPS);
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
         psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
@@ -183,7 +183,7 @@ namespace efg::d3d12
             { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
         };
 
-        const ShaderBytecode& vertexShader = shaderLibrary.Get(ShaderId::ShadowMapVS);
+        const ShaderBytecode& vertexShader = shaderLibrary.Get(ShaderId::GeometryVS);
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
         psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };

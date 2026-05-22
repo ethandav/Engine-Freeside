@@ -139,7 +139,7 @@
     <ClInclude Include="include\d3d12\frame\D3D12FrameContext.h" />
     <ClInclude Include="include\d3d12\frame\D3D12FrameResouce.h" />
     <ClInclude Include="include\d3d12\factories\D3D12ResourceFactory.h" />
-    <ClInclude Include="include\d3d12\libraries\D3D12TextureLibrary.h" />
+    <ClInclude Include="include\d3d12\libraries\D3D12MaterialTextureLibrary.h" />
     <ClInclude Include="include\d3d12\frame\D3D12RenderTargets.h" />
     <ClInclude Include="include\d3d12\passes\D3D12BackBufferSetup.h" />
     <ClInclude Include="include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h" />
@@ -194,7 +194,7 @@
     <ClCompile Include="src\d3d12\passes\D3D12ForwardLitGeometryRenderPass.cpp" />
     <ClCompile Include="src\d3d12\libraries\D3D12MaterialLibrary.cpp" />
     <ClCompile Include="src\d3d12\factories\D3D12ResourceFactory.cpp" />
-    <ClCompile Include="src\d3d12\libraries\D3D12TextureLibrary.cpp" />
+    <ClCompile Include="src\d3d12\libraries\D3D12MaterialTextureLibrary.cpp" />
     <ClCompile Include="src\d3d12\passes\D3D12ShadowMapRenderPass.cpp" />
     <ClCompile Include="src\d3d12\systems\D3D12ShadowSystem.cpp" />
     <ClCompile Include="src\render\types\FormatUtils.cpp" />

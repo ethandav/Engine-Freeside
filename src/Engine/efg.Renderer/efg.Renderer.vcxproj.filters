@@ -93,7 +93,7 @@
     <ClInclude Include="include\render\RenderQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\d3d12\libraries\D3D12TextureLibrary.h">
+    <ClInclude Include="include\d3d12\libraries\D3D12MaterialTextureLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\render\ImageLoader.h">
@@ -248,7 +248,7 @@
     <ClCompile Include="src\render\RenderQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3d12\libraries\D3D12TextureLibrary.cpp">
+    <ClCompile Include="src\d3d12\libraries\D3D12MaterialTextureLibrary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\render\ImageLoader.cpp">

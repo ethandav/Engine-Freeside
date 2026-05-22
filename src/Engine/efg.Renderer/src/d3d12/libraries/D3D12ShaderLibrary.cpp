@@ -57,22 +57,15 @@ namespace efg::d3d12
     void D3D12ShaderLibrary::CompileAllShaders()
     {
         AddShader(
-            ShaderId::ShadowMapVS,
-            L"..\\Engine\\efg.Renderer\\assets\\shaders\\shadowMap.hlsl",
-            L"VSMain",
-            L"vs_6_0"
-        );
-
-        AddShader(
             ShaderId::GeometryVS,
-            L"..\\Engine\\efg.Renderer\\assets\\shaders\\geometry.hlsl",
+            L"..\\Engine\\efg.Renderer\\assets\\shaders\\GeometryTransform_VS.hlsl",
             L"VSMain",
             L"vs_6_0"
         );
 
         AddShader(
-            ShaderId::GeometryPS,
-            L"..\\Engine\\efg.Renderer\\assets\\shaders\\geometry.hlsl",
+            ShaderId::ForwardLightingPS,
+            L"..\\Engine\\efg.Renderer\\assets\\shaders\\ForwardLighting_PS.hlsl",
             L"PSMain",
             L"ps_6_0"
         );

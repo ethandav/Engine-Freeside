@@ -16,5 +16,6 @@ namespace efg::d3d12
         Material GetDefaultMaterial();
     private:
         std::vector<Material> m_materials = {};
+        Material m_defaultMaterial = {};
     };
 }

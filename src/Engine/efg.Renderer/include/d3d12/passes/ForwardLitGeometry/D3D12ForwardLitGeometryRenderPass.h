@@ -16,13 +16,13 @@ namespace efg::d3d12
 	class D3D12DescriptorContext;
 	class D3D12MeshLibrary;
 	class D3D12MaterialLibrary;
-	class D3D12TextureLibrary;
+	class D3D12MaterialTextureLibrary;
 	class D3D12BufferFactory;
 
 	class D3D12ForwardLitGeometryRenderPass
 	{
 	public:
-		void Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12TextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory);
+		void Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12MaterialTextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory);
 		void Execute(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData);
 	private:
 		struct ForwardLitPassResources
@@ -57,7 +57,7 @@ namespace efg::d3d12
 		D3D12DescriptorContext* m_descriptorContext = nullptr;
 		D3D12MeshLibrary* m_meshLibrary = nullptr;
 		D3D12MaterialLibrary* m_materialLibrary = nullptr;
-		D3D12TextureLibrary* m_textureLibrary = nullptr;
+		D3D12MaterialTextureLibrary* m_textureLibrary = nullptr;
 		D3D12BufferFactory* m_bufferFactory = nullptr;
 	};
 }

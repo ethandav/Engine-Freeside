@@ -9,7 +9,7 @@ namespace efg
 {
     ImageLoader::ImageLoader()
     {
-        CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+        HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     }
 
     DecodedImage ImageLoader::LoadImageWithWIC(const wchar_t* filePath)
@@ -17,39 +17,18 @@ namespace efg
         using Microsoft::WRL::ComPtr;
 
         ComPtr<IWICImagingFactory> factory;
-        CoCreateInstance(CLSID_WICImagingFactory,
-            nullptr,
-            CLSCTX_INPROC_SERVER,
-            IID_PPV_ARGS(factory.GetAddressOf())
-        );
-
         ComPtr<IWICBitmapDecoder> decoder;
-        factory->CreateDecoderFromFilename(
-            filePath,
-            nullptr,
-            GENERIC_READ,
-            WICDecodeMetadataCacheOnLoad,
-            decoder.GetAddressOf()
-        );
-
         ComPtr<IWICBitmapFrameDecode> frame;
-        decoder->GetFrame(0, frame.GetAddressOf());
-
+        ComPtr<IWICFormatConverter> converter;
         UINT width = 0;
         UINT height = 0;
+
+        HRESULT hr = CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(factory.GetAddressOf()));
+        factory->CreateDecoderFromFilename(filePath, nullptr, GENERIC_READ, WICDecodeMetadataCacheOnLoad, decoder.GetAddressOf());
+        decoder->GetFrame(0, frame.GetAddressOf());
         frame->GetSize(&width, &height);
-
-        ComPtr<IWICFormatConverter> converter;
         factory->CreateFormatConverter(converter.GetAddressOf());
-
-        converter->Initialize(
-            frame.Get(),
-            GUID_WICPixelFormat32bppRGBA,
-            WICBitmapDitherTypeNone,
-            nullptr,
-            0.0,
-            WICBitmapPaletteTypeCustom
-        );
+        converter->Initialize(frame.Get(), GUID_WICPixelFormat32bppRGBA, WICBitmapDitherTypeNone, nullptr, 0.0, WICBitmapPaletteTypeCustom);
 
         DecodedImage image = {};
         image.width = width;
@@ -58,12 +37,23 @@ namespace efg
         image.rowPitch = image.width * BytesPerPixelOrBlock(image.format);
         image.pixels.resize(static_cast<size_t>(image.rowPitch) * height);
 
-        converter->CopyPixels(
-            nullptr,
-            image.rowPitch,
-            static_cast<UINT>(image.pixels.size()),
-            image.pixels.data()
-        );
+        converter->CopyPixels(nullptr, image.rowPitch, static_cast<UINT>(image.pixels.size()), image.pixels.data());
+
+        return image;
+    }
+
+    DecodedImage ImageLoader::CreateSolidColorImage(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+    {
+        DecodedImage image = {};
+        image.width = 1;
+        image.height = 1;
+        image.format = Format::R8G8B8A8_UNorm;
+        image.rowPitch = image.width * BytesPerPixelOrBlock(image.format);
+        image.pixels.resize(image.rowPitch * image.height);
+        image.pixels[0] = r;
+        image.pixels[1] = g;
+        image.pixels[2] = b;
+        image.pixels[3] = a;
 
         return image;
     }

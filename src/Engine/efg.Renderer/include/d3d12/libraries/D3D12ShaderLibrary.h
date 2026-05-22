@@ -14,9 +14,8 @@ namespace efg::d3d12
     enum class ShaderId : uint32_t
     {
         ShadowMapVS,
-
         GeometryVS,
-        GeometryPS,
+        ForwardLightingPS,
 
         Count
     };

@@ -153,7 +153,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	object3.name = L"Sphere";
 
 	object4.mesh = planeMeshHandle;
-	object4.material = grassMaterialHandle;
 	object4.transform.position = Freeside::Math::Vec3(0.0f, 0.0f, 5.0f);
 	object4.transform.rotation = Freeside::Math::Vec3(-3.14159265f * 0.5f, 0.0f, 0.0f);
 	object4.transform.scale = Freeside::Math::Vec3(10.0f, 10.0f, 10.0f);
@@ -162,7 +161,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	object4.name =  L"Plane";
 
 	object5.mesh = planeMeshHandle;
-	object5.material = grassMaterialHandle;
 	object5.transform.position = Freeside::Math::Vec3(0.0f, -0.5f, 0.0f);
 	object5.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
 	object5.transform.scale = Freeside::Math::Vec3(10.0f, 10.0f, 10.0f);
@@ -184,7 +182,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	Freeside::DirectionalLightHandle hDirLight = Freeside::DirectionalLightHandle(0);
 	Freeside::Lights::Directional* pDirLight = sceneManager.GetDirectionalLightByHandle(testSceneHandle, hDirLight);
-	pDirLight->intensity = 0.0f;
+	pDirLight->intensity = 1.0f;
 
 	Freeside::Lights::Point pointLight1;
 	pointLight1.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);

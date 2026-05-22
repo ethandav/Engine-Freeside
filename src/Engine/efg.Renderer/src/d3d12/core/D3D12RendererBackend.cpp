@@ -17,6 +17,7 @@ namespace efg::d3d12
         CreateRenderTargets(desc.width, desc.height);
         InitializeRenderPasses();
         CreateFrameResources();
+        CreateBuiltIns();
         m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
     }
 
@@ -65,6 +66,14 @@ namespace efg::d3d12
     {
         m_forwarLitGeometryRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_materialLibrary, &m_textureLibrary, &m_bufferFactory);
         m_shadowMapRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_textureFactory, &m_bufferFactory);
+    }
+
+    void D3D12RendererBackend::CreateBuiltIns()
+    {
+        DecodedImage image = m_imageLoader.CreateSolidColorImage(100, 100, 100, 255);
+        GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::ShaderVisible);
+        m_textureLibrary.RegisterDefaultMaterialTexture2D(texture);
+        m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     }
 
     void D3D12RendererBackend::CreateFrameResources()
@@ -145,7 +154,7 @@ namespace efg::d3d12
         GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::ShaderVisible);
         m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-        Freeside::TextureHandle handle = m_textureLibrary.RegisterTexture2D(texture);
+        Freeside::TextureHandle handle = m_textureLibrary.RegisterMaterialTexture2D(texture);
 
         return handle;
     }

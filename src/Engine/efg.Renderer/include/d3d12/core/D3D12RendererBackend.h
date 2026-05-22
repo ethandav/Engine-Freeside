@@ -17,7 +17,7 @@
 #include "..\descriptors\D3D12DescriptorContext.h"
 #include "..\libraries\D3D12GraphicsPipelineLibrary.h"
 #include "..\libraries\D3D12MaterialLibrary.h"
-#include "..\libraries\D3D12TextureLibrary.h"
+#include "..\libraries\D3D12MaterialTextureLibrary.h"
 #include "..\libraries\D3D12MeshLibrary.h"
 #include "..\factories\D3D12BufferFactory.h"
 #include "..\factories\D3D12TextrureFactory.h"
@@ -46,6 +46,7 @@ namespace efg::d3d12
 		void CreateRenderTargets(uint32_t width, uint32_t height);
 		void InitializeD3D12Systems(const Freeside::RendererDesc& desc);
 		void InitializeRenderPasses();
+		void CreateBuiltIns();
 		void CreateFrameResources();
 		void DestroyFrameResources();
 		FrameContext BeginFrame();
@@ -64,7 +65,7 @@ namespace efg::d3d12
 		D3D12GraphicsPipelineLibary m_graphicsPipelineLibrary = {};
 		D3D12ShaderLibrary m_shaderLibrary = {};
 		D3D12MaterialLibrary m_materialLibrary = {};
-		D3D12TextureLibrary m_textureLibrary = {};
+		D3D12MaterialTextureLibrary m_textureLibrary = {};
 		D3D12BufferFactory m_bufferFactory = {};
 		D3D12TextureFactory m_textureFactory = {};
 		D3D12ResourceFactory m_resourceFactory = {};
