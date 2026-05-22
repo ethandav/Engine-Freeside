@@ -1,5 +1,6 @@
 #include "..\..\..\include\d3d12\systems\D3D12ShadowSystem.h"
 #include "..\..\..\include\d3d12\factories\D3D12TextrureFactory.h"
+#include "..\..\..\include\d3d12\descriptors\D3D12DescriptorAllocation.h"
 #include "..\..\..\include\render\Camera.h"
 #include "..\..\..\include\render\Lights.h"
 
@@ -44,7 +45,7 @@ namespace efg::d3d12
 		{
 			for (uint32_t i = static_cast<uint32_t>(m_directionalShadowMaps.size()); i < scene.directionalLights.size(); i++)
 			{
-				GpuTexture2D texture = m_textureFactory->CreateDepthBuffer(2048, 2048, true);
+				GpuTexture2D texture = m_textureFactory->CreateDepthBuffer(2048, 2048, DescriptorVisibility::CpuOnlyAndShaderVisible);
 				m_directionalShadowMaps.push_back(std::move(texture));
 			}
 		}
@@ -53,7 +54,7 @@ namespace efg::d3d12
 		{
 			for (uint32_t i = static_cast<uint32_t>(m_pointShadowCubes.size()); i < scene.pointLights.size(); i++)
 			{
-				GpuTextureCube texture = m_textureFactory->CreateDepthTextureCube(2048, 2048);
+				GpuTextureCube texture = m_textureFactory->CreateDepthTextureCube(2048, 2048, DescriptorVisibility::CpuOnlyAndShaderVisible);
 				m_pointShadowCubes.push_back(std::move(texture));
 			}
 		}

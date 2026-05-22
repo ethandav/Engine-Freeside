@@ -37,7 +37,7 @@ namespace efg::d3d12
 
     void D3D12RendererBackend::CreateRenderTargets(uint32_t width, uint32_t height)
     {
-        m_renderTargets.sceneDepth = m_textureFactory.CreateDepthBuffer(width, height);
+        m_renderTargets.sceneDepth = m_textureFactory.CreateDepthBuffer(width, height, DescriptorVisibility::CpuOnly);
     }
 
     void D3D12RendererBackend::InitializeD3D12Systems(const Freeside::RendererDesc& desc)
@@ -137,7 +137,7 @@ namespace efg::d3d12
     Freeside::TextureHandle D3D12RendererBackend::RegisterTexture2D(const wchar_t* filename)
     {
         DecodedImage image = m_imageLoader.LoadImageWithWIC(filename);
-        GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format));
+        GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::ShaderVisible);
         m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
         Freeside::TextureHandle handle = m_textureLibrary.RegisterTexture2D(texture);

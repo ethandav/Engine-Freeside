@@ -59,46 +59,22 @@ namespace efg::d3d12
         return allocation;
     }
 
-    void D3D12DescriptorFactory::CreateStructuredBufferSRV(GpuStructuredBuffer* buffer, uint32_t elementCount, uint32_t elementStride)
+    void D3D12DescriptorFactory::CreateStructuredBufferSRV(GpuStructuredBuffer* buffer, uint32_t elementCount, uint32_t elementStride, DescriptorVisibility visibility)
     {
-        GpuDescriptorAllocation allocation = m_descriptorContext->AllocateShaderVisibleCBVSRVUAV();
-        D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-        srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-        srvDesc.Buffer.FirstElement = 0;
-        srvDesc.Buffer.NumElements = elementCount;
-        srvDesc.Buffer.StructureByteStride = elementStride;
-        srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-        m_device->CreateShaderResourceView(buffer->resource.Get(), &srvDesc, allocation.cpu);
-        buffer->cpuSrv = allocation.cpu;
-        buffer->gpuSrv = allocation.gpu;
+        D3D12_SHADER_RESOURCE_VIEW_DESC desc = BuildStructuredBufferSRVDesc(elementCount, elementStride);
+        CreateSRVWithVisibility(buffer->resource.Get(), desc, visibility, &buffer->cpuSrv, &buffer->gpuSrv);
     }
 
     void efg::d3d12::D3D12DescriptorFactory::CreateTexture2DSRV(GpuTexture2D* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility)
     {
-        GpuDescriptorAllocation shaderVisibleAllocation = m_descriptorContext->AllocateShaderVisibleCBVSRVUAV();
-        CpuDescriptorAllocation cpuOnlyAllocation = m_descriptorContext->AllocateCpuOnlyCBVSRVUAV();
-
         D3D12_SHADER_RESOURCE_VIEW_DESC desc = BuildTexture2DSRVDesc(format, mipLevels);
-        m_device->CreateShaderResourceView(texture->resource.Get(), &desc, shaderVisibleAllocation.cpu);
-        m_device->CreateShaderResourceView(texture->resource.Get(), &desc, cpuOnlyAllocation.cpu);
-
-        texture->cpuSrv = cpuOnlyAllocation.cpu;
-        texture->gpuSrv = shaderVisibleAllocation.gpu;
+        CreateSRVWithVisibility(texture->resource.Get(), desc, visibility, &texture->cpuSrv, &texture->gpuSrv);
     }
 
     void efg::d3d12::D3D12DescriptorFactory::CreateTextureCubeSRV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility)
     {
-        GpuDescriptorAllocation shaderVisibleAllocation = m_descriptorContext->AllocateShaderVisibleCBVSRVUAV();
-        CpuDescriptorAllocation cpuOnlyAllocation = m_descriptorContext->AllocateCpuOnlyCBVSRVUAV();
-
         D3D12_SHADER_RESOURCE_VIEW_DESC desc = BuildTextureCubeSRVDesc(format, mipLevels);
-        m_device->CreateShaderResourceView(texture->resource.Get(), &desc, shaderVisibleAllocation.cpu);
-        m_device->CreateShaderResourceView(texture->resource.Get(), &desc, cpuOnlyAllocation.cpu);
-
-        texture->cpuSrv = cpuOnlyAllocation.cpu;
-        texture->gpuSrv = shaderVisibleAllocation.gpu;
+        CreateSRVWithVisibility(texture->resource.Get(), desc, visibility, &texture->cpuSrv, &texture->gpuSrv);
     }
 
     void D3D12DescriptorFactory::CreateTextureCubeFaceDSV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex)
@@ -120,6 +96,54 @@ namespace efg::d3d12
         m_device->CreateSampler(&samplerDesc, allocation.cpu);
 
         return allocation;
+    }
+
+    void D3D12DescriptorFactory::CreateSRVWithVisibility(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, DescriptorVisibility visibility, D3D12_CPU_DESCRIPTOR_HANDLE* outCpuOnly, D3D12_GPU_DESCRIPTOR_HANDLE* outShaderVisible)
+    {
+        if (outCpuOnly)
+        {
+            *outCpuOnly = {};
+        }
+
+        if (outShaderVisible)
+        {
+            *outShaderVisible = {};
+        }
+
+        if (visibility == DescriptorVisibility::CpuOnly || visibility == DescriptorVisibility::CpuOnlyAndShaderVisible)
+        {
+            auto cpuOnlyAllocation = m_descriptorContext->AllocateCpuOnlyCBVSRVUAV();
+            m_device->CreateShaderResourceView(resource, &desc, cpuOnlyAllocation.cpu);
+
+            if (outCpuOnly)
+            {
+                *outCpuOnly = cpuOnlyAllocation.cpu;
+            }
+        }
+
+        if (visibility == DescriptorVisibility::ShaderVisible || visibility == DescriptorVisibility::CpuOnlyAndShaderVisible)
+        {
+            auto shaderVisibleAllocation = m_descriptorContext->AllocateShaderVisibleCBVSRVUAV();
+            m_device->CreateShaderResourceView(resource, &desc, shaderVisibleAllocation.cpu);
+
+            if (outShaderVisible)
+            {
+                *outShaderVisible = shaderVisibleAllocation.gpu;
+            }
+        }
+    }
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC D3D12DescriptorFactory::BuildStructuredBufferSRVDesc(uint32_t elementCount, uint32_t elementStride)
+    {
+        D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+        desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+        desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        desc.Format = DXGI_FORMAT_UNKNOWN;
+        desc.Buffer.FirstElement = 0;
+        desc.Buffer.NumElements = elementCount;
+        desc.Buffer.StructureByteStride = elementStride;
+        desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+        return desc;
     }
 
     D3D12_SHADER_RESOURCE_VIEW_DESC D3D12DescriptorFactory::BuildTexture2DSRVDesc(DXGI_FORMAT format, uint32_t mipLevels)

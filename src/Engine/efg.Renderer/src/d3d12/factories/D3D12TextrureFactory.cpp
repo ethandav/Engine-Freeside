@@ -11,7 +11,7 @@ namespace efg::d3d12
         m_device = device;
     }
 
-    GpuTexture2D D3D12TextureFactory::CreateTexture2D(uint32_t width, uint32_t height, DXGI_FORMAT format)
+    GpuTexture2D D3D12TextureFactory::CreateTexture2D(uint32_t width, uint32_t height, DXGI_FORMAT format, DescriptorVisibility visibility)
     {
         GpuTexture2D texture = {};
         texture.width = width;
@@ -19,19 +19,19 @@ namespace efg::d3d12
         texture.mipLevels = 1;
         texture.format = format;
         m_resourceFactory->CreateCommittedTexture2DResource(&texture, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
-        m_descriptorFactory->CreateTexture2DSRV(&texture, texture.format, texture.mipLevels, DescriptorVisibility::CpuOnlyAndShaderVisible);
+        m_descriptorFactory->CreateTexture2DSRV(&texture, texture.format, texture.mipLevels, visibility);
 
         return texture;
     }
 
-    GpuTextureCube D3D12TextureFactory::CreateDepthTextureCube(uint32_t width, uint32_t height, DXGI_FORMAT format)
+    GpuTextureCube D3D12TextureFactory::CreateDepthTextureCube(uint32_t width, uint32_t height, DescriptorVisibility visibility, DXGI_FORMAT format)
     {
         GpuTextureCube texture = {};
         texture.width = width;
         texture.height = height;
         texture.format = format;
         m_resourceFactory->CreateCommittedDepthTextureCubeResource(&texture);
-        m_descriptorFactory->CreateTextureCubeSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1, DescriptorVisibility::CpuOnlyAndShaderVisible);
+        m_descriptorFactory->CreateTextureCubeSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1, visibility);
 
         for (uint32_t face = 0; face < 6; ++face)
         {
@@ -41,7 +41,7 @@ namespace efg::d3d12
         return texture;
     }
 
-    GpuTexture2D D3D12TextureFactory::CreateDepthBuffer(uint32_t width, uint32_t height, bool shaderVisible)
+    GpuTexture2D D3D12TextureFactory::CreateDepthBuffer(uint32_t width, uint32_t height, DescriptorVisibility visibility)
     {
         GpuTexture2D texture = {};
         texture.width = width;
@@ -53,9 +53,9 @@ namespace efg::d3d12
 
         texture.dsv = m_descriptorFactory->CreateDSV(texture.resource.Get(), nullptr).cpu;
 
-        if (shaderVisible)
+        if (visibility == DescriptorVisibility::ShaderVisible || visibility == DescriptorVisibility::CpuOnlyAndShaderVisible)
         {
-            m_descriptorFactory->CreateTexture2DSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1, DescriptorVisibility::CpuOnlyAndShaderVisible);
+            m_descriptorFactory->CreateTexture2DSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1, visibility);
         }
 
         return texture;

@@ -10,13 +10,6 @@ namespace efg::d3d12
 {
 	class D3D12DescriptorContext;
 
-	enum class DescriptorVisibility
-	{
-		CpuOnly,
-		ShaderVisible,
-		CpuOnlyAndShaderVisible
-	};
-
 	class D3D12DescriptorFactory
 	{
 	public:
@@ -25,12 +18,14 @@ namespace efg::d3d12
 		CpuDescriptorAllocation CreateDSV(ID3D12Resource* resource, const D3D12_DEPTH_STENCIL_VIEW_DESC* desc);
 		GpuDescriptorAllocation CreateCBV(ID3D12Resource* resource, uint32_t sizeInBytes);
 		GpuDescriptorAllocation CreateUAV(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride, ID3D12Resource* counterResource);
-		void CreateStructuredBufferSRV(GpuStructuredBuffer* resource, uint32_t elementCount, uint32_t elementStride);
-		void CreateTexture2DSRV(GpuTexture2D* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility = DescriptorVisibility::CpuOnlyAndShaderVisible);
-		void CreateTextureCubeSRV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility = DescriptorVisibility::CpuOnlyAndShaderVisible);
-		void CreateTextureCubeFaceDSV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex);
 		GpuDescriptorAllocation CreateSampler(const D3D12_SAMPLER_DESC& samplerDesc);
+		void CreateStructuredBufferSRV(GpuStructuredBuffer* resource, uint32_t elementCount, uint32_t elementStride, DescriptorVisibility visibility);
+		void CreateTexture2DSRV(GpuTexture2D* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility);
+		void CreateTextureCubeSRV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility);
+		void CreateTextureCubeFaceDSV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex);
 	private:
+		void CreateSRVWithVisibility(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, DescriptorVisibility visibility, D3D12_CPU_DESCRIPTOR_HANDLE* outCpuOnly, D3D12_GPU_DESCRIPTOR_HANDLE* outShaderVisible);
+		D3D12_SHADER_RESOURCE_VIEW_DESC BuildStructuredBufferSRVDesc(uint32_t elementCount, uint32_t elementStride);
 		D3D12_SHADER_RESOURCE_VIEW_DESC BuildTexture2DSRVDesc(DXGI_FORMAT format, uint32_t mipLevels);
 		D3D12_SHADER_RESOURCE_VIEW_DESC BuildTextureCubeSRVDesc(DXGI_FORMAT format, uint32_t mipLevels);
 

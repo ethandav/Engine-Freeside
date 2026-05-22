@@ -18,8 +18,6 @@ namespace efg::d3d12
         m_meshLibrary = meshLibrary;
         m_textureFactory = textureFactory;
         m_bufferFactory = bufferFactory;
-
-        m_shadowMap = m_textureFactory->CreateDepthBuffer(2048, 2048, true);
     }
 
     void D3D12ShadowMapRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene, ShadowMapFrameData& shadowMapFrameData)

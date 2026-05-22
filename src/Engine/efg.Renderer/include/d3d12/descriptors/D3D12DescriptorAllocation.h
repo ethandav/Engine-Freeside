@@ -5,6 +5,13 @@
 
 namespace efg::d3d12
 {
+    enum class DescriptorVisibility
+    {
+        CpuOnly,
+        ShaderVisible,
+        CpuOnlyAndShaderVisible
+    };
+
     struct CpuDescriptorAllocation
     {
         uint32_t index = 0;
