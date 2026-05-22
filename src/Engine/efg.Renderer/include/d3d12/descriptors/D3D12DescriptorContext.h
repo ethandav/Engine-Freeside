@@ -21,11 +21,11 @@ namespace efg::d3d12
 		UINT CreateCPUOnlyCBVSRVUAVDescriptorHeap(const UINT Count = MaxShaderVisibleHeapSize);
 		UINT CreateSamplerDescriptorHeap(const UINT Count = MaxSamplerHeapSize);
 		GpuDescriptorArena CreateDescriptorArena(const uint32_t frame);
-		DescriptorAllocation AllocateRTV();
-		DescriptorAllocation AllocateDSV();
-		DescriptorAllocation AllocateShaderVisibleCBVSRVUAV();
-		DescriptorAllocation AllocateCpuOnlyCBVSRVUAV();
-		DescriptorAllocation AllocateSampler();
+		CpuDescriptorAllocation AllocateRTV();
+		CpuDescriptorAllocation AllocateDSV();
+		GpuDescriptorAllocation AllocateShaderVisibleCBVSRVUAV();
+		CpuDescriptorAllocation AllocateCpuOnlyCBVSRVUAV();
+		GpuDescriptorAllocation AllocateSampler();
 		GpuDescriptorTable AllocateCBVSRVUAVTable(uint32_t count);
 		GpuDescriptorTable AllocateShaderVisibleTableFromFrameArena(GpuDescriptorArena& arena, uint32_t count);
 		ID3D12DescriptorHeap* GetCBVSRVUAVHeap() const;

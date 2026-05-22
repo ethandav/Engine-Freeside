@@ -106,14 +106,14 @@ namespace efg::d3d12
         return arena;
     }
 
-    DescriptorAllocation D3D12DescriptorContext::AllocateRTV()
+    CpuDescriptorAllocation D3D12DescriptorContext::AllocateRTV()
     {
         if (m_rtvUsed >= m_rtvCapacity)
         {
             throw std::runtime_error("RTV descriptor heap is full.");
         }
 
-        DescriptorAllocation allocation = {};
+        CpuDescriptorAllocation allocation = {};
         allocation.index = m_rtvUsed;
         allocation.cpu = m_rtvHeapStart;
         allocation.cpu.ptr += static_cast<SIZE_T>(m_rtvUsed) * m_rtvDescriptorSize;
@@ -122,14 +122,14 @@ namespace efg::d3d12
         return allocation;
     }
 
-    DescriptorAllocation D3D12DescriptorContext::AllocateDSV()
+    CpuDescriptorAllocation D3D12DescriptorContext::AllocateDSV()
     {
         if (m_dsvUsed >= m_dsvCapacity)
         {
             throw std::runtime_error("DSV descriptor heap is full.");
         }
 
-        DescriptorAllocation allocation = {};
+        CpuDescriptorAllocation allocation = {};
         allocation.index = m_dsvUsed;
         allocation.cpu = m_dsvHeapStart;
         allocation.cpu.ptr += static_cast<SIZE_T>(m_dsvUsed) * m_dsvDescriptorSize;
@@ -138,14 +138,14 @@ namespace efg::d3d12
         return allocation;
     }
 
-    DescriptorAllocation D3D12DescriptorContext::AllocateShaderVisibleCBVSRVUAV()
+    GpuDescriptorAllocation D3D12DescriptorContext::AllocateShaderVisibleCBVSRVUAV()
     {
         if (m_shaderVisibleUsed >= m_shaderVisibleCapacity)
         {
             throw std::runtime_error("CBV/SRV/UAV heap is full.");
         }
 
-        DescriptorAllocation allocation = {};
+        GpuDescriptorAllocation allocation = {};
         allocation.index = m_shaderVisibleUsed;
         allocation.cpu = m_shaderVisibleHeapCpuStart;
         allocation.cpu.ptr += static_cast<SIZE_T>(m_shaderVisibleUsed) * m_shaderVisibleDescriptorSize;
@@ -156,14 +156,14 @@ namespace efg::d3d12
         return allocation;
     }
 
-    DescriptorAllocation D3D12DescriptorContext::AllocateCpuOnlyCBVSRVUAV()
+    CpuDescriptorAllocation D3D12DescriptorContext::AllocateCpuOnlyCBVSRVUAV()
     {
         if (m_cpuOnlyCbvSrvUavUsed >= m_cpuOnlyCbvSrvUavCapacity)
         {
             throw std::runtime_error("CBV/SRV/UAV heap is full.");
         }
 
-        DescriptorAllocation allocation = {};
+        CpuDescriptorAllocation allocation = {};
         allocation.index = m_cpuOnlyCbvSrvUavUsed;
         allocation.cpu = m_cpuOnlyCbvSrvUavHeapCpuStart;
         allocation.cpu.ptr += static_cast<SIZE_T>(m_cpuOnlyCbvSrvUavUsed) * m_cpuOnlyCbvSrvUavDescriptorSize;
@@ -172,14 +172,14 @@ namespace efg::d3d12
         return allocation;
     }
 
-    DescriptorAllocation D3D12DescriptorContext::AllocateSampler()
+    GpuDescriptorAllocation D3D12DescriptorContext::AllocateSampler()
     {
         if (m_samplerUsed >= m_samplerCapacity)
         {
             throw std::runtime_error("Sampler descriptor heap is full.");
         }
 
-        DescriptorAllocation allocation = {};
+        GpuDescriptorAllocation allocation = {};
         allocation.index = m_samplerUsed;
         allocation.cpu = m_samplerHeapCpuStart;
         allocation.cpu.ptr += static_cast<SIZE_T>(m_samplerUsed) * m_samplerDescriptorSize;

@@ -35,6 +35,6 @@ namespace efg::d3d12
 		D3D12DescriptorFactory* m_descriptorFactory = nullptr;
 		Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;
 		Microsoft::WRL::ComPtr<ID3D12Resource> m_backBuffers[FrameCount];
-		std::array<DescriptorAllocation, FrameCount> m_backBufferHandles;
+		std::array<CpuDescriptorAllocation, FrameCount> m_backBufferHandles;
 	};
 }

@@ -5,15 +5,16 @@
 
 namespace efg::d3d12
 {
-	struct DescriptorAllocation
-	{
-		D3D12_CPU_DESCRIPTOR_HANDLE cpu = {};
-		D3D12_GPU_DESCRIPTOR_HANDLE gpu = {};
-		uint32_t index = UINT32_MAX;
+    struct CpuDescriptorAllocation
+    {
+        uint32_t index = 0;
+        D3D12_CPU_DESCRIPTOR_HANDLE cpu = {};
+    };
 
-		bool IsValid() const
-		{
-			return index != UINT32_MAX;
-		}
-	};
+    struct GpuDescriptorAllocation
+    {
+        uint32_t index = 0;
+        D3D12_CPU_DESCRIPTOR_HANDLE cpu = {};
+        D3D12_GPU_DESCRIPTOR_HANDLE gpu = {};
+    };
 }
