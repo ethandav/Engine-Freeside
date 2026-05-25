@@ -15,12 +15,14 @@ namespace efg::d3d12
     struct CpuDescriptorAllocation
     {
         uint32_t index = 0;
+        uint32_t count = 0;
         D3D12_CPU_DESCRIPTOR_HANDLE cpu = {};
     };
 
     struct GpuDescriptorAllocation
     {
         uint32_t index = 0;
+        uint32_t count = 0;
         D3D12_CPU_DESCRIPTOR_HANDLE cpu = {};
         D3D12_GPU_DESCRIPTOR_HANDLE gpu = {};
     };
