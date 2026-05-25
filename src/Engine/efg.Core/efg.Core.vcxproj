@@ -137,6 +137,7 @@
     <ClInclude Include="include\shapes\pyramid.h" />
     <ClInclude Include="include\shapes\shapes.h" />
     <ClInclude Include="include\shapes\sphere.h" />
+    <ClInclude Include="include\shapes\wall.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

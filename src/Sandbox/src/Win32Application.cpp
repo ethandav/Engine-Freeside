@@ -44,6 +44,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MeshData sphereMeshData = Freeside::Shapes::Sphere().mesh;
 	Freeside::MeshData pyramidMeshData = Freeside::Shapes::Pyramid().mesh;
 	Freeside::MeshData planeMeshData = Freeside::Shapes::Plane().mesh;
+	Freeside::MeshData wallMeshData = Freeside::Shapes::Wall().mesh;
 
 	window.Create(hInstance, rendererDesc.width, rendererDesc.height, L"Ethan's Framework (for) Graphics");
 	window.Show(nCmdShow);
@@ -56,18 +57,20 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MeshHandle sphereMeshHandle = renderer.CreateMesh(sphereMeshData);
 	Freeside::MeshHandle pyramidMeshHandle = renderer.CreateMesh(pyramidMeshData);
 	Freeside::MeshHandle planeMeshHandle = renderer.CreateMesh(planeMeshData);
+	Freeside::MeshHandle wallMeshHandle = renderer.CreateMesh(wallMeshData);
 	
 	Freeside::TextureHandle earthTexture = renderer.RegisterTexture2D(L"assets/textures/earth.jpeg");
 	Freeside::TextureHandle crateTexture = renderer.RegisterTexture2D(L"assets/textures/crate.png");
 	Freeside::TextureHandle pyramidTexture = renderer.RegisterTexture2D(L"assets/textures/pyramid.jpg");
 	Freeside::TextureHandle grassTexture = renderer.RegisterTexture2D(L"assets/textures/grass.jpg");
+	Freeside::TextureHandle brickTexture = renderer.RegisterTexture2D(L"assets/textures/brick.png");
+	Freeside::TextureHandle floorTexture = renderer.RegisterTexture2D(L"assets/textures/floor.png");
 
 	Freeside::MaterialDesc earthMaterial;
 	earthMaterial.baseColor = Freeside::Math::Vec3(0.0f, 0.0f, 1.0f);
 	earthMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	earthMaterial.baseColorTexture2D = earthTexture;
 	Freeside::MaterialHandle earthMaterialHandle = renderer.RegisterMaterial(earthMaterial);
-
 
 	Freeside::MaterialDesc crateMaterial;
 	crateMaterial.baseColor = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
@@ -88,6 +91,20 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	grassMaterial.uvScale = Freeside::Math::Vec2(10.0f, 10.0f);
 	grassMaterial.baseColorTexture2D = grassTexture;
 	Freeside::MaterialHandle grassMaterialHandle = renderer.RegisterMaterial(grassMaterial);
+
+	Freeside::MaterialDesc wallMaterial;
+	wallMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
+	wallMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
+	wallMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
+	wallMaterial.baseColorTexture2D = brickTexture;
+	Freeside::MaterialHandle wallMaterialHandle = renderer.RegisterMaterial(wallMaterial);
+
+	Freeside::MaterialDesc floorMaterial;
+	floorMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
+	floorMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
+	floorMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
+	floorMaterial.baseColorTexture2D = floorTexture;
+	Freeside::MaterialHandle floorMaterialHandle = renderer.RegisterMaterial(floorMaterial);
 
 	std::mt19937 rng{ std::random_device{}() };
 
@@ -113,11 +130,15 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	}
 	*/
 
-	Freeside::RenderObject object1;
-	Freeside::RenderObject object2;
-	Freeside::RenderObject object3;
-	Freeside::RenderObject object4;
-	Freeside::RenderObject object5;
+	Freeside::RenderObject box1;
+	Freeside::RenderObject box2;
+	Freeside::RenderObject box3;
+	Freeside::RenderObject pyramid;
+	Freeside::RenderObject sphere;
+	Freeside::RenderObject wallBack;
+	Freeside::RenderObject floor;
+	Freeside::RenderObject wallLeft;
+	Freeside::RenderObject wallRight;
 	Freeside::RenderObject* pObject1;
 	Freeside::RenderObject* pObject2;
 	Freeside::RenderObject* pObject3;
@@ -128,69 +149,121 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::Scene::SceneRenderObjectHandle hObject3;
 	Freeside::Scene::SceneRenderObjectHandle hObject4;
 	Freeside::Scene::SceneRenderObjectHandle hObject5;
-	object1.mesh = cubeMeshHandle;
-	object1.material = crateMaterialHandle;
-	object1.transform.position = Freeside::Math::Vec3(-1.0f, 0.0f, 0.0f);
-	object1.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
-	object1.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	object1.world = Freeside::Math::TransformMatrix(object1.transform.position, object1.transform.rotation, object1.transform.scale);
-	object1.initialTransform = object1.world;
-	object1.name = L"Cube";
 
-	object2.mesh = pyramidMeshHandle;
-	object2.material = pyramidMaterialHandle;
-	object2.transform.position = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
-	object2.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
-	object2.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	object2.world = Freeside::Math::TransformMatrix(object2.transform.position, object2.transform.rotation, object2.transform.scale);
-	object2.initialTransform = object2.world;
-	object2.name = L"Pyramid";
+	box1.mesh = cubeMeshHandle;
+	box1.material = crateMaterialHandle;
+	box1.transform.position = Freeside::Math::Vec3(-1.0f, 0.0f, 0.0f);
+	box1.transform.rotation = Freeside::Math::Vec3(0.0f, Freeside::Math::PI * 0.1f, 0.0f);
+	box1.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	box1.world = Freeside::Math::TransformMatrix(box1.transform.position, box1.transform.rotation, box1.transform.scale);
+	box1.initialTransform = box1.world;
+	box1.name = L"Cube";
 
-	object3.mesh = sphereMeshHandle;
-	object3.material = earthMaterialHandle;
-	object3.world = Freeside::Math::Translation(0.0f, 1.0f, 0.0f);
-	object3.initialTransform = Freeside::Math::Translation(0.0f, 1.0f, 0.0f);
-	object3.name = L"Sphere";
+	box2.mesh = cubeMeshHandle;
+	box2.material = crateMaterialHandle;
+	box2.transform.position = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
+	box2.transform.rotation = Freeside::Math::Vec3(0.0f, Freeside::Math::PI * 0.2f, 0.0f);
+	box2.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	box2.world = Freeside::Math::TransformMatrix(box2.transform.position, box2.transform.rotation, box2.transform.scale);
+	box2.initialTransform = box2.world;
+	box2.name = L"Cube";
 
-	object4.mesh = planeMeshHandle;
-	object4.transform.position = Freeside::Math::Vec3(0.0f, 0.0f, 5.0f);
-	object4.transform.rotation = Freeside::Math::Vec3(-3.14159265f * 0.5f, 0.0f, 0.0f);
-	object4.transform.scale = Freeside::Math::Vec3(10.0f, 10.0f, 10.0f);
-	object4.world = Freeside::Math::TransformMatrix(object4.transform.position, object4.transform.rotation, object4.transform.scale);
-	object4.initialTransform = object4.world;
-	object4.name =  L"Plane";
+	box3.mesh = cubeMeshHandle;
+	box3.material = crateMaterialHandle;
+	box3.transform.position = Freeside::Math::Vec3(1.0f, 1.0f, 0.0f);
+	box3.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+	box3.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	box3.world = Freeside::Math::TransformMatrix(box3.transform.position, box3.transform.rotation, box3.transform.scale);
+	box3.initialTransform = box3.world;
+	box3.name = L"Cube";
 
-	object5.mesh = planeMeshHandle;
-	object5.transform.position = Freeside::Math::Vec3(0.0f, -0.5f, 0.0f);
-	object5.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
-	object5.transform.scale = Freeside::Math::Vec3(10.0f, 10.0f, 10.0f);
-	object5.world = Freeside::Math::TransformMatrix(object5.transform.position, object5.transform.rotation, object5.transform.scale);
-	object5.initialTransform = object5.world;
-	object5.name = L"Plane";
+	pyramid.mesh = pyramidMeshHandle;
+	pyramid.material = pyramidMaterialHandle;
+	pyramid.transform.position = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
+	pyramid.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+	pyramid.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	pyramid.world = Freeside::Math::TransformMatrix(pyramid.transform.position, pyramid.transform.rotation, pyramid.transform.scale);
+	pyramid.initialTransform = pyramid.world;
+	pyramid.name = L"Pyramid";
+
+	sphere.mesh = sphereMeshHandle;
+	sphere.material = earthMaterialHandle;
+	sphere.world = Freeside::Math::Translation(0.0f, 1.0f, 0.0f);
+	sphere.initialTransform = Freeside::Math::Translation(0.0f, 1.0f, 0.0f);
+	sphere.name = L"Sphere";
+
+	wallBack.mesh = wallMeshHandle;
+	wallBack.material = wallMaterialHandle;
+	wallBack.transform.position = Freeside::Math::Vec3(0.0f, 2.0f, 2.5f);
+	wallBack.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+	wallBack.transform.scale = Freeside::Math::Vec3(5.0f, 5.0f, 5.0f);
+	wallBack.world = Freeside::Math::TransformMatrix(wallBack.transform.position, wallBack.transform.rotation, wallBack.transform.scale);
+	wallBack.initialTransform = wallBack.world;
+	wallBack.name =  L"Plane";
+
+	wallLeft.mesh = wallMeshHandle;
+	wallLeft.material = wallMaterialHandle;
+	wallLeft.transform.position = Freeside::Math::Vec3(-2.5f, 2.0f, 0.0f);
+	wallLeft.transform.rotation = Freeside::Math::Vec3(0.0f, -3.14159265f * 0.5f, 0.0f);
+	wallLeft.transform.scale = Freeside::Math::Vec3(5.0f, 5.0f, 5.0f);
+	wallLeft.world = Freeside::Math::TransformMatrix(wallLeft.transform.position, wallLeft.transform.rotation, wallLeft.transform.scale);
+	wallLeft.initialTransform = wallLeft.world;
+	wallLeft.name = L"Plane";
+
+	wallRight.mesh = wallMeshHandle;
+	wallRight.material = wallMaterialHandle;
+	wallRight.transform.position = Freeside::Math::Vec3(2.5f, 2.0f, 0.0f);
+	wallRight.transform.rotation = Freeside::Math::Vec3(0.0f, 3.14159265f * 0.5f, 0.0f);
+	wallRight.transform.scale = Freeside::Math::Vec3(5.0f, 5.0f, 5.0f);
+	wallRight.world = Freeside::Math::TransformMatrix(wallRight.transform.position, wallRight.transform.rotation, wallRight.transform.scale);
+	wallRight.initialTransform = wallRight.world;
+	wallRight.name = L"Plane";
+
+	floor.mesh = planeMeshHandle;
+	floor.material = floorMaterialHandle;
+	floor.transform.position = Freeside::Math::Vec3(0.0f, -0.5f, 0.0f);
+	floor.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+	floor.transform.scale = Freeside::Math::Vec3(5.0f, 5.0f, 5.0f);
+	floor.world = Freeside::Math::TransformMatrix(floor.transform.position, floor.transform.rotation, floor.transform.scale);
+	floor.initialTransform = floor.world;
+	floor.name = L"Plane";
 
 
-	hObject1 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object1);
-	hObject2 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object2);
-	hObject3 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object3);
-	hObject4 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object4);
-	hObject5 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object5);
+	hObject1 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, box1);
+	hObject1 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, box2);
+	hObject1 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, box3);
+	//hObject2 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, pyramid);
+	//hObject3 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, sphere);
+	hObject4 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, wallBack);
+	hObject4 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, wallLeft);
+	hObject4 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, wallRight);
+	hObject5 = sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, floor);
 	pObject1 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject1);
+	/*
 	pObject2 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject2);
 	pObject3 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject3);
 	pObject4 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject4);
 	pObject5 = sceneManager.GetRenderObjectByHandle(testSceneHandle, hObject5);
+	*/
 
 	Freeside::DirectionalLightHandle hDirLight = Freeside::DirectionalLightHandle(0);
 	Freeside::Lights::Directional* pDirLight = sceneManager.GetDirectionalLightByHandle(testSceneHandle, hDirLight);
-	pDirLight->intensity = 1.0f;
+	pDirLight->intensity = 0.0f;
 
 	Freeside::Lights::Point pointLight1;
 	pointLight1.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
 	pointLight1.intensity = 1.0f;
-	pointLight1.position = Freeside::Math::Vec3(-1.0f, 0.0f, -3.0f);
+	pointLight1.position = Freeside::Math::Vec3(0.0f, 0.5f, -2.0f);
 	pointLight1.radius = 20.0f;
 
+	Freeside::Lights::Point pointLight2;
+	pointLight2.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	pointLight2.intensity = 0.0f;
+	pointLight2.position = Freeside::Math::Vec3(0.0f, 0.5f, 1.5f);
+	pointLight2.radius = 20.0f;
+
 	Freeside::PointLightHandle hPointLight1 = sceneManager.AddPointLightToScene(testSceneHandle, pointLight1);
+	Freeside::PointLightHandle hPointLight2 = sceneManager.AddPointLightToScene(testSceneHandle, pointLight2);
 	Freeside::Lights::Point* pPointLight1 = sceneManager.GetPointLightByHandle(testSceneHandle, hPointLight1);
 
 	float angle = 0.0f;
@@ -219,14 +292,16 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 		pDirLight->direction = Freeside::Math::Normalize(Freeside::Math::Vec3{ 0,0,0 } - sunPosition);
 
-		pPointLight1->color = HSVtoRGB(hue, 1.0f, 1.0f);
+		//pPointLight1->color = HSVtoRGB(hue, 1.0f, 1.0f);
 
-		Freeside::Math::Mat4 translation1 = object1.initialTransform;
+		/*
+		Freeside::Math::Mat4 translation1 = box1.initialTransform;
 		pObject1->world = translation1 * rotation;
         Freeside::Math::Mat4 translation2 = object2.initialTransform;
         pObject2->world = translation2 * rotation;
         Freeside::Math::Mat4 translation3 = object3.initialTransform;
         pObject3->world = translation3 * rotation;
+		*/
 
 		window.PollEvents();
 		sceneManager.RenderScene(testSceneHandle);

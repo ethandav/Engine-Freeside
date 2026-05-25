@@ -276,7 +276,4 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="assets\shaders\geometry.hlsl" />
-  </ItemGroup>
 </Project>

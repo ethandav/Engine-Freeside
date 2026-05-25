@@ -45,5 +45,8 @@
     <ClInclude Include="include\shapes\plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\shapes\wall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

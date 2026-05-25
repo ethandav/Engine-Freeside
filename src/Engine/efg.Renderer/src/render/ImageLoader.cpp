@@ -24,7 +24,7 @@ namespace efg
         UINT height = 0;
 
         HRESULT hr = CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(factory.GetAddressOf()));
-        factory->CreateDecoderFromFilename(filePath, nullptr, GENERIC_READ, WICDecodeMetadataCacheOnLoad, decoder.GetAddressOf());
+        hr = factory->CreateDecoderFromFilename(filePath, nullptr, GENERIC_READ, WICDecodeMetadataCacheOnLoad, decoder.GetAddressOf());
         decoder->GetFrame(0, frame.GetAddressOf());
         frame->GetSize(&width, &height);
         factory->CreateFormatConverter(converter.GetAddressOf());
