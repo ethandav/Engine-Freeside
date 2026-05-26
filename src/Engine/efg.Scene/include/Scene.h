@@ -33,6 +33,16 @@ namespace Freeside
 			}
 		};
 
+		struct CameraHandle
+		{
+			uint32_t index = UINT32_MAX;
+
+			bool IsValid() const
+			{
+				return index != UINT32_MAX;
+			}
+		};
+
 		class Scene
 		{
 		public:
@@ -44,7 +54,9 @@ namespace Freeside
 			Lights::Directional* GetDirectionalLightByHandle(DirectionalLightHandle handle);
 			Lights::Point* GetPointLightByHandle(PointLightHandle handle);
 			void CreateScenefromDefault(float aspectRatio);
-			void AddCamera(Camera camera);
+			CameraHandle AddCamera(Camera camera);
+			Camera* GetCameraByHandle(CameraHandle handle);
+			void SetActiveCamera(CameraHandle handle);
 			void Render(Renderer* renderer);
 
 			std::wstring name;
@@ -54,7 +66,8 @@ namespace Freeside
 			uint32_t pointLightCount = 0;
 			uint32_t directionalLightCount = 0;
 			uint32_t objectCount = 0;
-			Camera m_camera = {};
+			Camera* m_ActiveCamera = {};
+			std::vector<Camera> m_cameras = {};
 			std::vector<Lights::Point> m_pointLights = {};
 			std::vector<Lights::Directional> m_directionalLights = {};
 			std::vector<RenderObject> m_renderObjectQueue = {};

@@ -40,13 +40,13 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\controllers\FirstPersonCameraController.h" />
     <ClInclude Include="include\math\Mat4.h" />
     <ClInclude Include="include\math\math.h" />
     <ClInclude Include="include\math\Meshes.h" />
@@ -139,6 +140,17 @@
     <ClInclude Include="include\shapes\shapes.h" />
     <ClInclude Include="include\shapes\sphere.h" />
     <ClInclude Include="include\shapes\wall.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\controllers\FirstPersonCameraController.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\efg.Platform\efg.Platform.vcxproj">
+      <Project>{55f8282a-d0d6-48fc-bb2a-089bd1aec460}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\efg.Renderer\efg.Renderer.vcxproj">
+      <Project>{a6d3881d-a23c-4ab4-b93f-d9fc5312cd53}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

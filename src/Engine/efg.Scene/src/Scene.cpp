@@ -14,13 +14,7 @@ namespace Freeside
 
 		void Scene::CreateScenefromDefault(float aspectRatio)
 		{
-			m_camera.LookAt(Freeside::Math::Vec3(0.0f, 2.0f, -5.0f), Freeside::Math::Vec3(0.0f, 0.0f, 0.0f));
-			m_camera.SetPerspective(0.78539816339f, aspectRatio, 0.1f, 1000.0f);
 
-			Lights::Directional dir = {};
-			dir.color = Math::Vec3(1.0f, 1.0f, 1.0f);
-			dir.direction = Math::Vec3(-0.2f, -1.0f, -0.3f);
-			AddDirectionalLightToScene(dir);
 		}
 
 		SceneRenderObjectHandle Scene::AddRenderObjectToRenderQueue(RenderObject object)
@@ -83,9 +77,32 @@ namespace Freeside
 			return &m_pointLights[handle.index];
 		}
 
-		void Scene::AddCamera(Camera camera)
+		CameraHandle Scene::AddCamera(Camera camera)
 		{
-			m_camera = camera;
+			m_cameras.push_back(camera);
+			return CameraHandle
+			{
+				static_cast<uint32_t>(m_cameras.size() - 1)
+			};
+		}
+
+		Camera* Scene::GetCameraByHandle(CameraHandle handle)
+		{
+			if (!handle.IsValid() || handle.index >= m_cameras.size())
+			{
+				throw std::runtime_error("Invalid Camera handle.");
+			}
+
+			return &m_cameras[handle.index];
+		}
+
+		void Scene::SetActiveCamera(CameraHandle handle)
+		{
+			if (!handle.IsValid() || handle.index >= m_cameras.size())
+			{
+				throw std::runtime_error("Invalid Camera handle.");
+			}
+			m_ActiveCamera = &m_cameras[handle.index];
 		}
 
 		void Scene::Render(Renderer* renderer)
@@ -95,7 +112,7 @@ namespace Freeside
 			renderData.pointLights.reserve(pointLightCount);
 			renderData.directionalLights.reserve(directionalLightCount);
 
-			renderData.camera = m_camera;
+			renderData.camera = *m_ActiveCamera;
 			renderData.directionalLights = m_directionalLights;
 			renderData.renderObjects = m_renderObjectQueue;
 			renderData.pointLights = m_pointLights;

@@ -130,6 +130,7 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\InputState.h" />
     <ClInclude Include="include\Window.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>

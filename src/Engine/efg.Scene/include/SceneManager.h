@@ -24,9 +24,12 @@ namespace Freeside
 			SceneRenderObjectHandle AddRenderObjectToRenderQueue(SceneHandle handle, RenderObject& object);
 			PointLightHandle AddPointLightToScene(SceneHandle handle, Lights::Point& light);
 			RenderObject* GetRenderObjectByHandle(SceneHandle sceneHandle, SceneRenderObjectHandle objectHandle);
+			DirectionalLightHandle AddDirectionalLightToScene(SceneHandle handle, Lights::Directional& light);
 			Lights::Directional* GetDirectionalLightByHandle(SceneHandle sceneHandle, DirectionalLightHandle handle);
 			Lights::Point* GetPointLightByHandle(SceneHandle sceneHandle, PointLightHandle pointLightHandle);
-			void AddCamera(SceneHandle handle, Camera camera);
+			CameraHandle AddCamera(SceneHandle handle, Camera camera);
+			Camera* GetCameraByHandle(SceneHandle sceneHandle, CameraHandle camHandle);
+			void SetActiveCamera(SceneHandle sceneHandle, CameraHandle camHandle);
 			void RenderScene(SceneHandle handle);
 		private:
 			Scene* GetSceneByHandle(SceneHandle handle);

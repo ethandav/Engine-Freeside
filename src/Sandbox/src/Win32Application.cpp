@@ -2,6 +2,7 @@
 #include "..\..\Engine\efg.Renderer\efg.h"
 
 #include <random>
+#include "../../Engine/efg.Core/include/controllers/FirstPersonCameraController.h"
 
 constexpr uint32_t ObjectCount = 10000;
 
@@ -30,7 +31,7 @@ Freeside::Math::Vec3 HSVtoRGB(float h, float s, float v)
 
 void Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
-	Window window;
+	Freeside::Window window;
 	Timer timer;
 	Freeside::Renderer renderer;
 	Freeside::Scene::SceneManager sceneManager;
@@ -50,8 +51,29 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	window.Show(nCmdShow);
 	rendererDesc.nativeWindowHandle = window.GetHwnd();
 	renderer.Initialize(rendererDesc);
+	float aspectRatio = renderer.GetRendererAspectRatio();
 	sceneManager.Initialize(&renderer);
 	Freeside::Scene::SceneHandle testSceneHandle = sceneManager.CreateScene(L"Test Scene");
+
+	Freeside::Camera camera = {};
+	camera.LookAt(Freeside::Math::Vec3(0.0f, 2.0f, -5.0f), Freeside::Math::Vec3(0.0f, 0.0f, 0.0f));
+	camera.SetPerspective(0.78539816339f, aspectRatio, 0.1f, 1000.0f);
+
+	Freeside::Scene::CameraHandle hCam = sceneManager.AddCamera(testSceneHandle, camera);
+	Freeside::Camera* pCam = sceneManager.GetCameraByHandle(testSceneHandle, hCam);
+	sceneManager.SetActiveCamera(testSceneHandle, hCam);
+
+	Freeside::FirstPersonCameraController cameraController;
+	cameraController.InitializeFromCamera(camera);
+	cameraController.SetMoveSpeed(5.0f);
+	cameraController.SetMouseSensitivity(0.002f);
+
+	Freeside::Lights::Directional dir = {};
+	dir.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	dir.direction = Freeside::Math::Vec3(-0.2f, -1.0f, -0.3f);
+	
+	Freeside::DirectionalLightHandle hDir = sceneManager.AddDirectionalLightToScene(testSceneHandle, dir);
+	Freeside::Lights::Directional* pDir = sceneManager.GetDirectionalLightByHandle(testSceneHandle, hDir);
 
 	Freeside::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
 	Freeside::MeshHandle sphereMeshHandle = renderer.CreateMesh(sphereMeshData);
@@ -299,7 +321,10 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
         pObject3->world = translation3 * rotation;
 		*/
 
-		window.PollEvents();
+		Freeside::InputState input = window.PollInput();
+
+		cameraController.Update(pCam, input, deltaTime);
+
 		sceneManager.RenderScene(testSceneHandle);
 	}
 }

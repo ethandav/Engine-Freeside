@@ -55,6 +55,12 @@ namespace Freeside
 			return scene->GetRenderObjectByHandle(objectHandle);
 		}
 
+		DirectionalLightHandle SceneManager::AddDirectionalLightToScene(SceneHandle handle, Lights::Directional& light)
+		{
+			Scene* scene = GetSceneByHandle(handle);
+			return scene->AddDirectionalLightToScene(light);
+		}
+
 		Lights::Directional* Freeside::Scene::SceneManager::GetDirectionalLightByHandle(SceneHandle sceneHandle, DirectionalLightHandle handle)
 		{
 			Scene* scene = GetSceneByHandle(sceneHandle);
@@ -67,10 +73,22 @@ namespace Freeside
 			return scene->GetPointLightByHandle(pointLightHandle);
 		}
 
-		void SceneManager::AddCamera(SceneHandle handle, Camera camera)
+		CameraHandle SceneManager::AddCamera(SceneHandle handle, Camera camera)
 		{
 			Scene* scene = GetSceneByHandle(handle);
-			scene->AddCamera(camera);
+			return scene->AddCamera(camera);
+		}
+
+		Camera* SceneManager::GetCameraByHandle(SceneHandle sceneHandle, CameraHandle cameraHandle)
+		{
+			Scene* scene = GetSceneByHandle(sceneHandle);
+			return scene->GetCameraByHandle(cameraHandle);
+		}
+
+		void SceneManager::SetActiveCamera(SceneHandle sceneHandle, CameraHandle camHandle)
+		{
+			Scene* scene = GetSceneByHandle(sceneHandle);
+			scene->SetActiveCamera(camHandle);
 		}
 
 		Scene* SceneManager::GetSceneByHandle(SceneHandle handle)

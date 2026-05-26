@@ -51,5 +51,13 @@
     <ClInclude Include="include\math\Meshes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\controllers\FirstPersonCameraController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\controllers\FirstPersonCameraController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

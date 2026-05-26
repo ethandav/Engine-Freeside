@@ -133,6 +133,9 @@
     <ClCompile Include="src\Win32Application.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Engine\efg.Core\efg.Core.vcxproj">
+      <Project>{1f3ee634-8f6a-4118-964c-ff915ca23935}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine\efg.Platform\efg.Platform.vcxproj">
       <Project>{55f8282a-d0d6-48fc-bb2a-089bd1aec460}</Project>
     </ProjectReference>

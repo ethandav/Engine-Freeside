@@ -1,6 +1,7 @@
 #pragma once
 
 #include "..\..\Engine\efg.Platform\include\Window.h"
+#include "..\efg.Platform\include\InputState.h"
 #include "..\..\Engine\efg.Platform\include\Timer.h"
 #include "..\..\Engine\efg.Renderer\include\render\Renderer.h"
 #include "..\..\Engine\efg.Core\include\math\math.h"
