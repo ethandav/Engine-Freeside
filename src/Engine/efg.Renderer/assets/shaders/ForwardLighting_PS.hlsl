@@ -4,7 +4,7 @@ struct VSOutput
     float3 worldPosition : TEXCOORD0;
     float3 normalWS : TEXCOORD1;
     float2 uv : TEXCOORD2;
-    float3 tangent : TEXCOORD3;
+    float3 tangentWS : TEXCOORD3;
 };
 
 cbuffer CameraCB : register(b0)
@@ -78,6 +78,32 @@ StructuredBuffer<DirectionalShadowData> gDirectionalShadows : register(t5);
 StructuredBuffer<PointShadowData> gPointShadows : register(t6);
 SamplerState gLinearSampler : register(s0);
 SamplerComparisonState ShadowSampler : register(s1);
+
+float3 ApplyNormalMap(float3 normalWS, float3 tangentWS, float2 uv)
+{
+    float3 N = normalize(normalWS);
+    float3 T = normalize(tangentWS);
+
+    // Re-orthogonalize tangent against normal.
+    T = normalize(T - N * dot(N, T));
+
+    // Build bitangent.
+    float3 B = normalize(cross(N, T));
+
+    // Sample normal map.
+    float3 normalTS = gNormalTexture.Sample(gLinearSampler, uv).xyz;
+
+    // Convert from [0, 1] to [-1, 1].
+    normalTS = normalTS * 2.0f - 1.0f;
+
+    // Optional but usually good.
+    normalTS = normalize(normalTS);
+
+    // Tangent-space to world-space.
+    float3x3 TBN = float3x3(T, B, N);
+
+    return normalize(mul(normalTS, TBN));
+}
 
 float ComputeDirectionalShadowFactor(float3 worldPosition, int shadowDataIndex, int shadowTextureDescriptorIndex)
 {
@@ -215,7 +241,7 @@ float4 PSMain(VSOutput input) : SV_TARGET
 {
     float2 uv = input.uv * uvScale;
     float4 sampledBaseColor = gBaseColorTexture.Sample(gLinearSampler, uv);
-    float3 normal = normalize(input.normalWS);
+    float3 normal = ApplyNormalMap(input.normalWS, input.tangentWS, input.uv);
     float3 viewDir = normalize(ViewPosition.xyz - input.worldPosition);
     float3 ambient = sampledBaseColor.rgb * 0.1f;
     float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, sampledBaseColor);

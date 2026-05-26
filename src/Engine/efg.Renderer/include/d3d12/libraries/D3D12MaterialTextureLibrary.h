@@ -11,10 +11,13 @@ namespace efg::d3d12
     public:
         Freeside::TextureHandle RegisterMaterialTexture2D(const GpuTexture2D& desc);
         void RegisterDefaultMaterialTexture2D(const GpuTexture2D& texture);
+        void RegisterDefaultNormalTexture2D(const GpuTexture2D& texture);
         const GpuTexture2D& GetTextureByHandle(Freeside::TextureHandle handle) const;
         GpuTexture2D GetDefaultMaterialTexture();
+        GpuTexture2D GetDefaultNormalTexture();
     private:
         std::vector<GpuTexture2D> m_textures;
         GpuTexture2D m_defaultTexture;
+        GpuTexture2D m_defaultNormalTexture;
     };
 }

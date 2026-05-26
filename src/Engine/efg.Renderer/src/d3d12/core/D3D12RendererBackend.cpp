@@ -70,10 +70,20 @@ namespace efg::d3d12
 
     void D3D12RendererBackend::CreateBuiltIns()
     {
-        DecodedImage image = m_imageLoader.CreateSolidColorImage(100, 100, 100, 255);
-        GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::ShaderVisible);
-        m_textureLibrary.RegisterDefaultMaterialTexture2D(texture);
-        m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        {
+            DecodedImage image = m_imageLoader.CreateSolidColorImage(100, 100, 100, 255);
+            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::CpuOnlyAndShaderVisible);
+            m_textureLibrary.RegisterDefaultMaterialTexture2D(texture);
+            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        }
+
+        {
+            DecodedImage image = m_imageLoader.CreateSolidColorImage(128, 128, 255, 255);
+            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, DXGI_FORMAT_R8G8B8A8_UNORM, DescriptorVisibility::CpuOnlyAndShaderVisible);
+            m_textureLibrary.RegisterDefaultNormalTexture2D(texture);
+            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        }
+
     }
 
     void D3D12RendererBackend::CreateFrameResources()
@@ -148,7 +158,7 @@ namespace efg::d3d12
         if (!mat.baseColorTexturePath.empty())
         {
             DecodedImage image = m_imageLoader.LoadImageWithWIC(mat.baseColorTexturePath.c_str());
-            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::ShaderVisible);
+            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::CpuOnlyAndShaderVisible);
             m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
             material.baseColorTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
         }
@@ -156,7 +166,7 @@ namespace efg::d3d12
         if (!mat.normalTexturePath.empty())
         {
             DecodedImage image = m_imageLoader.LoadImageWithWIC(mat.normalTexturePath.c_str());
-            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::ShaderVisible);
+            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, DXGI_FORMAT_R8G8B8A8_UNORM, DescriptorVisibility::CpuOnlyAndShaderVisible);
             m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
             material.normalTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
         }

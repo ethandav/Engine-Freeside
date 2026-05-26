@@ -20,6 +20,11 @@ namespace efg::d3d12
 		m_defaultTexture = texture;
 	}
 
+	void D3D12MaterialTextureLibrary::RegisterDefaultNormalTexture2D(const GpuTexture2D& texture)
+	{
+		m_defaultNormalTexture = texture;
+	}
+
 	const GpuTexture2D& D3D12MaterialTextureLibrary::GetTextureByHandle(Freeside::TextureHandle handle) const
 	{
 		if (!handle.IsValid() || handle.index >= m_textures.size())
@@ -33,5 +38,10 @@ namespace efg::d3d12
 	GpuTexture2D D3D12MaterialTextureLibrary::GetDefaultMaterialTexture()
 	{
 		return m_defaultTexture;
+	}
+
+	GpuTexture2D D3D12MaterialTextureLibrary::GetDefaultNormalTexture()
+	{
+		return m_defaultNormalTexture;
 	}
 }

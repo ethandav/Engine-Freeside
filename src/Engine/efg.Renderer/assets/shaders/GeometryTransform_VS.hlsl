@@ -12,7 +12,7 @@ struct VSOutput
     float3 worldPosition : TEXCOORD0;
     float3 normalWS : TEXCOORD1;
     float2 uv : TEXCOORD2;
-    float3 tangent : TEXCOORD3;
+    float3 tangentWS : TEXCOORD3;
 };
 
 struct InstanceData
@@ -37,6 +37,7 @@ VSOutput VSMain(VSInput input, uint instanceId : SV_InstanceID)
     output.position = mul(ViewProjection, worldPosition);
     output.worldPosition = worldPosition.xyz;
     output.normalWS = normalize(mul((float3x3) instance.World, input.normal));
+    output.tangentWS = normalize(mul((float3x3) instance.World, input.tangent));
     output.uv = input.uv;
     
     return output;

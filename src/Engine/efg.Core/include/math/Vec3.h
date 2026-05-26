@@ -32,6 +32,14 @@ namespace Freeside
             return Vec3(v.x * scalar, v.y * scalar, v.z * scalar);
         }
 
+        inline Vec3& operator+=(Vec3& a, const Vec3& b)
+        {
+            a.x += b.x;
+            a.y += b.y;
+            a.z += b.z;
+            return a;
+        }
+
         inline float Dot(const Vec3& a, const Vec3& b)
         {
             return a.x * b.x + a.y * b.y + a.z * b.z;
