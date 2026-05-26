@@ -111,7 +111,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MaterialDesc wallMaterial;
 	wallMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 	wallMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
-	wallMaterial.uvScale = Freeside::Math::Vec2(1.0f, 1.0f);
+	wallMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
 	wallMaterial.baseColorTexturePath = L"assets/textures/brick.png";
 	wallMaterial.normalTexturePath = L"assets/textures/brick_normals.png";
 	wallMaterial.heightTexturePath = L"assets/textures/brick_height.png";
@@ -120,7 +120,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MaterialDesc floorMaterial;
 	floorMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 	floorMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
-	floorMaterial.uvScale = Freeside::Math::Vec2(1.0f, 1.0f);
+	floorMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
 	floorMaterial.baseColorTexturePath = L"assets/textures/floor.png";
 	floorMaterial.normalTexturePath = L"assets/textures/floor_normals.png";
 	floorMaterial.heightTexturePath = L"assets/textures/floor_height.png";
