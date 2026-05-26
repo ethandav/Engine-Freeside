@@ -5,6 +5,7 @@ struct VSInput
     float3 position : POSITION;
     float3 normal : NORMAL;
     float2 uv : TEXCOORD0;
+    float3 tangent : TANGENT;
 };
 
 VSOutput VSMain(VSInput input, uint instanceId : SV_InstanceID)

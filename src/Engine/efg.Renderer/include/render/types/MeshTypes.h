@@ -12,6 +12,7 @@ namespace Freeside
         Freeside::Math::Vec3 position;
         Freeside::Math::Vec3 normal;
         Freeside::Math::Vec2 uv;
+        Freeside::Math::Vec3 tangent;
     };
 
     struct MeshData
