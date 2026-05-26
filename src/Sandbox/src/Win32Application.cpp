@@ -68,6 +68,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	crateMaterial.baseColor = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
 	crateMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	crateMaterial.baseColorTexturePath = L"assets/textures/crate.png";
+	crateMaterial.normalTexturePath = L"assets/textures/crate_normals.png";
 	Freeside::MaterialHandle crateMaterialHandle = renderer.RegisterMaterial(crateMaterial);
 
 
@@ -93,8 +94,9 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MaterialDesc floorMaterial;
 	floorMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 	floorMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
-	floorMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
+	floorMaterial.uvScale = Freeside::Math::Vec2(1.0f, 1.0f);
 	floorMaterial.baseColorTexturePath = L"assets/textures/floor.png";
+	floorMaterial.normalTexturePath = L"assets/textures/floor_normals.png";
 	Freeside::MaterialHandle floorMaterialHandle = renderer.RegisterMaterial(floorMaterial);
 
 	std::mt19937 rng{ std::random_device{}() };
@@ -244,12 +246,12 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::Lights::Point pointLight1;
 	pointLight1.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
 	pointLight1.intensity = 1.0f;
-	pointLight1.position = Freeside::Math::Vec3(0.0f, 0.5f, -2.0f);
+	pointLight1.position = Freeside::Math::Vec3(0.0f, 2.0f, -2.0f);
 	pointLight1.radius = 20.0f;
 
 	Freeside::Lights::Point pointLight2;
 	pointLight2.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	pointLight2.intensity = 1.0f;
+	pointLight2.intensity = 0.0f;
 	pointLight2.position = Freeside::Math::Vec3(0.0f, 0.5f, 1.5f);
 	pointLight2.radius = 20.0f;
 
