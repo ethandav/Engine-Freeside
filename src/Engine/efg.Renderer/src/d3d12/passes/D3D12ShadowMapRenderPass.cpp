@@ -12,7 +12,7 @@
 
 namespace efg::d3d12
 {
-    void D3D12ShadowMapRenderPass::Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12TextureFactory* textureFactory, D3D12BufferFactory* bufferFactory)
+    void D3D12ShadowMapRenderPass::Initialize(D3D12GraphicsPipelineLibrary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12TextureFactory* textureFactory, D3D12BufferFactory* bufferFactory)
     {
         m_pipelineLibrary = pipelineLib;
         m_descriptorContext = descriptorCtx;

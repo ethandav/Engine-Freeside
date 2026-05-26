@@ -24,6 +24,7 @@
 #include "..\factories\D3D12ResourceFactory.h"
 #include "..\factories\D3D12DescriptorFactory.h"
 #include "..\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
+#include "..\passes\Skybox\D3D12SkyboxRenderPass.h"
 #include "..\passes\ShadowMap\D3D12ShadowMapRenderPass.h"
 #include "..\presentation\D3D12SwapChain.h"
 #include "..\systems\D3D12ShadowSystem.h"
@@ -61,7 +62,7 @@ namespace efg::d3d12
 		D3D12DirectCommandContext m_commandContext = {};
 		D3D12DescriptorContext m_descriptorContext = {};
 		D3D12UploadContext m_uploadContext = {};
-		D3D12GraphicsPipelineLibary m_graphicsPipelineLibrary = {};
+		D3D12GraphicsPipelineLibrary m_graphicsPipelineLibrary = {};
 		D3D12ShaderLibrary m_shaderLibrary = {};
 		D3D12MaterialLibrary m_materialLibrary = {};
 		D3D12MaterialTextureLibrary m_textureLibrary = {};
@@ -78,6 +79,7 @@ namespace efg::d3d12
 
 		D3D12ForwardLitGeometryRenderPass m_forwarLitGeometryRenderPass = {};
 		D3D12ShadowMapRenderPass m_shadowMapRenderPass = {};
+		D3D12SkyboxRenderPass m_skyboxRenderPass = {};
 
 		std::array<FrameResource, NumFramesInFlight> m_frameResources = {};
 

@@ -5,6 +5,7 @@
 #include <d3d12.h>
 #include <vector>
 #include <wrl.h>
+#include "../../render/ImageLoader.h"
 
 namespace efg::d3d12
 {
@@ -21,7 +22,8 @@ namespace efg::d3d12
 		void Submit();
 
 		void QueueBufferUpload(ID3D12Resource* dest, const void* data, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState);
-		void QueueTextureUpload(ID3D12Resource* destination, const void* sourceData, const D3D12_RESOURCE_DESC& destinationDesc, uint32_t sourceRowPitch, D3D12_RESOURCE_STATES finalState);
+		void QueueTexture2DUpload(ID3D12Resource* destination, const void* sourceData, const D3D12_RESOURCE_DESC& destinationDesc, uint32_t sourceRowPitch, D3D12_RESOURCE_STATES finalState);
+		void QueueTextureCubeUpload(ID3D12Resource* destination, const std::array<DecodedImage, 6>& faces, const D3D12_RESOURCE_DESC& textureDesc, D3D12_RESOURCE_STATES finalState);
 		UploadTicket FlushUploads();
 		void RetireCompletedUploads();
 
@@ -40,7 +42,8 @@ namespace efg::d3d12
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_copyCommandAllocator;
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_copyCommandList;
 		std::vector<PendingBufferUpload> m_queuedBufferUploads = {};
-		std::vector<PendingTextureUpload> m_queuedTextureUploads = {};
+		std::vector<PendingTexture2DUpload> m_queuedTexture2DUploads = {};
+		std::vector<PendingTextureCubeUpload> m_queuedTextureCubeUploads = {};
 		std::vector<UploadBatch> m_pendingBatches = {};
 	};
 }

@@ -30,6 +30,11 @@ namespace efg::d3d12
 		m_defaultHeightTexture = texture;
 	}
 
+	void D3D12MaterialTextureLibrary::RegisterDefaultSkyboxTexture(const GpuTextureCube& texture)
+	{
+		m_defaultSkybox = texture;
+	}
+
 	const GpuTexture2D& D3D12MaterialTextureLibrary::GetTextureByHandle(Freeside::TextureHandle handle) const
 	{
 		if (!handle.IsValid() || handle.index >= m_textures.size())
@@ -53,5 +58,10 @@ namespace efg::d3d12
 	GpuTexture2D D3D12MaterialTextureLibrary::GetDefaultHeightTexture()
 	{
 		return m_defaultHeightTexture;
+	}
+
+	GpuTextureCube D3D12MaterialTextureLibrary::GetDefaulSkyboxTexture()
+	{
+		return m_defaultSkybox;
 	}
 }

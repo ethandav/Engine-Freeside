@@ -82,10 +82,10 @@ namespace efg::d3d12
 		request.upload->Unmap(0, nullptr);
 
 		m_queuedBufferUploads.push_back(std::move(request));
-		queueSize = m_queuedBufferUploads.size() + m_queuedTextureUploads.size();
+		queueSize = m_queuedBufferUploads.size() + m_queuedTexture2DUploads.size();
 	}
 
-	void D3D12UploadContext::QueueTextureUpload(ID3D12Resource* destination, const void* sourceData, const D3D12_RESOURCE_DESC& textureDesc, uint32_t sourceRowPitch, D3D12_RESOURCE_STATES finalState)
+	void D3D12UploadContext::QueueTexture2DUpload(ID3D12Resource* destination, const void* sourceData, const D3D12_RESOURCE_DESC& textureDesc, uint32_t sourceRowPitch, D3D12_RESOURCE_STATES finalState)
 	{
 		if (!destination)
 		{
@@ -118,16 +118,54 @@ namespace efg::d3d12
 
 		upload->Unmap(0, nullptr);
 
-		PendingTextureUpload pending = {};
+		PendingTexture2DUpload pending = {};
 		pending.destination = destination;
 		pending.upload = upload;
 		pending.footprint = footprint;
 		pending.finalState = finalState;
 
-		m_queuedTextureUploads.push_back(std::move(pending));
+		m_queuedTexture2DUploads.push_back(std::move(pending));
 
-		queueSize = m_queuedBufferUploads.size() + m_queuedTextureUploads.size();
+		queueSize = m_queuedBufferUploads.size() + m_queuedTexture2DUploads.size();
 
+	}
+
+	void D3D12UploadContext::QueueTextureCubeUpload(ID3D12Resource* destination, const std::array<DecodedImage, 6>& faces, const D3D12_RESOURCE_DESC& textureDesc, D3D12_RESOURCE_STATES finalState)
+	{
+		std::array<D3D12_PLACED_SUBRESOURCE_FOOTPRINT, 6> footprints = {};
+		std::array<UINT, 6> numRows = {};
+		std::array<UINT64, 6> rowSizeInBytes = {};
+		UINT64 uploadBufferSize = 0;
+
+		m_graphicsContext->GetDevice()->GetCopyableFootprints(&textureDesc, 0, 6, 0, footprints.data(), numRows.data(), rowSizeInBytes.data(), &uploadBufferSize);
+
+		ComPtr<ID3D12Resource> upload = m_resourceFactory->CreateCommittedUploadBufferResource(uploadBufferSize);
+
+		uint8_t* mappedData = nullptr;
+		CD3DX12_RANGE readRange(0, 0);
+
+		D3D12_THROW_IF_FAILED(upload->Map(0, &readRange, reinterpret_cast<void**>(&mappedData)));
+
+		for (uint32_t face = 0; face < 6; ++face)
+		{
+			uint8_t* dstBytes = mappedData + footprints[face].Offset;
+			const uint8_t* srcBytes = faces[face].pixels.data();
+
+			for (UINT row = 0; row < numRows[face]; ++row)
+			{
+				memcpy(dstBytes + row * footprints[face].Footprint.RowPitch, srcBytes + row * faces[face].rowPitch, faces[face].rowPitch);
+			}
+		}
+
+		upload->Unmap(0, nullptr);
+
+		PendingTextureCubeUpload pending = {};
+		pending.destination = destination;
+		pending.upload = upload;
+		pending.footprints = footprints;
+		pending.finalState = finalState;
+
+		m_queuedTextureCubeUploads.push_back(std::move(pending));
 	}
 
 	UploadTicket D3D12UploadContext::FlushUploads()
@@ -135,7 +173,7 @@ namespace efg::d3d12
 		UploadTicket ticket = {};
 
 		const bool hasBufferUploads = !m_queuedBufferUploads.empty();
-		const bool hasTextureUploads = !m_queuedTextureUploads.empty();
+		const bool hasTextureUploads = !m_queuedTexture2DUploads.empty();
 
 		if (!hasBufferUploads && !hasTextureUploads)
 		{
@@ -151,7 +189,7 @@ namespace efg::d3d12
 			ticket.resources.push_back(UploadedResource{upload.destination, upload.finalState});
 		}
 
-		for (const PendingTextureUpload& upload : m_queuedTextureUploads)
+		for (const PendingTexture2DUpload& upload : m_queuedTexture2DUploads)
 		{
 			D3D12_TEXTURE_COPY_LOCATION dst = {};
 			dst.pResource = upload.destination.Get();
@@ -165,6 +203,26 @@ namespace efg::d3d12
 			ticket.resources.push_back(UploadedResource{upload.destination, upload.finalState});
 		}
 
+		for (const PendingTextureCubeUpload& upload : m_queuedTextureCubeUploads)
+		{
+			for (uint32_t face = 0; face < 6; ++face)
+			{
+				D3D12_TEXTURE_COPY_LOCATION dst = {};
+				dst.pResource = upload.destination.Get();
+				dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+				dst.SubresourceIndex = face;
+
+				D3D12_TEXTURE_COPY_LOCATION src = {};
+				src.pResource = upload.upload.Get();
+				src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+				src.PlacedFootprint = upload.footprints[face];
+
+				m_copyCommandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+			}
+
+			ticket.resources.push_back(UploadedResource{ upload.destination, upload.finalState });
+		}
+
 		PIXEndEvent(m_copyCommandList.Get());
 		EndRecording();
 		Submit();
@@ -176,12 +234,12 @@ namespace efg::d3d12
 		batch.copyFenceValue = copyFenceValue;
 		batch.resources = ticket.resources;
 		batch.bufferUploads = std::move(m_queuedBufferUploads);
-		batch.textureUploads = std::move(m_queuedTextureUploads);
+		batch.textureUploads = std::move(m_queuedTexture2DUploads);
 
 		m_pendingBatches.push_back(std::move(batch));
 		pendingBatchesSize = m_pendingBatches.size();
 		m_queuedBufferUploads.clear();
-		m_queuedTextureUploads.clear();
+		m_queuedTexture2DUploads.clear();
 		queueSize = 0;
 
 		return ticket;

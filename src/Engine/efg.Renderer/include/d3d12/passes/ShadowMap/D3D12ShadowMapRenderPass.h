@@ -13,7 +13,7 @@
 
 namespace efg::d3d12
 {
-	class D3D12GraphicsPipelineLibary;
+	class D3D12GraphicsPipelineLibrary;
 	class D3D12DescriptorContext;
 	class D3D12MeshLibrary;
 	class D3D12TextureFactory;
@@ -22,7 +22,7 @@ namespace efg::d3d12
 	class D3D12ShadowMapRenderPass
 	{
 	public:
-		void Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12TextureFactory* textureFactory, D3D12BufferFactory* bufferFactory);
+		void Initialize(D3D12GraphicsPipelineLibrary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12TextureFactory* textureFactory, D3D12BufferFactory* bufferFactory);
 		void Execute(const FrameContext& ctx, const FramePacket& scene, ShadowMapFrameData& shadowMapFrameData);
 	private:
 		struct ShadowMapPassResources
@@ -38,7 +38,7 @@ namespace efg::d3d12
 		GpuTexture2D m_shadowMap = {};
 
 
-		D3D12GraphicsPipelineLibary* m_pipelineLibrary = nullptr;
+		D3D12GraphicsPipelineLibrary* m_pipelineLibrary = nullptr;
 		D3D12DescriptorContext* m_descriptorContext = nullptr;
 		D3D12MeshLibrary* m_meshLibrary = nullptr;
 		D3D12TextureFactory* m_textureFactory = nullptr;

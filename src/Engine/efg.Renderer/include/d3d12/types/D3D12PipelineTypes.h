@@ -10,6 +10,7 @@ namespace efg::d3d12
 	{
 		ForwardLitGeometry,
 		ShadowMap,
+        Skybox,
 		Count
 	};
 

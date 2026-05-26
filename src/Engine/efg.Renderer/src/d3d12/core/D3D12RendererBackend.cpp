@@ -66,6 +66,7 @@ namespace efg::d3d12
     {
         m_forwarLitGeometryRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_materialLibrary, &m_textureLibrary, &m_bufferFactory);
         m_shadowMapRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_textureFactory, &m_bufferFactory);
+        m_skyboxRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext);
     }
 
     void D3D12RendererBackend::CreateBuiltIns()
@@ -74,21 +75,47 @@ namespace efg::d3d12
             DecodedImage image = m_imageLoader.CreateSolidColorImage(100, 100, 100, 255);
             GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::CpuOnlyAndShaderVisible);
             m_textureLibrary.RegisterDefaultMaterialTexture2D(texture);
-            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         }
 
         {
             DecodedImage image = m_imageLoader.CreateSolidColorImage(128, 128, 255, 255);
             GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, DXGI_FORMAT_R8G8B8A8_UNORM, DescriptorVisibility::CpuOnlyAndShaderVisible);
             m_textureLibrary.RegisterDefaultNormalTexture2D(texture);
-            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         }
 
         {
             DecodedImage image = m_imageLoader.CreateSolidColorImage(128, 128, 128, 255);
             GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, DXGI_FORMAT_R8_UNORM, DescriptorVisibility::CpuOnlyAndShaderVisible);
             m_textureLibrary.RegisterDefaultHeightTexture2D(texture);
-            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        }
+
+        {
+            /*
+            std::array<DecodedImage, 6> faces =
+            {
+                m_imageLoader.LoadImageWithWIC(posXPath),
+                m_imageLoader.LoadImageWithWIC(negXPath),
+                m_imageLoader.LoadImageWithWIC(posYPath),
+                m_imageLoader.LoadImageWithWIC(negYPath),
+                m_imageLoader.LoadImageWithWIC(posZPath),
+                m_imageLoader.LoadImageWithWIC(negZPath),
+            };
+            */
+            std::array<DecodedImage, 6> faces =
+            {
+                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255),
+                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255),
+                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255),
+                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255),
+                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255),
+                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255)
+            };
+            GpuTextureCube texture = m_textureFactory.CreateTextureCube(faces[0].width, faces[0].height, DescriptorVisibility::CpuOnlyAndShaderVisible, DXGI_FORMAT_R8G8B8A8_UNORM);
+            m_textureLibrary.RegisterDefaultSkyboxTexture(texture);
+            m_uploadContext.QueueTextureCubeUpload(texture.resource.Get(), faces, texture.resource.Get()->GetDesc(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         }
 
     }
@@ -126,9 +153,11 @@ namespace efg::d3d12
 
         PIXBeginEvent(commandList, PIX_COLOR(0, 0, 0), L"Begin Frame");
         ProcessUploads();
-        PIXBeginEvent(PixColors::ShadowMapPass, L"");
-        m_renderQueue.BuildForwardGeometryBatches(scene.renderObjects);
+
+        PIXBeginEvent(PixColors::ShadowMapPass, L"Skybox Render Pass");
+        m_skyboxRenderPass.Execute(ctx, scene);
         PIXEndEvent();
+        m_renderQueue.BuildForwardGeometryBatches(scene.renderObjects);
         PIXBeginEvent(PixColors::ShadowMapPass, L"Shadow System Update");
         ShadowMapFrameData shadowMapFrameData = m_shadowSystem.Update(scene);
         PIXEndEvent();
@@ -166,7 +195,7 @@ namespace efg::d3d12
         {
             DecodedImage image = m_imageLoader.LoadImageWithWIC(mat.baseColorTexturePath.c_str());
             GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::CpuOnlyAndShaderVisible);
-            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
             material.baseColorTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
         }
 
@@ -174,7 +203,7 @@ namespace efg::d3d12
         {
             DecodedImage image = m_imageLoader.LoadImageWithWIC(mat.normalTexturePath.c_str());
             GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, DXGI_FORMAT_R8G8B8A8_UNORM, DescriptorVisibility::CpuOnlyAndShaderVisible);
-            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
             material.normalTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
         }
 
@@ -182,7 +211,7 @@ namespace efg::d3d12
         {
             DecodedImage image = m_imageLoader.LoadHeightMapWithWIC(mat.heightTexturePath.c_str());
             GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, DXGI_FORMAT_R8_UNORM, DescriptorVisibility::CpuOnlyAndShaderVisible);
-            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
             material.heightTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
         }
 

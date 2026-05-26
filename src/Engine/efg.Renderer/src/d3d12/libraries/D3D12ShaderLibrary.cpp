@@ -69,6 +69,20 @@ namespace efg::d3d12
             L"PSMain",
             L"ps_6_6"
         );
+
+        AddShader(
+            ShaderId::SkyboxPS,
+            L"..\\Engine\\efg.Renderer\\assets\\shaders\\Skybox_PS.hlsl",
+            L"PSMain",
+            L"ps_6_6"
+        );
+
+        AddShader(
+            ShaderId::SkyboxVS,
+            L"..\\Engine\\efg.Renderer\\assets\\shaders\\Skybox_VS.hlsl",
+            L"VSMain",
+            L"vs_6_6"
+        );
     }
 
     Microsoft::WRL::ComPtr<IDxcBlob> D3D12ShaderLibrary::CompileShaderFromFile(

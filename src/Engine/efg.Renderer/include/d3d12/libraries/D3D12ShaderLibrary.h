@@ -13,7 +13,8 @@ namespace efg::d3d12
 {
     enum class ShaderId : uint32_t
     {
-        ShadowMapVS,
+        SkyboxVS,
+        SkyboxPS,
         GeometryVS,
         ForwardLightingPS,
 

@@ -57,7 +57,7 @@ namespace efg::d3d12
         return {};
     }
 
-    void D3D12ForwardLitGeometryRenderPass::Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12MaterialTextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory)
+    void D3D12ForwardLitGeometryRenderPass::Initialize(D3D12GraphicsPipelineLibrary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12MaterialTextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory)
     {
         m_pipelineLibrary = pipelineLib;
         m_descriptorContext = descriptorCtx;

@@ -16,5 +16,6 @@ namespace efg
 		std::vector<Freeside::RenderObject> renderObjects = {};
 		std::vector<Freeside::Lights::Directional> directionalLights = {};
 		std::vector<Freeside::Lights::Point> pointLights = {};
+		Freeside::TextureHandle skyboxTexture = {};
 	};
 }
