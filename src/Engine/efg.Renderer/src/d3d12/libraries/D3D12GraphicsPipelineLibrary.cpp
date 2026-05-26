@@ -50,9 +50,9 @@ namespace efg::d3d12
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::InstanceData)].InitAsShaderResourceView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv)].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
-        CD3DX12_DESCRIPTOR_RANGE baseColorTextureRange = {};
-        baseColorTextureRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
-        rootParameters[static_cast<UINT>(ForwardLitRootParameter::BaseColorTexture)].InitAsDescriptorTable(1, &baseColorTextureRange, D3D12_SHADER_VISIBILITY_PIXEL);
+        CD3DX12_DESCRIPTOR_RANGE materialTextures = {};
+        materialTextures.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 2);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::BaseColorTexture)].InitAsDescriptorTable(1, &materialTextures, D3D12_SHADER_VISIBILITY_PIXEL);
 
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalLightsSrv)].InitAsShaderResourceView(4, 0, D3D12_SHADER_VISIBILITY_PIXEL);
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowDataSrv)].InitAsShaderResourceView(5, 0, D3D12_SHADER_VISIBILITY_PIXEL);

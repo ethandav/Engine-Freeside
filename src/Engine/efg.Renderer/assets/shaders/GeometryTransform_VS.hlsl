@@ -1,11 +1,30 @@
-#include "include\geometry.hlsli"
-
 struct VSInput
 {
     float3 position : POSITION;
     float3 normal : NORMAL;
     float2 uv : TEXCOORD0;
     float3 tangent : TANGENT;
+};
+
+struct VSOutput
+{
+    float4 position : SV_POSITION;
+    float3 worldPosition : TEXCOORD0;
+    float3 normalWS : TEXCOORD1;
+    float2 uv : TEXCOORD2;
+    float3 tangent : TEXCOORD3;
+};
+
+struct InstanceData
+{
+    float4x4 World;
+};
+StructuredBuffer<InstanceData> Instances : register(t0);
+
+cbuffer CameraCB : register(b0)
+{
+    float4 ViewPosition;
+    float4x4 ViewProjection;
 };
 
 VSOutput VSMain(VSInput input, uint instanceId : SV_InstanceID)

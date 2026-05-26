@@ -1,4 +1,17 @@
-#include "include\geometry.hlsli"
+struct VSOutput
+{
+    float4 position : SV_POSITION;
+    float3 worldPosition : TEXCOORD0;
+    float3 normalWS : TEXCOORD1;
+    float2 uv : TEXCOORD2;
+    float3 tangent : TEXCOORD3;
+};
+
+cbuffer CameraCB : register(b0)
+{
+    float4 ViewPosition;
+    float4x4 ViewProjection;
+};
 
 cbuffer MaterialCB : register(b3)
 {
@@ -59,6 +72,7 @@ struct PointShadowData
 
 StructuredBuffer<PointLight> gPointLights : register(t1);
 Texture2D gBaseColorTexture : register(t2);
+Texture2D gNormalTexture : register(t3);
 StructuredBuffer<DirectionalLight> gDirectionalLights : register(t4);
 StructuredBuffer<DirectionalShadowData> gDirectionalShadows : register(t5);
 StructuredBuffer<PointShadowData> gPointShadows : register(t6);
