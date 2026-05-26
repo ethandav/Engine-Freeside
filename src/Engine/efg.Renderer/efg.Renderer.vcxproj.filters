@@ -189,6 +189,9 @@
     <ClInclude Include="include\d3d12\passes\Skybox\D3D12SkyboxRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\d3d12\passes\Skybox\D3D12SkyboxRenderPassTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\render\Renderer.cpp">

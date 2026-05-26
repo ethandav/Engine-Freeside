@@ -127,9 +127,9 @@ namespace efg::d3d12
         {
             const Freeside::RenderObject& first = scene.renderObjects[ctx.renderQueue->sortedIndices[batch.firstSortedIndex]];
             const Material& material = batch.material.IsValid() ? m_materialLibrary->GetMaterialByHandle(batch.material) : m_materialLibrary->GetDefaultMaterial();
-            const GpuTexture2D baseColorTexture = material.baseColorTexture.IsValid() ? m_textureLibrary->GetTextureByHandle(material.baseColorTexture) : m_textureLibrary->GetDefaultMaterialTexture();
-            const GpuTexture2D normalTexture = material.normalTexture.IsValid() ? m_textureLibrary->GetTextureByHandle(material.normalTexture) : m_textureLibrary->GetDefaultNormalTexture();
-            const GpuTexture2D heightTexture = material.heightTexture.IsValid() ? m_textureLibrary->GetTextureByHandle(material.heightTexture) : m_textureLibrary->GetDefaultHeightTexture();
+            const GpuTexture2D baseColorTexture = material.baseColorTexture.IsValid() ? m_textureLibrary->GetTexture2DByHandle(material.baseColorTexture) : m_textureLibrary->GetDefaultMaterialTexture();
+            const GpuTexture2D normalTexture = material.normalTexture.IsValid() ? m_textureLibrary->GetTexture2DByHandle(material.normalTexture) : m_textureLibrary->GetDefaultNormalTexture();
+            const GpuTexture2D heightTexture = material.heightTexture.IsValid() ? m_textureLibrary->GetTexture2DByHandle(material.heightTexture) : m_textureLibrary->GetDefaultHeightTexture();
 
             D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &material.constants, sizeof(MaterialConstants));
             ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);

@@ -148,6 +148,7 @@
     <ClInclude Include="include\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPass.h" />
     <ClInclude Include="include\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPassTypes.h" />
     <ClInclude Include="include\d3d12\passes\Skybox\D3D12SkyboxRenderPass.h" />
+    <ClInclude Include="include\d3d12\passes\Skybox\D3D12SkyboxRenderPassTypes.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuAlignment.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuArena.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuMesh.h" />

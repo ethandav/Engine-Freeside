@@ -1,6 +1,7 @@
 #include "..\..\..\include\render\types\RendererDesc.h"
 #include "..\..\..\include\render\types\MeshTypes.h"
 #include "..\..\..\include\render\types\Handles.h"
+#include "..\..\..\..\efg.Core\include\shapes\skybox.h"
 
 #include "..\..\..\include\d3d12\core\D3D12RendererBackend.h"
 #include "..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
@@ -66,7 +67,7 @@ namespace efg::d3d12
     {
         m_forwarLitGeometryRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_materialLibrary, &m_textureLibrary, &m_bufferFactory);
         m_shadowMapRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_textureFactory, &m_bufferFactory);
-        m_skyboxRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext);
+        m_skyboxRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_textureLibrary, &m_bufferFactory);
     }
 
     void D3D12RendererBackend::CreateBuiltIns()
@@ -93,29 +94,34 @@ namespace efg::d3d12
         }
 
         {
+            std::array<DecodedImage, 6> faces =
+            {
+                m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/right.jpg"),
+                m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/left.jpg"),
+                m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/top.jpg"),
+                m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/bottom.jpg"),
+                m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/front.jpg"),
+                m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/back.jpg"),
+            };
             /*
             std::array<DecodedImage, 6> faces =
             {
-                m_imageLoader.LoadImageWithWIC(posXPath),
-                m_imageLoader.LoadImageWithWIC(negXPath),
-                m_imageLoader.LoadImageWithWIC(posYPath),
-                m_imageLoader.LoadImageWithWIC(negYPath),
-                m_imageLoader.LoadImageWithWIC(posZPath),
-                m_imageLoader.LoadImageWithWIC(negZPath),
+                m_imageLoader.CreateSolidColorImage(255, 0, 0, 255),
+                m_imageLoader.CreateSolidColorImage(255, 0, 0, 255),
+                m_imageLoader.CreateSolidColorImage(0, 255, 0, 255),
+                m_imageLoader.CreateSolidColorImage(0, 255, 0, 255),
+                m_imageLoader.CreateSolidColorImage(0, 0, 255, 255),
+                m_imageLoader.CreateSolidColorImage(0, 0, 255, 255),
             };
             */
-            std::array<DecodedImage, 6> faces =
-            {
-                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255),
-                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255),
-                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255),
-                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255),
-                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255),
-                m_imageLoader.CreateSolidColorImage(128, 128, 128, 255)
-            };
             GpuTextureCube texture = m_textureFactory.CreateTextureCube(faces[0].width, faces[0].height, DescriptorVisibility::CpuOnlyAndShaderVisible, DXGI_FORMAT_R8G8B8A8_UNORM);
             m_textureLibrary.RegisterDefaultSkyboxTexture(texture);
             m_uploadContext.QueueTextureCubeUpload(texture.resource.Get(), faces, texture.resource.Get()->GetDesc(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+            Freeside::MeshData skybox = Freeside::Shapes::SkyboxCube().mesh;
+            Freeside::MeshHandle hSkybox = CreateMesh(skybox);
+
+            m_skyboxRenderPass.SetSkyboxMesh(m_meshLibrary.Get(hSkybox));
         }
 
     }
@@ -154,9 +160,6 @@ namespace efg::d3d12
         PIXBeginEvent(commandList, PIX_COLOR(0, 0, 0), L"Begin Frame");
         ProcessUploads();
 
-        PIXBeginEvent(PixColors::ShadowMapPass, L"Skybox Render Pass");
-        m_skyboxRenderPass.Execute(ctx, scene);
-        PIXEndEvent();
         m_renderQueue.BuildForwardGeometryBatches(scene.renderObjects);
         PIXBeginEvent(PixColors::ShadowMapPass, L"Shadow System Update");
         ShadowMapFrameData shadowMapFrameData = m_shadowSystem.Update(scene);
@@ -168,6 +171,9 @@ namespace efg::d3d12
         PIXBeginEvent(commandList, PixColors::BackbufferSetup, L"BackBuffer Setup");
         RecordBackBufferSetup(ctx);
         PIXEndEvent(commandList);
+        PIXBeginEvent(PixColors::ShadowMapPass, L"Skybox Render Pass");
+        m_skyboxRenderPass.Execute(ctx, scene);
+        PIXEndEvent();
         PIXBeginEvent(commandList, PixColors::ForwardLitPass, L"Forward Lit Geometry Pass");
         m_forwarLitGeometryRenderPass.Execute(ctx, scene, shadowMapFrameData);
         PIXEndEvent(commandList);

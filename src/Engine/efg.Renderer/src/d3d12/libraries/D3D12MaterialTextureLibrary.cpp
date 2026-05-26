@@ -7,11 +7,21 @@ namespace efg::d3d12
 {
 	Freeside::TextureHandle D3D12MaterialTextureLibrary::RegisterMaterialTexture2D(const GpuTexture2D& texture)
 	{
-		m_textures.push_back(texture);
+		m_textures2D.push_back(texture);
 
 		return Freeside::TextureHandle
 		{
-			static_cast<uint32_t>(m_textures.size() - 1)
+			static_cast<uint32_t>(m_textures2D.size() - 1)
+		};
+	}
+
+	Freeside::TextureHandle D3D12MaterialTextureLibrary::RegisterTextureCube(const GpuTextureCube& texture)
+	{
+		m_textureCubes.push_back(texture);
+
+		return Freeside::TextureHandle
+		{
+			static_cast<uint32_t>(m_textureCubes.size() - 1)
 		};
 	}
 
@@ -35,14 +45,24 @@ namespace efg::d3d12
 		m_defaultSkybox = texture;
 	}
 
-	const GpuTexture2D& D3D12MaterialTextureLibrary::GetTextureByHandle(Freeside::TextureHandle handle) const
+	const GpuTexture2D& D3D12MaterialTextureLibrary::GetTexture2DByHandle(Freeside::TextureHandle handle) const
 	{
-		if (!handle.IsValid() || handle.index >= m_textures.size())
+		if (!handle.IsValid() || handle.index >= m_textures2D.size())
 		{
 			throw std::runtime_error("Invalid material handle.");
 		}
 
-		return m_textures[handle.index];
+		return m_textures2D[handle.index];
+	}
+
+	const GpuTextureCube& D3D12MaterialTextureLibrary::GetTextureCubeByHandle(Freeside::TextureHandle handle) const
+	{
+		if (!handle.IsValid() || handle.index >= m_textureCubes.size())
+		{
+			throw std::runtime_error("Invalid material handle.");
+		}
+
+		return m_textureCubes[handle.index];
 	}
 
 	GpuTexture2D D3D12MaterialTextureLibrary::GetDefaultMaterialTexture()

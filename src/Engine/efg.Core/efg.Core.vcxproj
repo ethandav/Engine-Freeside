@@ -138,6 +138,7 @@
     <ClInclude Include="include\shapes\plane.h" />
     <ClInclude Include="include\shapes\pyramid.h" />
     <ClInclude Include="include\shapes\shapes.h" />
+    <ClInclude Include="include\shapes\skybox.h" />
     <ClInclude Include="include\shapes\sphere.h" />
     <ClInclude Include="include\shapes\wall.h" />
   </ItemGroup>

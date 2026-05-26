@@ -20,8 +20,7 @@ SamplerState gLinearClampSampler : register(s0);
 
 float4 PSMain(VSOutput input) : SV_TARGET
 {
-    TextureCube<float4> skyboxTexture =
-        ResourceDescriptorHeap[NonUniformResourceIndex(SkyboxTextureDescriptorIndex)];
+    TextureCube<float4> skyboxTexture = ResourceDescriptorHeap[NonUniformResourceIndex(SkyboxTextureDescriptorIndex)];
 
     float3 dir = normalize(input.direction);
 
