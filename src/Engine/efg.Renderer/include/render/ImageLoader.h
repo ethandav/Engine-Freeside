@@ -21,6 +21,7 @@ namespace efg
     public:
         ImageLoader();
         DecodedImage LoadImageWithWIC(const wchar_t* filePath);
+        DecodedImage LoadHeightMapWithWIC(const wchar_t* filePath);
         DecodedImage CreateSolidColorImage(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
     private:
     };

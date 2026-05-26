@@ -73,11 +73,45 @@ struct PointShadowData
 StructuredBuffer<PointLight> gPointLights : register(t1);
 Texture2D gBaseColorTexture : register(t2);
 Texture2D gNormalTexture : register(t3);
-StructuredBuffer<DirectionalLight> gDirectionalLights : register(t4);
-StructuredBuffer<DirectionalShadowData> gDirectionalShadows : register(t5);
-StructuredBuffer<PointShadowData> gPointShadows : register(t6);
+Texture2D gHeightTexture : register(t4);
+StructuredBuffer<DirectionalLight> gDirectionalLights : register(t5);
+StructuredBuffer<DirectionalShadowData> gDirectionalShadows : register(t6);
+StructuredBuffer<PointShadowData> gPointShadows : register(t7);
 SamplerState gLinearSampler : register(s0);
 SamplerComparisonState ShadowSampler : register(s1);
+
+float2 ApplyParallaxOcclusionMapping(float2 uv, float3 viewDirTS)
+{
+    viewDirTS = normalize(viewDirTS);
+
+    const int minLayers = 8;
+    const int maxLayers = 32;
+
+    float ndotv = saturate(abs(viewDirTS.z));
+    int numLayers = (int) lerp(maxLayers, minLayers, ndotv);
+
+    float heightScale = 0.015f;
+
+    float layerDepth = 1.0f / numLayers;
+    float currentLayerDepth = 0.0f;
+
+    float2 deltaUV = (viewDirTS.xy / max(abs(viewDirTS.z), 0.1f)) * heightScale / numLayers;
+
+    float2 currentUV = uv;
+
+    // Convert height map to depth map:
+    // white/high = shallow, black/low = deep.
+    float currentDepthMapValue = 1.0f - gHeightTexture.Sample(gLinearSampler, currentUV).r;
+
+    while (currentLayerDepth < currentDepthMapValue)
+    {
+        currentUV -= deltaUV;
+        currentDepthMapValue = 1.0f - gHeightTexture.Sample(gLinearSampler, currentUV).r;
+        currentLayerDepth += layerDepth;
+    }
+
+    return currentUV;
+}
 
 float3 ApplyNormalMap(float3 normalWS, float3 tangentWS, float2 uv)
 {
@@ -237,15 +271,47 @@ float3 AccumulateDirectionalLights(float3 worldPos, float3 normal, float3 viewDi
     return result;
 }
 
+void BuildTBN(
+    float3 normalWS,
+    float3 tangentWS,
+    out float3 T,
+    out float3 B,
+    out float3 N)
+{
+    N = normalize(normalWS);
+
+    // Re-orthogonalize tangent against normal.
+    T = normalize(tangentWS - N * dot(tangentWS, N));
+
+    // Depending on your handedness, this may need to be cross(T, N) instead.
+    B = normalize(cross(N, T));
+}
+
 float4 PSMain(VSOutput input) : SV_TARGET
 {
     float2 uv = input.uv * uvScale;
-    float4 sampledBaseColor = gBaseColorTexture.Sample(gLinearSampler, uv);
-    float3 normal = ApplyNormalMap(input.normalWS, input.tangentWS, input.uv);
+
     float3 viewDir = normalize(ViewPosition.xyz - input.worldPosition);
+
+    float3 T, B, N;
+    BuildTBN(input.normalWS, input.tangentWS, T, B, N);
+
+    float3x3 TBN = float3x3(T, B, N);
+
+    // World-space view direction -> tangent-space view direction.
+    float3 viewDirTS = mul(viewDir, transpose(TBN));
+
+    uv = ApplyParallaxOcclusionMapping(uv, viewDirTS);
+
+    float4 sampledBaseColor = gBaseColorTexture.Sample(gLinearSampler, uv);
+
+    // Important: use parallaxed uv here too.
+    float3 normal = ApplyNormalMap(input.normalWS, input.tangentWS, uv);
+
     float3 ambient = sampledBaseColor.rgb * 0.1f;
     float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, sampledBaseColor);
     float3 pointLighting = AccumulatePointLights(input.worldPosition, normal, viewDir, sampledBaseColor);
+
     float3 finalColor = ambient + directionalLighting + pointLighting;
 
     return float4(finalColor, BaseColor.a);

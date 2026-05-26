@@ -16,5 +16,6 @@ namespace Freeside
 		TextureHandle baseColorTexture2D = {};
 		std::wstring baseColorTexturePath = {};
 		std::wstring normalTexturePath = {};
+		std::wstring heightTexturePath = {};
 	};
 }

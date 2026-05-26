@@ -32,13 +32,14 @@ namespace efg::d3d12
         ComPtr<ID3DBlob> signature;
         ComPtr<ID3DBlob> error;
 
-        CD3DX12_STATIC_SAMPLER_DESC linearWrapSampler(
+        CD3DX12_STATIC_SAMPLER_DESC materialSampler(
             0, // s0
-            D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+            D3D12_FILTER_ANISOTROPIC,
             D3D12_TEXTURE_ADDRESS_MODE_WRAP,
             D3D12_TEXTURE_ADDRESS_MODE_WRAP,
             D3D12_TEXTURE_ADDRESS_MODE_WRAP
         );
+        materialSampler.MaxAnisotropy = 16;
 
         std::array<CD3DX12_ROOT_PARAMETER, static_cast<size_t>(ForwardLitRootParameter::Count)> rootParameters = {};
 
@@ -51,12 +52,12 @@ namespace efg::d3d12
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv)].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
         CD3DX12_DESCRIPTOR_RANGE materialTextures = {};
-        materialTextures.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 2);
+        materialTextures.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 2);
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::BaseColorTexture)].InitAsDescriptorTable(1, &materialTextures, D3D12_SHADER_VISIBILITY_PIXEL);
 
-        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalLightsSrv)].InitAsShaderResourceView(4, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowDataSrv)].InitAsShaderResourceView(5, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointShadowDataSrv)].InitAsShaderResourceView(6, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalLightsSrv)].InitAsShaderResourceView(5, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowDataSrv)].InitAsShaderResourceView(6, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointShadowDataSrv)].InitAsShaderResourceView(7, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
         D3D12_STATIC_SAMPLER_DESC shadowSampler = {};
         shadowSampler.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
@@ -75,7 +76,7 @@ namespace efg::d3d12
 
         D3D12_STATIC_SAMPLER_DESC staticSamplers[] =
         {
-            linearWrapSampler,
+            materialSampler,
             shadowSampler
         };
 

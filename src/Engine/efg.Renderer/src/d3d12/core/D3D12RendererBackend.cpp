@@ -84,6 +84,13 @@ namespace efg::d3d12
             m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         }
 
+        {
+            DecodedImage image = m_imageLoader.CreateSolidColorImage(128, 128, 128, 255);
+            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, DXGI_FORMAT_R8_UNORM, DescriptorVisibility::CpuOnlyAndShaderVisible);
+            m_textureLibrary.RegisterDefaultHeightTexture2D(texture);
+            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        }
+
     }
 
     void D3D12RendererBackend::CreateFrameResources()
@@ -169,6 +176,14 @@ namespace efg::d3d12
             GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, DXGI_FORMAT_R8G8B8A8_UNORM, DescriptorVisibility::CpuOnlyAndShaderVisible);
             m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
             material.normalTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
+        }
+
+        if (!mat.heightTexturePath.empty())
+        {
+            DecodedImage image = m_imageLoader.LoadHeightMapWithWIC(mat.heightTexturePath.c_str());
+            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, DXGI_FORMAT_R8_UNORM, DescriptorVisibility::CpuOnlyAndShaderVisible);
+            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            material.heightTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
         }
 
         MaterialConstants materialConstants{

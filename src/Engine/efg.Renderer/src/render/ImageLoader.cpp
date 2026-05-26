@@ -42,6 +42,39 @@ namespace efg
         return image;
     }
 
+    DecodedImage ImageLoader::LoadHeightMapWithWIC(const wchar_t* filePath)
+    {
+        DecodedImage rgba = LoadImageWithWIC(filePath);
+
+        DecodedImage height = {};
+        height.width = rgba.width;
+        height.height = rgba.height;
+        height.format = Format::R8_UNorm;
+        height.rowPitch = height.width * BytesPerPixelOrBlock(height.format);
+        height.pixels.resize(static_cast<size_t>(height.rowPitch) * height.height);
+
+        for (uint32_t y = 0; y < height.height; ++y)
+        {
+            const uint8_t* srcRow = rgba.pixels.data() + static_cast<size_t>(y) * rgba.rowPitch;
+            uint8_t* dstRow = height.pixels.data() + static_cast<size_t>(y) * height.rowPitch;
+
+            for (uint32_t x = 0; x < height.width; ++x)
+            {
+                const uint8_t r = srcRow[x * 4 + 0];
+                const uint8_t g = srcRow[x * 4 + 1];
+                const uint8_t b = srcRow[x * 4 + 2];
+
+                // Since your generated height map is grayscale, r/g/b should be similar.
+                // You can use r only, or luminance. Luminance is safer.
+                dstRow[x] = static_cast<uint8_t>(
+                    0.299f * r + 0.587f * g + 0.114f * b
+                    );
+            }
+        }
+
+        return height;
+    }
+
     DecodedImage ImageLoader::CreateSolidColorImage(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     {
         DecodedImage image = {};
