@@ -251,10 +251,6 @@ namespace efg::d3d12
                 shadowData[i].lightViewProjection = shadowMapFrameData.directionalShadows[i].lightViewProjection;
             }
         }
-        else
-        {
-            //resources.directionalShadowDataSRV = m_dummyStructuredBufferGpuVA;
-        }
 
         if (pointShadowCount > 0)
         {
@@ -273,10 +269,6 @@ namespace efg::d3d12
 
                 shadowData[i].farPlane = entry.farPlane;
             }
-        }
-        else
-        {
-            //resources.pointShadowDataSRV = m_dummyStructuredBufferGpuVA;
         }
     }
 }

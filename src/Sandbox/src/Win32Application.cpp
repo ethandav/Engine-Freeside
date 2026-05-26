@@ -258,7 +258,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	Freeside::Lights::Point pointLight2;
 	pointLight2.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	pointLight2.intensity = 0.0f;
+	pointLight2.intensity = 1.0f;
 	pointLight2.position = Freeside::Math::Vec3(0.0f, 0.5f, 1.5f);
 	pointLight2.radius = 20.0f;
 

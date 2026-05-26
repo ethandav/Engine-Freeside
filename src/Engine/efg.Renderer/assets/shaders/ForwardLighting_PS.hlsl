@@ -1,8 +1,3 @@
-#define MAX_POINT_LIGHTS 1024
-#define MAX_DIRECTIONAL_LIGHTS 16
-#define MAX_DIRECTIONAL_SHADOWS 16
-#define MAX_POINT_SHADOWS 64
-
 #include "include\geometry.hlsli"
 
 cbuffer MaterialCB : register(b3)
