@@ -30,7 +30,6 @@ namespace Freeside
 		void SubmitFrame(efg::FramePacket sceneRenderData);
 		MeshHandle CreateMesh(const MeshData& mesh);
 		MaterialHandle RegisterMaterial(const MaterialDesc& mat);
-		TextureHandle RegisterTexture2D(const wchar_t* filename);
 	private:
 		std::unique_ptr<efg::d3d12::IRendererBackend> m_backend;
 		std::unique_ptr<efg::RenderThread> m_renderThread;

@@ -20,6 +20,7 @@ namespace efg::d3d12
 	{
 		MaterialConstants constants = {};
 		Freeside::TextureHandle baseColorTexture = {};
+		Freeside::TextureHandle normalTexture = {};
 	};
 
 	struct CameraConstants

@@ -11,7 +11,7 @@ namespace efg::d3d12
     class D3D12MaterialLibrary
     {
     public:
-        Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& desc);
+        Freeside::MaterialHandle RegisterMaterial(const Material& material);
         const Material& GetMaterialByHandle(Freeside::MaterialHandle handle) const;
         Material GetDefaultMaterial();
     private:

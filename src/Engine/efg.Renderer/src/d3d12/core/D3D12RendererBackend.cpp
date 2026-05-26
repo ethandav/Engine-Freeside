@@ -144,18 +144,31 @@ namespace efg::d3d12
 
     Freeside::MaterialHandle D3D12RendererBackend::RegisterMaterial(const Freeside::MaterialDesc& mat)
     {
-        Freeside::MaterialHandle handle = m_materialLibrary.RegisterMaterial(mat);
-        return handle;
-    }
+        Material material = {};
+        if (!mat.baseColorTexturePath.empty())
+        {
+            DecodedImage image = m_imageLoader.LoadImageWithWIC(mat.baseColorTexturePath.c_str());
+            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::ShaderVisible);
+            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            material.baseColorTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
+        }
 
-    Freeside::TextureHandle D3D12RendererBackend::RegisterTexture2D(const wchar_t* filename)
-    {
-        DecodedImage image = m_imageLoader.LoadImageWithWIC(filename);
-        GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::ShaderVisible);
-        m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        if (!mat.normalTexturePath.empty())
+        {
+            DecodedImage image = m_imageLoader.LoadImageWithWIC(mat.normalTexturePath.c_str());
+            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::ShaderVisible);
+            m_uploadContext.QueueTextureUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            material.normalTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
+        }
 
-        Freeside::TextureHandle handle = m_textureLibrary.RegisterMaterialTexture2D(texture);
+        MaterialConstants materialConstants{
+            Freeside::Math::Vec4(mat.baseColor.x, mat.baseColor.y, mat.baseColor.z, 1.0f),
+            Freeside::Math::Vec4(mat.specular.x, mat.specular.y, 0.0f, 0.0f),
+            Freeside::Math::Vec4(mat.uvScale.x, mat.uvScale.y, 0.0f, 0.0f)
+        };
+        material.constants = materialConstants;
 
+        Freeside::MaterialHandle handle = m_materialLibrary.RegisterMaterial(material);
         return handle;
     }
 

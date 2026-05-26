@@ -58,9 +58,4 @@ namespace Freeside
     {
         return m_backend->RegisterMaterial(mat);
     }
-
-    TextureHandle Renderer::RegisterTexture2D(const wchar_t* filename)
-    {
-        return m_backend->RegisterTexture2D(filename);
-    }
 }

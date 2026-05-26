@@ -39,7 +39,6 @@ namespace efg::d3d12
 		void Render(const FramePacket& scene) override;
 		Freeside::MeshHandle CreateMesh(const Freeside::MeshData& mesh) override;
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) override;
-		Freeside::TextureHandle RegisterTexture2D(const wchar_t* filename) override;
 
 	private:
 		void CreateViewportAndScissor(uint32_t width, uint32_t height);

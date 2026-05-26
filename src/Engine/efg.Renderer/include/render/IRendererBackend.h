@@ -17,7 +17,6 @@ namespace efg::d3d12
         virtual void Render(const FramePacket& sceneRenderData) = 0;
         virtual Freeside::MeshHandle CreateMesh(const Freeside::MeshData& mesh) = 0;
         virtual Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) = 0;
-        virtual Freeside::TextureHandle RegisterTexture2D(const wchar_t* filename) = 0;
 
     };
 }

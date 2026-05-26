@@ -58,52 +58,42 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MeshHandle pyramidMeshHandle = renderer.CreateMesh(pyramidMeshData);
 	Freeside::MeshHandle planeMeshHandle = renderer.CreateMesh(planeMeshData);
 	Freeside::MeshHandle wallMeshHandle = renderer.CreateMesh(wallMeshData);
-	
-	Freeside::TextureHandle earthTexture = renderer.RegisterTexture2D(L"assets/textures/earth.jpeg");
-	Freeside::TextureHandle crateTexture = renderer.RegisterTexture2D(L"assets/textures/crate.png");
-	Freeside::TextureHandle pyramidTexture = renderer.RegisterTexture2D(L"assets/textures/pyramid.jpg");
-	Freeside::TextureHandle grassTexture = renderer.RegisterTexture2D(L"assets/textures/grass.jpg");
-	Freeside::TextureHandle brickTexture = renderer.RegisterTexture2D(L"assets/textures/brick.png");
-	Freeside::TextureHandle floorTexture = renderer.RegisterTexture2D(L"assets/textures/floor.png");
 
 	Freeside::MaterialDesc earthMaterial;
 	earthMaterial.baseColor = Freeside::Math::Vec3(0.0f, 0.0f, 1.0f);
 	earthMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
-	earthMaterial.baseColorTexture2D = earthTexture;
 	Freeside::MaterialHandle earthMaterialHandle = renderer.RegisterMaterial(earthMaterial);
 
 	Freeside::MaterialDesc crateMaterial;
 	crateMaterial.baseColor = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
 	crateMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
-	crateMaterial.baseColorTexture2D = crateTexture;
+	crateMaterial.baseColorTexturePath = L"assets/textures/crate.png";
 	Freeside::MaterialHandle crateMaterialHandle = renderer.RegisterMaterial(crateMaterial);
 
 
 	Freeside::MaterialDesc pyramidMaterial;
 	pyramidMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 	pyramidMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
-	pyramidMaterial.baseColorTexture2D = pyramidTexture;
 	Freeside::MaterialHandle pyramidMaterialHandle = renderer.RegisterMaterial(pyramidMaterial);
 
 	Freeside::MaterialDesc grassMaterial;
 	grassMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 	grassMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	grassMaterial.uvScale = Freeside::Math::Vec2(10.0f, 10.0f);
-	grassMaterial.baseColorTexture2D = grassTexture;
 	Freeside::MaterialHandle grassMaterialHandle = renderer.RegisterMaterial(grassMaterial);
 
 	Freeside::MaterialDesc wallMaterial;
 	wallMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 	wallMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	wallMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
-	wallMaterial.baseColorTexture2D = brickTexture;
+	wallMaterial.baseColorTexturePath = L"assets/textures/brick.png";
 	Freeside::MaterialHandle wallMaterialHandle = renderer.RegisterMaterial(wallMaterial);
 
 	Freeside::MaterialDesc floorMaterial;
 	floorMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 	floorMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	floorMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
-	floorMaterial.baseColorTexture2D = floorTexture;
+	floorMaterial.baseColorTexturePath = L"assets/textures/floor.png";
 	Freeside::MaterialHandle floorMaterialHandle = renderer.RegisterMaterial(floorMaterial);
 
 	std::mt19937 rng{ std::random_device{}() };

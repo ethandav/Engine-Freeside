@@ -5,17 +5,8 @@
 
 namespace efg::d3d12
 {
-	Freeside::MaterialHandle D3D12MaterialLibrary::RegisterMaterial(const Freeside::MaterialDesc& mat)
+	Freeside::MaterialHandle D3D12MaterialLibrary::RegisterMaterial(const Material& material)
 	{
-		Material material = {};
-		MaterialConstants materialConstants{
-			Freeside::Math::Vec4(mat.baseColor.x, mat.baseColor.y, mat.baseColor.z, 1.0f),
-			Freeside::Math::Vec4(mat.specular.x, mat.specular.y, 0.0f, 0.0f),
-			Freeside::Math::Vec4(mat.uvScale.x, mat.uvScale.y, 0.0f, 0.0f)
-		};
-		material.constants = materialConstants;
-		material.baseColorTexture = mat.baseColorTexture2D;
-
 		m_materials.push_back(material);
 
 		return Freeside::MaterialHandle

@@ -4,6 +4,8 @@
 #include "..\..\..\..\efg.Core\include\math\Vec2.h"
 #include "..\..\..\..\efg.Core\include\math\Vec3.h"
 
+#include <string>
+
 namespace Freeside
 {
 	struct MaterialDesc
@@ -12,5 +14,7 @@ namespace Freeside
 		Freeside::Math::Vec2 specular = Freeside::Math::Vec2(1.0f, 64.0f);
 		Freeside::Math::Vec2 uvScale = Freeside::Math::Vec2(1.0f, 1.0f);
 		TextureHandle baseColorTexture2D = {};
+		std::wstring baseColorTexturePath = {};
+		std::wstring normalTexturePath = {};
 	};
 }
