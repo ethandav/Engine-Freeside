@@ -58,17 +58,6 @@ namespace efg::d3d12
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowDataSrv)].InitAsShaderResourceView(5, 0, D3D12_SHADER_VISIBILITY_PIXEL);
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointShadowDataSrv)].InitAsShaderResourceView(6, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
-        CD3DX12_DESCRIPTOR_RANGE directionalShadowMapRange = {};
-        directionalShadowMapRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 16, 16);
-
-        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowMaps)].InitAsDescriptorTable(1, &directionalShadowMapRange, D3D12_SHADER_VISIBILITY_PIXEL);
-
-        CD3DX12_DESCRIPTOR_RANGE pointShadowCubeRange = {};
-        pointShadowCubeRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 64, 32);
-
-        rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointShadowCubes)].InitAsDescriptorTable(1, &pointShadowCubeRange, D3D12_SHADER_VISIBILITY_PIXEL);
-
-
         D3D12_STATIC_SAMPLER_DESC shadowSampler = {};
         shadowSampler.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
         shadowSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
@@ -90,12 +79,16 @@ namespace efg::d3d12
             shadowSampler
         };
 
+        D3D12_ROOT_SIGNATURE_FLAGS flags =
+            D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+            D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED;
+
         rootSignatureDesc.Init(
             static_cast<UINT>(rootParameters.size()),
             rootParameters.data(),
             _countof(staticSamplers),
             staticSamplers,
-            D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
+            flags
         );
 
         D3D12_THROW_IF_FAILED(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));

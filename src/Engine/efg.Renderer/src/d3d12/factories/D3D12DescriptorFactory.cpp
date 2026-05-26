@@ -68,13 +68,13 @@ namespace efg::d3d12
     void efg::d3d12::D3D12DescriptorFactory::CreateTexture2DSRV(GpuTexture2D* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility)
     {
         D3D12_SHADER_RESOURCE_VIEW_DESC desc = BuildTexture2DSRVDesc(format, mipLevels);
-        CreateSRVWithVisibility(texture->resource.Get(), desc, visibility, &texture->cpuSrv, &texture->gpuSrv);
+        texture->bindlessSrvIndex = CreateSRVWithVisibility(texture->resource.Get(), desc, visibility, &texture->cpuSrv, &texture->gpuSrv);
     }
 
     void efg::d3d12::D3D12DescriptorFactory::CreateTextureCubeSRV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility)
     {
         D3D12_SHADER_RESOURCE_VIEW_DESC desc = BuildTextureCubeSRVDesc(format, mipLevels);
-        CreateSRVWithVisibility(texture->resource.Get(), desc, visibility, &texture->cpuSrv, &texture->gpuSrv);
+        texture->bindlessSrvIndex = CreateSRVWithVisibility(texture->resource.Get(), desc, visibility, &texture->cpuSrv, &texture->gpuSrv);
     }
 
     void D3D12DescriptorFactory::CreateTextureCubeFaceDSV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex)
@@ -98,7 +98,7 @@ namespace efg::d3d12
         return allocation;
     }
 
-    void D3D12DescriptorFactory::CreateSRVWithVisibility(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, DescriptorVisibility visibility, D3D12_CPU_DESCRIPTOR_HANDLE* outCpuOnly, D3D12_GPU_DESCRIPTOR_HANDLE* outShaderVisible)
+    uint32_t D3D12DescriptorFactory::CreateSRVWithVisibility(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, DescriptorVisibility visibility, D3D12_CPU_DESCRIPTOR_HANDLE* outCpuOnly, D3D12_GPU_DESCRIPTOR_HANDLE* outShaderVisible)
     {
         if (outCpuOnly)
         {
@@ -130,7 +130,11 @@ namespace efg::d3d12
             {
                 *outShaderVisible = shaderVisibleAllocation.gpu;
             }
+
+            return shaderVisibleAllocation.index;
         }
+
+        return -1;
     }
 
     D3D12_SHADER_RESOURCE_VIEW_DESC D3D12DescriptorFactory::BuildStructuredBufferSRVDesc(uint32_t elementCount, uint32_t elementStride)

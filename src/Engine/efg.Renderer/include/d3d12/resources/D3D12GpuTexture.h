@@ -20,6 +20,8 @@ namespace efg::d3d12
         D3D12_CPU_DESCRIPTOR_HANDLE dsv = {};
         D3D12_CPU_DESCRIPTOR_HANDLE rtv = {};
 
+        int32_t bindlessSrvIndex = -1;
+
     };
 
     struct GpuTextureCube
@@ -34,5 +36,7 @@ namespace efg::d3d12
         D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
         D3D12_CPU_DESCRIPTOR_HANDLE dsv[6] = {};
         D3D12_CPU_DESCRIPTOR_HANDLE rtv[6] = {};
+
+        int32_t bindlessSrvIndex = -1;
     };
 }

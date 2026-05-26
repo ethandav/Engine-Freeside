@@ -28,9 +28,6 @@ namespace efg::d3d12
         DirectionalShadowDataSrv = 9,  // t5
         PointShadowDataSrv = 10,       // t6
 
-        DirectionalShadowMaps = 11,    // t16 descriptor table
-        PointShadowCubes = 12,         // t32 descriptor table
-
         Count
     };
 

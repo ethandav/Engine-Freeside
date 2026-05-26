@@ -50,7 +50,8 @@ namespace efg::d3d12
 	{
 		Freeside::Math::Vec4 directionAndIntensity;
 		Freeside::Math::Vec4 colorAndPadding;
-		int32_t shadowIndex = -1;
+		int32_t shadowDataIndex = -1;
+		int32_t shadowTextureDescriptorIndex = -1;
 		float padding[3] = {};
 	};
 
@@ -58,7 +59,8 @@ namespace efg::d3d12
 	{
 		Freeside::Math::Vec4 positionAndRadius;
 		Freeside::Math::Vec4 colorAndIntensity;
-		int32_t shadowIndex = -1;
+		int32_t shadowDataIndex = -1;
+		int32_t shadowTextureDescriptorIndex = -1;
 		float padding[3] = {};
 	};
 

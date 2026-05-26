@@ -13,31 +13,48 @@
 
 namespace efg::d3d12
 {
-
-    static int32_t FindDirectionalShadowIndex(const ShadowMapFrameData& shadowMapFrameData, uint32_t lightIndex)
+    struct ShadowBinding
     {
-        for (uint32_t i = 0; i < shadowMapFrameData.directionalShadows.size(); ++i)
+        int32_t shadowDataIndex = -1;
+        int32_t shadowTextureDescriptorIndex = -1;
+    };
+
+    static ShadowBinding FindDirectionalShadowBinding(const ShadowMapFrameData& shadowMapFrameData, uint32_t lightIndex)
+    {
+        for (int32_t i = 0; i < shadowMapFrameData.directionalShadows.size(); ++i)
         {
-            if (shadowMapFrameData.directionalShadows[i].lightIndex == lightIndex)
+            const DirectionalShadowEntry& entry = shadowMapFrameData.directionalShadows[i];
+
+            if (entry.lightIndex == lightIndex)
             {
-                return static_cast<int32_t>(i);
+                return ShadowBinding
+                {
+                    i,
+                    entry.shadowMap->bindlessSrvIndex
+                };
             }
         }
 
-        return -1;
+        return {};
     }
 
-    static int32_t FindPointShadowIndex(const ShadowMapFrameData& shadowMapFrameData, uint32_t lightIndex)
+    static ShadowBinding FindPointShadowBinding(const ShadowMapFrameData& shadowMapFrameData, uint32_t lightIndex)
     {
-        for (uint32_t i = 0; i < shadowMapFrameData.pointShadows.size(); ++i)
+        for (int32_t i = 0; i < shadowMapFrameData.pointShadows.size(); ++i)
         {
-            if (shadowMapFrameData.pointShadows[i].lightIndex == lightIndex)
+            const PointShadowEntry& entry = shadowMapFrameData.pointShadows[i];
+
+            if (entry.lightIndex == lightIndex)
             {
-                return static_cast<int32_t>(i);
+                return ShadowBinding
+                {
+                    i,
+                    entry.shadowCube->bindlessSrvIndex
+                };
             }
         }
 
-        return -1;
+        return {};
     }
 
     void D3D12ForwardLitGeometryRenderPass::Initialize(D3D12GraphicsPipelineLibary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12MaterialTextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory)
@@ -69,14 +86,13 @@ namespace efg::d3d12
 
     void D3D12ForwardLitGeometryRenderPass::BindPassResources(const FrameContext& ctx, ForwardLitPassResources& resources)
     {
-        ctx.commandContext->BindPipeline(m_pipelineLibrary->Get(PipelineId::ForwardLitGeometry));
-
         ID3D12DescriptorHeap* heaps[] =
         {
             m_descriptorContext->GetCBVSRVUAVHeap()
         };
-
         ctx.commandContext->SetDescriptorHeaps(_countof(heaps), heaps);
+        ctx.commandContext->BindPipeline(m_pipelineLibrary->Get(PipelineId::ForwardLitGeometry));
+
         ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), resources.cameraCB);
         ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLightMetadata), resources.directionalLightConstantsCB);
         ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightMetadata), resources.pointLightConstantsCB);
@@ -85,8 +101,6 @@ namespace efg::d3d12
         ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLightsSrv), resources.directionalLightsSRV);
         ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowDataSrv), resources.directionalShadowDataSRV);
         ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointShadowDataSrv), resources.pointShadowDataSRV);
-        ctx.commandContext->SetGraphicsRootDescriptorTable(static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowMaps), resources.directionalShadowMapsTable);
-        ctx.commandContext->SetGraphicsRootDescriptorTable(static_cast<UINT>(ForwardLitRootParameter::PointShadowCubes), resources.pointShadowCubesTable);
     }
 
     void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
@@ -134,42 +148,6 @@ namespace efg::d3d12
         }
     }
 
-    void D3D12ForwardLitGeometryRenderPass::BuildDirectionalShadowMapTable(const FrameContext& ctx, const ShadowMapFrameData& shadowMapFrameData, uint32_t activeShadowCount, ForwardLitPassResources& resources)
-    {
-        GpuDescriptorTable table = m_descriptorContext->AllocateShaderVisibleTableFromFrameArena(ctx.frame->descriptorArena, MaxDirectionalShadows);
-        const uint32_t descriptorSize = m_descriptorContext->GetCBVSRVUAVDescriptorSize();
-
-        for (uint32_t i = 0; i < activeShadowCount; ++i)
-        {
-            D3D12_CPU_DESCRIPTOR_HANDLE dst = table.cpuStart;
-            D3D12_CPU_DESCRIPTOR_HANDLE src = {};
-
-            dst.ptr += static_cast<SIZE_T>(i) * descriptorSize;
-            src = shadowMapFrameData.directionalShadows[i].shadowMap->cpuSrv;
-            ctx.graphicsContext->GetDevice()->CopyDescriptorsSimple(1, dst, src, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-        }
-
-        resources.directionalShadowMapsTable = table.gpuStart;
-    }
-
-    void D3D12ForwardLitGeometryRenderPass::BuildPointShadowCubeTable(const FrameContext& ctx, const ShadowMapFrameData& shadowMapFrameData, uint32_t activeShadowCount, ForwardLitPassResources& resources)
-    {
-        GpuDescriptorTable table = m_descriptorContext->AllocateShaderVisibleTableFromFrameArena(ctx.frame->descriptorArena, MaxPointShadows);
-        const uint32_t descriptorSize = m_descriptorContext->GetCBVSRVUAVDescriptorSize();
-
-        for (uint32_t i = 0; i < activeShadowCount; ++i)
-        {
-            D3D12_CPU_DESCRIPTOR_HANDLE dst = table.cpuStart;
-            D3D12_CPU_DESCRIPTOR_HANDLE src = {};
-
-            dst.ptr += static_cast<SIZE_T>(i) * descriptorSize;
-            src = shadowMapFrameData.pointShadows[i].shadowCube->cpuSrv;
-            ctx.graphicsContext->GetDevice()->CopyDescriptorsSimple(1, dst, src, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-        }
-
-        resources.pointShadowCubesTable = table.gpuStart;
-    }
-
     void D3D12ForwardLitGeometryRenderPass::UploadPointLights(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources)
     {
         uint32_t count = 0;
@@ -202,7 +180,9 @@ namespace efg::d3d12
                     light.intensity
                 };
 
-                instances[i].shadowIndex = FindPointShadowIndex(shadowMapFrameData, i);
+                ShadowBinding shadow = FindPointShadowBinding(shadowMapFrameData, i);
+                instances[i].shadowDataIndex = shadow.shadowDataIndex;
+                instances[i].shadowTextureDescriptorIndex = shadow.shadowTextureDescriptorIndex;
             }
         }
 
@@ -240,7 +220,9 @@ namespace efg::d3d12
                     0.0f
                 };
 
-                instances[i].shadowIndex = FindDirectionalShadowIndex(shadowMapFrameData, i);
+                ShadowBinding shadow = FindDirectionalShadowBinding(shadowMapFrameData, i);
+                instances[i].shadowDataIndex = shadow.shadowDataIndex;
+                instances[i].shadowTextureDescriptorIndex = shadow.shadowTextureDescriptorIndex;
             }
         }
 
@@ -296,8 +278,5 @@ namespace efg::d3d12
         {
             //resources.pointShadowDataSRV = m_dummyStructuredBufferGpuVA;
         }
-
-        BuildDirectionalShadowMapTable(ctx, shadowMapFrameData, directionalShadowCount, resources);
-        BuildPointShadowCubeTable(ctx, shadowMapFrameData, pointShadowCount, resources);
     }
 }

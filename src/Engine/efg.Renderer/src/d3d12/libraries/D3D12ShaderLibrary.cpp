@@ -60,14 +60,14 @@ namespace efg::d3d12
             ShaderId::GeometryVS,
             L"..\\Engine\\efg.Renderer\\assets\\shaders\\GeometryTransform_VS.hlsl",
             L"VSMain",
-            L"vs_6_0"
+            L"vs_6_6"
         );
 
         AddShader(
             ShaderId::ForwardLightingPS,
             L"..\\Engine\\efg.Renderer\\assets\\shaders\\ForwardLighting_PS.hlsl",
             L"PSMain",
-            L"ps_6_0"
+            L"ps_6_6"
         );
     }
 

@@ -36,7 +36,8 @@ struct PointLight
 {
     float4 positionAndRadius;
     float4 colorAndIntensity;
-    int shadowIndex;
+    int shadowDataIndex;
+    int shadowTextureDescriptorIndex;
     float3 _padding;
 };
 
@@ -44,7 +45,8 @@ struct DirectionalLight
 {
     float4 lightDirectionAndIntensity;
     float4 lightColor;
-    int shadowIndex;
+    int shadowDataIndex;
+    int shadowTextureDescriptorIndex;
     float3 _padding;
 };
 
@@ -65,19 +67,19 @@ Texture2D gBaseColorTexture : register(t2);
 StructuredBuffer<DirectionalLight> gDirectionalLights : register(t4);
 StructuredBuffer<DirectionalShadowData> gDirectionalShadows : register(t5);
 StructuredBuffer<PointShadowData> gPointShadows : register(t6);
-Texture2D<float> gDirectionalShadowMaps[MAX_DIRECTIONAL_SHADOWS] : register(t16);
-TextureCube<float> gPointShadowCubes[MAX_POINT_SHADOWS] : register(t32);
 SamplerState gLinearSampler : register(s0);
 SamplerComparisonState ShadowSampler : register(s1);
 
-float ComputeDirectionalShadowFactor(float3 worldPosition, int shadowIndex)
+float ComputeDirectionalShadowFactor(float3 worldPosition, int shadowDataIndex, int shadowTextureDescriptorIndex)
 {
-    if (shadowIndex < 0 || shadowIndex >= (int) gDirectionalShadowCount)
+    if (shadowDataIndex < 0 || shadowDataIndex >= (int) gDirectionalShadowCount)
     {
         return 1.0f;
     }
 
-    float4 lightClip = mul(gDirectionalShadows[shadowIndex].lightViewProjection, float4(worldPosition, 1.0f));
+    DirectionalShadowData shadowData = gDirectionalShadows[shadowDataIndex];
+    
+    float4 lightClip = mul(shadowData.lightViewProjection, float4(worldPosition, 1.0f));
     float3 lightNdc = lightClip.xyz / lightClip.w;
 
     float2 shadowUV;
@@ -93,7 +95,8 @@ float ComputeDirectionalShadowFactor(float3 worldPosition, int shadowIndex)
         return 1.0f;
     }
 
-    float visibility = gDirectionalShadowMaps[NonUniformResourceIndex(shadowIndex)].SampleCmpLevelZero(ShadowSampler, shadowUV, currentDepth - gShadowBias);
+    Texture2D<float> shadowMap = ResourceDescriptorHeap[NonUniformResourceIndex(shadowTextureDescriptorIndex)];
+    float visibility = shadowMap.SampleCmpLevelZero(ShadowSampler, shadowUV, currentDepth - gShadowBias);
 
     return lerp(1.0f, visibility, gShadowStrength);
 }
@@ -115,9 +118,9 @@ uint GetCubeFaceIndex(float3 dir)
     return dir.z >= 0.0f ? 4 : 5;
 }
 
-float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int shadowIndex)
+float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int shadowDataIndex, int shadowTextureDescriptorIndex)
 {
-    if (shadowIndex < 0 || shadowIndex >= (int) gPointShadowCount)
+    if (shadowDataIndex < 0 || shadowDataIndex >= (int) gPointShadowCount)
     {
         return 1.0f;
     }
@@ -125,7 +128,8 @@ float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int s
     float3 lightToPixel = worldPosition - lightPosition;
     float3 sampleDir = normalize(lightToPixel);
     uint faceIndex = GetCubeFaceIndex(sampleDir);
-    PointShadowData shadowData = gPointShadows[shadowIndex];
+    
+    PointShadowData shadowData = gPointShadows[shadowDataIndex];
 
     float4 lightClip = mul(
         shadowData.faceViewProjection[faceIndex],
@@ -140,7 +144,9 @@ float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int s
         return 1.0f;
     }
 
-    float sampledDepth = gPointShadowCubes[NonUniformResourceIndex(shadowIndex)].Sample(gLinearSampler, sampleDir);
+    TextureCube<float> shadowCube = ResourceDescriptorHeap[NonUniformResourceIndex(shadowTextureDescriptorIndex)];
+
+    float sampledDepth = shadowCube.Sample(gLinearSampler, sampleDir);
     float visibility = currentDepth - gShadowBias <= sampledDepth ? 1.0f : 0.0f;
 
     return lerp(1.0f, visibility, gShadowStrength);
@@ -162,7 +168,7 @@ float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, flo
         float3 lightDir = toLight / max(distanceToLight, 0.0001f);
         float attenuation = saturate(1.0f - distanceToLight / radius);
         attenuation *= attenuation;
-        float shadowFactor = ComputePointShadowFactor(worldPos, lightPos, light.shadowIndex);
+        float shadowFactor = ComputePointShadowFactor(worldPos, lightPos, light.shadowDataIndex, light.shadowTextureDescriptorIndex);
         float ndotl = saturate(dot(normal, lightDir));
         float3 diffuse = baseColor.rgb * lightColor * ndotl * intensity * attenuation;
         float3 halfVector = normalize(lightDir + viewDir);
@@ -182,7 +188,7 @@ float3 AccumulateDirectionalLights(float3 worldPos, float3 normal, float3 viewDi
     for (uint i = 0; i < gDirectionalLightCount; ++i)
     {
         DirectionalLight light = gDirectionalLights[i];
-        float shadowFactor = ComputeDirectionalShadowFactor(worldPos, light.shadowIndex);
+        float shadowFactor = ComputeDirectionalShadowFactor(worldPos, light.shadowDataIndex, light.shadowTextureDescriptorIndex);
         float3 lightDir = normalize(-light.lightDirectionAndIntensity.xyz);
         float ndotl = saturate(dot(normal, lightDir));
         float3 diffuse = materialColor.rgb * light.lightColor.rgb * ndotl * light.lightDirectionAndIntensity.w;
