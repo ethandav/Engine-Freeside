@@ -49,6 +49,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	window.Create(hInstance, rendererDesc.width, rendererDesc.height, L"Ethan's Framework (for) Graphics");
 	window.Show(nCmdShow);
+	window.SetCursorLocked(true);
+
 	rendererDesc.nativeWindowHandle = window.GetHwnd();
 	renderer.Initialize(rendererDesc);
 	float aspectRatio = renderer.GetRendererAspectRatio();

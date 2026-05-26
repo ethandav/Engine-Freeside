@@ -20,17 +20,19 @@ namespace Freeside
 		bool IsOpen();
 		HWND GetHwnd();
 		InputState PollInput();
+		bool IsCursorLocked() const { return m_cursorLocked; };
+		void SetCursorLocked(bool locked);
 
 	private:
 		bool m_isOpen = false;
 		HWND m_hwnd = nullptr;
 		InputState m_input;
-		int m_lastMouseX = 0;
-		int m_lastMouseY = 0;
-		bool m_hasLastMousePosition = false;
+		bool m_cursorLocked = false;
 
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 		LRESULT HandleMessage(UINT message, WPARAM wParam, LPARAM lParam);
+		void UpdateCursorClip();
+		void RegisterRawMouseInput();
 	};
 
 }

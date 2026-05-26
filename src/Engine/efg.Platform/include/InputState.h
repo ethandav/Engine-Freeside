@@ -37,7 +37,12 @@ namespace Freeside
     struct InputState
     {
         std::array<bool, static_cast<size_t>(Key::Count)> keysDown{};
+        std::array<bool, static_cast<size_t>(Key::Count)> keysPressed{};
+        std::array<bool, static_cast<size_t>(Key::Count)> keysReleased{};
+
         std::array<bool, static_cast<size_t>(MouseButton::Count)> mouseButtonsDown{};
+        std::array<bool, static_cast<size_t>(MouseButton::Count)> mouseButtonsPressed{};
+        std::array<bool, static_cast<size_t>(MouseButton::Count)> mouseButtonsReleased{};
 
         float mouseDeltaX = 0.0f;
         float mouseDeltaY = 0.0f;
@@ -51,6 +56,16 @@ namespace Freeside
         bool IsKeyDown(Key key) const
         {
             return keysDown[static_cast<size_t>(key)];
+        }
+
+        bool IsKeyPressed(Key key) const
+        {
+            return keysPressed[static_cast<size_t>(key)];
+        }
+
+        bool IsMouseButtonPressed(MouseButton button) const
+        {
+            return mouseButtonsPressed[static_cast<size_t>(button)];
         }
 
         bool IsMouseButtonDown(MouseButton button) const

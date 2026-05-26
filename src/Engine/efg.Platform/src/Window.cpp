@@ -1,6 +1,9 @@
 #include "..\include\Window.h"
 
 #include <windowsx.h>
+#include <stdexcept>
+#include <vector>
+#include <cstddef>
 
 namespace Freeside
 {
@@ -52,6 +55,8 @@ namespace Freeside
             nullptr,
             hInstance,
             this);
+
+        RegisterRawMouseInput();
     }
 
     void Window::Show(int nCmdShow)
@@ -71,12 +76,43 @@ namespace Freeside
 
     InputState Window::PollInput()
     {
+        std::fill(m_input.keysPressed.begin(), m_input.keysPressed.end(), false);
+        std::fill(m_input.keysReleased.begin(), m_input.keysReleased.end(), false);
+
+        std::fill(m_input.mouseButtonsPressed.begin(), m_input.mouseButtonsPressed.end(), false);
+        std::fill(m_input.mouseButtonsReleased.begin(), m_input.mouseButtonsReleased.end(), false);
+
         m_input.mouseDeltaX = 0.0f;
         m_input.mouseDeltaY = 0.0f;
 
         PollEvents();
 
         return m_input;
+    }
+
+    void Window::SetCursorLocked(bool locked)
+    {
+        if (m_cursorLocked == locked)
+            return;
+
+        m_cursorLocked = locked;
+
+        if (m_cursorLocked)
+        {
+            UpdateCursorClip();
+
+            while (ShowCursor(FALSE) >= 0)
+            {
+            }
+        }
+        else
+        {
+            ClipCursor(nullptr);
+
+            while (ShowCursor(TRUE) < 0)
+            {
+            }
+        }
     }
 
     /*
@@ -124,31 +160,58 @@ namespace Freeside
         switch (message)
         {
         case WM_CLOSE:
+        {
             m_isOpen = false;
             DestroyWindow(m_hwnd);
             return 0;
+        }
         case WM_DESTROY:
+        {
             PostQuitMessage(0);
             return 0;
+        }
+        case WM_KILLFOCUS:
+        {
+            SetCursorLocked(false);
+
+            m_input = {};
+            m_input.windowFocused = false;
+
+            return 0;
+        }
+        case WM_MOVE:
+        case WM_SIZE:
+        {
+            UpdateCursorClip();
+            return 0;
+        }
         case WM_KEYDOWN:
         case WM_SYSKEYDOWN:
         {
-
             Freeside::Key key = TranslateVirtualKey(wParam);
             if (key != Freeside::Key::Unknown)
             {
-                m_input.keysDown[static_cast<size_t>(key)] = true;
+                size_t index = static_cast<size_t>(key);
+
+                if (!m_input.keysDown[index])
+                {
+                    m_input.keysPressed[index] = true;
+                }
+
+                m_input.keysDown[index] = true;
             }
             return 0;
         }
         case WM_KEYUP:
         case WM_SYSKEYUP:
         {
-
             Freeside::Key key = TranslateVirtualKey(wParam);
             if (key != Freeside::Key::Unknown)
             {
-                m_input.keysDown[static_cast<size_t>(key)] = false;
+                size_t index = static_cast<size_t>(key);
+
+                m_input.keysDown[index] = false;
+                m_input.keysReleased[index] = true;
             }
             return 0;
         }
@@ -195,38 +258,96 @@ namespace Freeside
             m_input.mouseX = x;
             m_input.mouseY = y;
 
-            if (!m_hasLastMousePosition)
-            {
-                m_lastMouseX = x;
-                m_lastMouseY = y;
-                m_hasLastMousePosition = true;
-            }
-
-            m_input.mouseDeltaX += static_cast<float>(x - m_lastMouseX);
-            m_input.mouseDeltaY += static_cast<float>(y - m_lastMouseY);
-
-            m_lastMouseX = x;
-            m_lastMouseY = y;
-
             return 0;
         }
         case WM_SETFOCUS:
         {
             m_input.windowFocused = true;
-            m_hasLastMousePosition = false;
             return 0;
         }
-
-        case WM_KILLFOCUS:
+        case WM_INPUT:
         {
-            m_input = {};
-            m_input.windowFocused = false;
-            m_hasLastMousePosition = false;
+            UINT size = 0;
+
+            GetRawInputData(
+                reinterpret_cast<HRAWINPUT>(lParam),
+                RID_INPUT,
+                nullptr,
+                &size,
+                sizeof(RAWINPUTHEADER)
+            );
+
+            if (size == 0)
+                return 0;
+
+            std::vector<std::byte> buffer(size);
+
+            UINT bytesRead = GetRawInputData(
+                reinterpret_cast<HRAWINPUT>(lParam),
+                RID_INPUT,
+                buffer.data(),
+                &size,
+                sizeof(RAWINPUTHEADER)
+            );
+
+            if (bytesRead != size)
+                return 0;
+
+            const RAWINPUT* raw = reinterpret_cast<const RAWINPUT*>(buffer.data());
+
+            if (raw->header.dwType == RIM_TYPEMOUSE)
+            {
+                const RAWMOUSE& mouse = raw->data.mouse;
+
+                if (m_cursorLocked && mouse.usFlags == MOUSE_MOVE_RELATIVE)
+                {
+                    m_input.mouseDeltaX += static_cast<float>(mouse.lLastX);
+                    m_input.mouseDeltaY += static_cast<float>(mouse.lLastY);
+                }
+            }
+
             return 0;
         }
         }
 
         return DefWindowProc(m_hwnd, message, wParam, lParam);
+    }
+
+    void Window::UpdateCursorClip()
+    {
+        if (!m_cursorLocked)
+            return;
+
+        RECT clientRect = {};
+        GetClientRect(m_hwnd, &clientRect);
+
+        POINT upperLeft = { clientRect.left, clientRect.top };
+        POINT lowerRight = { clientRect.right, clientRect.bottom };
+
+        ClientToScreen(m_hwnd, &upperLeft);
+        ClientToScreen(m_hwnd, &lowerRight);
+
+        RECT clipRect = {};
+        clipRect.left = upperLeft.x;
+        clipRect.top = upperLeft.y;
+        clipRect.right = lowerRight.x;
+        clipRect.bottom = lowerRight.y;
+
+        ClipCursor(&clipRect);
+    }
+
+    void Window::RegisterRawMouseInput()
+    {
+        RAWINPUTDEVICE rid = {};
+        rid.usUsagePage = 0x01; // Generic Desktop Controls
+        rid.usUsage = 0x02;     // Mouse
+        rid.dwFlags = 0;
+        rid.hwndTarget = m_hwnd;
+
+        if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
+        {
+            throw std::runtime_error("Failed to register raw mouse input.");
+        }
     }
 
     void Window::PollEvents()
