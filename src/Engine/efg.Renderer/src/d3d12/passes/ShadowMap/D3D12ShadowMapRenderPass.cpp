@@ -1,13 +1,13 @@
-#include "..\..\..\include\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPass.h"
-#include "..\..\..\include\d3d12\libraries\D3D12GraphicsPipelineLibrary.h"
-#include "..\..\..\include\d3d12\libraries\D3D12MeshLibrary.h"
-#include "..\..\..\include\d3d12\factories\D3D12TextrureFactory.h"
-#include "..\..\..\include\d3d12\factories\D3D12BufferFactory.h"
-#include "..\..\..\include\d3d12\descriptors\D3D12DescriptorContext.h"
-#include "..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
-#include "..\..\..\include\d3d12\types\D3D12DrawTypes.h"
-#include "..\..\..\include\d3d12\core\D3D12Pix.h"
-#include "..\..\..\include\d3d12\frame\D3D12PassContext.h"
+#include "..\..\..\..\include\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPass.h"
+#include "..\..\..\..\include\d3d12\libraries\D3D12GraphicsPipelineLibrary.h"
+#include "..\..\..\..\include\d3d12\libraries\D3D12MeshLibrary.h"
+#include "..\..\..\..\include\d3d12\factories\D3D12TextrureFactory.h"
+#include "..\..\..\..\include\d3d12\factories\D3D12BufferFactory.h"
+#include "..\..\..\..\include\d3d12\descriptors\D3D12DescriptorContext.h"
+#include "..\..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
+#include "..\..\..\..\include\d3d12\types\D3D12DrawTypes.h"
+#include "..\..\..\..\include\d3d12\core\D3D12Pix.h"
+#include "..\..\..\..\include\d3d12\frame\D3D12PassContext.h"
 
 #include <algorithm>
 
@@ -77,7 +77,7 @@ namespace efg::d3d12
 
     void D3D12ShadowMapRenderPass::BindPassResources(D3D12PassContext& ctx, ShadowMapPassResources& resources)
     {
-        ctx.frameContext->commandContext->BindPipeline(ctx.services->pipelines->Get(PipelineId::ShadowMap));
+        ctx.frameContext->commandContext->BindPipeline(ctx.services->pipelines->GetPipelineById(PipelineId::ShadowMap));
         ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(0, resources.lightViewCB);
     }
 

@@ -1,6 +1,6 @@
-#include "..\..\..\include\d3d12\passes\Skybox\D3D12SkyboxRenderPass.h"
-#include "..\..\..\include\d3d12\resources\D3D12GpuTexture.h"
-#include "..\..\..\include\d3d12\passes\Skybox\D3D12SkyboxRenderPassTypes.h"
+#include "..\..\..\..\include\d3d12\passes\Skybox\D3D12SkyboxRenderPass.h"
+#include "..\..\..\..\include\d3d12\resources\D3D12GpuTexture.h"
+#include "..\..\..\..\include\d3d12\passes\Skybox\D3D12SkyboxRenderPassTypes.h"
 
 namespace efg::d3d12
 {
@@ -11,7 +11,7 @@ namespace efg::d3d12
 			ctx.services->descriptors->GetCBVSRVUAVHeap()
 		};
 		ctx.frameContext->commandContext->SetDescriptorHeaps(_countof(heaps), heaps);
-		ctx.frameContext->commandContext->BindPipeline(ctx.services->pipelines->Get(PipelineId::Skybox));
+		ctx.frameContext->commandContext->BindPipeline(ctx.services->pipelines->GetPipelineById(PipelineId::Skybox));
 
 		const GpuTextureCube skyboxTexture = scene.skyboxTexture.IsValid() ? ctx.libraries->textures->GetTextureCubeByHandle(scene.skyboxTexture) : ctx.libraries->textures->GetDefaulSkyboxTexture();
 

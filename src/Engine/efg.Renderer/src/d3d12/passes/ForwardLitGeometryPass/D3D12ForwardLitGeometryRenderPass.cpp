@@ -1,8 +1,8 @@
-#include "..\..\..\include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
-#include "..\..\..\include\d3d12\core\D3D12Context.h"
-#include "..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
-#include "..\..\..\include\d3d12\types\D3D12DrawTypes.h"
-#include "..\..\..\include\d3d12\resources\D3D12GpuTexture.h"
+#include "..\..\..\..\include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
+#include "..\..\..\..\include\d3d12\core\D3D12Context.h"
+#include "..\..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
+#include "..\..\..\..\include\d3d12\types\D3D12DrawTypes.h"
+#include "..\..\..\..\include\d3d12\resources\D3D12GpuTexture.h"
 
 #include <algorithm>
 
@@ -76,7 +76,7 @@ namespace efg::d3d12
             ctx.services->descriptors->GetCBVSRVUAVHeap()
         };
         ctx.frameContext->commandContext->SetDescriptorHeaps(_countof(heaps), heaps);
-        ctx.frameContext->commandContext->BindPipeline(ctx.services->pipelines->Get(PipelineId::ForwardLitGeometry));
+        ctx.frameContext->commandContext->BindPipeline(ctx.services->pipelines->GetPipelineById(PipelineId::ForwardLitGeometry));
 
         ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), resources.cameraCB);
         ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLightMetadata), resources.directionalLightConstantsCB);

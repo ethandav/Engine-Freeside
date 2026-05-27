@@ -19,10 +19,13 @@
 #include "..\libraries\D3D12MaterialLibrary.h"
 #include "..\libraries\D3D12MaterialTextureLibrary.h"
 #include "..\libraries\D3D12MeshLibrary.h"
+#include "..\libraries\D3D12ShaderLibrary.h"
 #include "..\factories\D3D12BufferFactory.h"
 #include "..\factories\D3D12TextrureFactory.h"
 #include "..\factories\D3D12ResourceFactory.h"
 #include "..\factories\D3D12DescriptorFactory.h"
+#include "..\factories\D3D12PipelineFactory.h"
+#include "..\factories\D3D12RootSignatureFactory.h"
 #include "..\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
 #include "..\passes\Skybox\D3D12SkyboxRenderPass.h"
 #include "..\passes\ShadowMap\D3D12ShadowMapRenderPass.h"
@@ -69,6 +72,8 @@ namespace efg::d3d12
 		D3D12TextureFactory m_textureFactory = {};
 		D3D12ResourceFactory m_resourceFactory = {};
 		D3D12DescriptorFactory m_descriptorFactory = {};
+		D3D12PipelineFactory m_pipelineFactory = {};
+		D3D12RootSignatureFactory m_rootSignatureFactory = {};
 		D3D12MeshLibrary m_meshLibrary;
 		D3D12SwapChain m_swapChain = {};
 		D3D12QueueFence m_directFence = {};

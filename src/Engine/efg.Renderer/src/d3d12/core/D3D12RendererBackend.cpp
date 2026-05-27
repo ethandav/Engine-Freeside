@@ -9,6 +9,10 @@
 #include "..\..\..\include\d3d12\core\D3D12Format.h"
 #include "..\..\..\include\d3d12\types\D3D12DrawTypes.h"
 
+#include "..\..\..\include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryPipeline.h"
+#include "..\..\..\include\d3d12\passes\ShadowMap\D3D12ShadowMapPipeline.h"
+#include "..\..\..\include\d3d12\passes\Skybox\D3D12SkyboxPipeline.h"
+
 namespace efg::d3d12
 {
     void D3D12RendererBackend::Initialize(const Freeside::RendererDesc& desc)
@@ -58,8 +62,13 @@ namespace efg::d3d12
         m_swapChain.CreateBackBufferViews();
         m_directFence.CreateFence(0);
         m_shaderLibrary.Initialize();
-        m_graphicsPipelineLibrary.Initialize(&m_graphicsContext, m_shaderLibrary);
         m_shadowSystem.Initialize(&m_textureFactory);
+        m_pipelineFactory.Initialize(m_graphicsContext.GetDevice());
+        m_rootSignatureFactory.Initialize(m_graphicsContext.GetDevice());
+
+        m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::ForwardLitGeometry, ForwardLitGeometryPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
+        m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::ShadowMap, ShadowMapPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
+        m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::Skybox, SkyboxPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
 
         m_renderServices.buffers = &m_bufferFactory;
         m_renderServices.descriptors = &m_descriptorContext;

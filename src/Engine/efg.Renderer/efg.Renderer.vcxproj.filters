@@ -201,6 +201,21 @@
     <ClInclude Include="include\d3d12\types\D3D12RenderDeviceServices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\d3d12\factories\D3D12PipelineFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\factories\D3D12RootSignatureFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\passes\ShadowMap\D3D12ShadowMapPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\passes\Skybox\D3D12SkyboxPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\render\Renderer.cpp">
@@ -257,7 +272,7 @@
     <ClCompile Include="src\d3d12\factories\D3D12ResourceFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3d12\passes\D3D12ForwardLitGeometryRenderPass.cpp">
+    <ClCompile Include="src\d3d12\passes\ForwardLitGeometryPass\D3D12ForwardLitGeometryRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\render\RenderQueue.cpp">
@@ -278,7 +293,7 @@
     <ClCompile Include="src\d3d12\factories\D3D12TextrureFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3d12\passes\D3D12ShadowMapRenderPass.cpp">
+    <ClCompile Include="src\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\d3d12\systems\D3D12ShadowSystem.cpp">
@@ -287,7 +302,22 @@
     <ClCompile Include="src\d3d12\factories\D3D12DescriptorFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3d12\passes\D3D12SkyboxRenderPass.cpp">
+    <ClCompile Include="src\d3d12\passes\Skybox\D3D12SkyboxRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\factories\D3D12PipelineFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\passes\ForwardLitGeometryPass\D3D12ForwardLitGeometryPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\factories\D3D12RootSignatureFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\passes\ShadowMap\D3D12ShadowMapPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\passes\Skybox\D3D12SkyboxPipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
