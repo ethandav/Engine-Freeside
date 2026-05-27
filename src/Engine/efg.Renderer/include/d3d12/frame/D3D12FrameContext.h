@@ -11,7 +11,7 @@ namespace efg::d3d12
 	struct FrameContext
 	{
 		uint64_t frameIndex = 0;
-		FrameResource* frame = nullptr;
+		FrameResource* frameResource = nullptr;
 		D3D12DirectCommandContext* commandContext = nullptr;
 		D3D12Context* graphicsContext = nullptr;
 		D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = {};

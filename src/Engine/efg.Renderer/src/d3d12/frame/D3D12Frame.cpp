@@ -13,7 +13,7 @@ namespace efg::d3d12
 
         FrameContext ctx = {};
         ctx.frameIndex = frameIndex;
-        ctx.frame = &frame;
+        ctx.frameResource = &frame;
         ctx.commandContext = &m_commandContext;
         ctx.graphicsContext = &m_graphicsContext;
         ctx.backBuffer = m_swapChain.GetCurrentBackBuffer();
@@ -31,7 +31,7 @@ namespace efg::d3d12
         m_commandContext.ResourceBarrierTransition(m_swapChain.GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
         m_commandContext.EndRecording();
         m_commandContext.ExecuteDirect();
-        ctx.frame->fenceValue = m_directFence.Signal(queue);
+        ctx.frameResource->fenceValue = m_directFence.Signal(queue);
         m_swapChain.Present();
     }
 

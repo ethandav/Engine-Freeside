@@ -16,7 +16,6 @@ namespace efg::d3d12
         InitializeD3D12Systems(desc);
         CreateViewportAndScissor(desc.width, desc.height);
         CreateRenderTargets(desc.width, desc.height);
-        InitializeRenderPasses();
         CreateFrameResources();
         CreateBuiltIns();
         m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
@@ -61,13 +60,14 @@ namespace efg::d3d12
         m_shaderLibrary.Initialize();
         m_graphicsPipelineLibrary.Initialize(&m_graphicsContext, m_shaderLibrary);
         m_shadowSystem.Initialize(&m_textureFactory);
-    }
 
-    void D3D12RendererBackend::InitializeRenderPasses()
-    {
-        m_forwarLitGeometryRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_materialLibrary, &m_textureLibrary, &m_bufferFactory);
-        m_shadowMapRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_meshLibrary, &m_textureFactory, &m_bufferFactory);
-        m_skyboxRenderPass.Initialize(&m_graphicsPipelineLibrary, &m_descriptorContext, &m_textureLibrary, &m_bufferFactory);
+        m_renderServices.buffers = &m_bufferFactory;
+        m_renderServices.descriptors = &m_descriptorContext;
+        m_renderServices.pipelines = &m_graphicsPipelineLibrary;
+
+        m_renderResources.materials = &m_materialLibrary;
+        m_renderResources.meshes = &m_meshLibrary;
+        m_renderResources.textures = &m_textureLibrary;
     }
 
     void D3D12RendererBackend::CreateBuiltIns()
@@ -154,32 +154,37 @@ namespace efg::d3d12
 
     void D3D12RendererBackend::Render(const FramePacket& scene)
     {
-        FrameContext ctx = BeginFrame();
-        ID3D12GraphicsCommandList* commandList = ctx.commandContext->GetDirectCommandList();
+        FrameContext frameCtx = BeginFrame();
 
+        D3D12PassContext passCtx = {};
+        passCtx.frameContext = &frameCtx;
+        passCtx.services = &m_renderServices;
+        passCtx.libraries = &m_renderResources;
+        passCtx.renderQueue = &m_renderQueue;
+
+        ID3D12GraphicsCommandList* commandList = frameCtx.commandContext->GetDirectCommandList();
         PIXBeginEvent(commandList, PIX_COLOR(0, 0, 0), L"Begin Frame");
         ProcessUploads();
-
         m_renderQueue.BuildForwardGeometryBatches(scene.renderObjects);
         PIXBeginEvent(PixColors::ShadowMapPass, L"Shadow System Update");
         ShadowMapFrameData shadowMapFrameData = m_shadowSystem.Update(scene);
         PIXEndEvent();
         PIXBeginEvent(commandList, PixColors::ShadowMapPass, L"Shadow Map Pass");
-        m_shadowMapRenderPass.Execute(ctx, scene, shadowMapFrameData);
+        m_shadowMapRenderPass.Execute(passCtx, scene, shadowMapFrameData);
         PIXEndEvent(commandList);
         m_commandContext.FlushPendingBarrierTransitions();
         PIXBeginEvent(commandList, PixColors::BackbufferSetup, L"BackBuffer Setup");
-        RecordBackBufferSetup(ctx);
+        RecordBackBufferSetup(frameCtx);
         PIXEndEvent(commandList);
         PIXBeginEvent(PixColors::ShadowMapPass, L"Skybox Render Pass");
-        m_skyboxRenderPass.Execute(ctx, scene);
+        m_skyboxRenderPass.Execute(passCtx, scene);
         PIXEndEvent();
         PIXBeginEvent(commandList, PixColors::ForwardLitPass, L"Forward Lit Geometry Pass");
-        m_forwarLitGeometryRenderPass.Execute(ctx, scene, shadowMapFrameData);
+        m_forwarLitGeometryRenderPass.Execute(passCtx, scene, shadowMapFrameData);
         PIXEndEvent(commandList);
         PIXEndEvent(commandList);
         m_commandContext.FlushPendingBarrierTransitions();
-        EndFrame(ctx);
+        EndFrame(frameCtx);
     }
 
     Freeside::MeshHandle D3D12RendererBackend::CreateMesh(const Freeside::MeshData& mesh)

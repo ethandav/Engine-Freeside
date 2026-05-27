@@ -139,6 +139,7 @@
     <ClInclude Include="include\d3d12\frame\D3D12FrameContext.h" />
     <ClInclude Include="include\d3d12\frame\D3D12FrameResouce.h" />
     <ClInclude Include="include\d3d12\factories\D3D12ResourceFactory.h" />
+    <ClInclude Include="include\d3d12\frame\D3D12PassContext.h" />
     <ClInclude Include="include\d3d12\libraries\D3D12MaterialTextureLibrary.h" />
     <ClInclude Include="include\d3d12\frame\D3D12RenderTargets.h" />
     <ClInclude Include="include\d3d12\passes\D3D12BackBufferSetup.h" />
@@ -157,6 +158,8 @@
     <ClInclude Include="include\d3d12\systems\D3D12ShadowSystem.h" />
     <ClInclude Include="include\d3d12\types\D3D12DrawTypes.h" />
     <ClInclude Include="include\d3d12\types\D3D12PipelineTypes.h" />
+    <ClInclude Include="include\d3d12\types\D3D12RenderDeviceServices.h" />
+    <ClInclude Include="include\d3d12\types\D3D12RenderSceneResources.h" />
     <ClInclude Include="include\d3d12\types\ShadowFrameData.h" />
     <ClInclude Include="include\render\Camera.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuBuffer.h" />

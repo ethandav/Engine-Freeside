@@ -45,7 +45,6 @@ namespace efg::d3d12
 		void CreateViewportAndScissor(uint32_t width, uint32_t height);
 		void CreateRenderTargets(uint32_t width, uint32_t height);
 		void InitializeD3D12Systems(const Freeside::RendererDesc& desc);
-		void InitializeRenderPasses();
 		void CreateBuiltIns();
 		void CreateFrameResources();
 		void DestroyFrameResources();
@@ -74,6 +73,8 @@ namespace efg::d3d12
 		D3D12SwapChain m_swapChain = {};
 		D3D12QueueFence m_directFence = {};
 		D3D12ShadowSystem m_shadowSystem = {};
+		D3D12RenderServices m_renderServices = {};
+		D3D12RenderResourcesLibraries m_renderResources = {};
 
 		RenderTargets m_renderTargets = {};
 

@@ -7,21 +7,13 @@
 #include "..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
 #include "..\..\..\include\d3d12\types\D3D12DrawTypes.h"
 #include "..\..\..\include\d3d12\core\D3D12Pix.h"
+#include "..\..\..\include\d3d12\frame\D3D12PassContext.h"
 
 #include <algorithm>
 
 namespace efg::d3d12
 {
-    void D3D12ShadowMapRenderPass::Initialize(D3D12GraphicsPipelineLibrary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12TextureFactory* textureFactory, D3D12BufferFactory* bufferFactory)
-    {
-        m_pipelineLibrary = pipelineLib;
-        m_descriptorContext = descriptorCtx;
-        m_meshLibrary = meshLibrary;
-        m_textureFactory = textureFactory;
-        m_bufferFactory = bufferFactory;
-    }
-
-    void D3D12ShadowMapRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene, ShadowMapFrameData& shadowMapFrameData)
+    void D3D12ShadowMapRenderPass::Execute(D3D12PassContext& ctx, const FramePacket& scene, ShadowMapFrameData& shadowMapFrameData)
     {
         for (const auto& dirShadowMap : shadowMapFrameData.directionalShadows)
         {
@@ -36,24 +28,24 @@ namespace efg::d3d12
             m_scissorRect.top = 0;
             m_scissorRect.right = static_cast<LONG>(2048);
             m_scissorRect.bottom = static_cast<LONG>(2048);
-            PIXBeginEvent(ctx.commandContext->GetDirectCommandList(), PixColors::ShadowMapPass, L"Write Directional Light Depth Buffer %u", dirShadowMap.lightIndex + 1);
-            ctx.commandContext->SetViewportAndScissor(m_viewport, m_scissorRect);
-            ctx.commandContext->SetRenderTarget(0, nullptr, &dirShadowMap.shadowMap->dsv);
-            ctx.commandContext->ClearDepthStencil(dirShadowMap.shadowMap->dsv, 1.0f, 0);
+            PIXBeginEvent(ctx.frameContext->commandContext->GetDirectCommandList(), PixColors::ShadowMapPass, L"Write Directional Light Depth Buffer %u", dirShadowMap.lightIndex + 1);
+            ctx.frameContext->commandContext->SetViewportAndScissor(m_viewport, m_scissorRect);
+            ctx.frameContext->commandContext->SetRenderTarget(0, nullptr, &dirShadowMap.shadowMap->dsv);
+            ctx.frameContext->commandContext->ClearDepthStencil(dirShadowMap.shadowMap->dsv, 1.0f, 0);
 
             LightViewConstants constants = {};
             constants.viewProjection = dirShadowMap.lightViewProjection;
-            resources.lightViewCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &constants, sizeof(LightViewConstants));
+            resources.lightViewCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &constants, sizeof(LightViewConstants));
             BindPassResources(ctx, resources);
             DrawAllRenderObjects(ctx, scene);
-            PIXEndEvent(ctx.commandContext->GetDirectCommandList());
+            PIXEndEvent(ctx.frameContext->commandContext->GetDirectCommandList());
         }
 
         for (const auto& pointShadow : shadowMapFrameData.pointShadows)
         {
             GpuTextureCube* shadowCube = pointShadow.shadowCube;
 
-            PIXBeginEvent(ctx.commandContext->GetDirectCommandList(), PixColors::ShadowMapPass, L"Write Point Light Depth Buffer %u", pointShadow.lightIndex + 1);
+            PIXBeginEvent(ctx.frameContext->commandContext->GetDirectCommandList(), PixColors::ShadowMapPass, L"Write Point Light Depth Buffer %u", pointShadow.lightIndex + 1);
             for (uint32_t face = 0; face < 6; ++face)
             {
                 ShadowMapPassResources resources = {};
@@ -68,34 +60,34 @@ namespace efg::d3d12
                 m_scissorRect.right = static_cast<LONG>(2048);
                 m_scissorRect.bottom = static_cast<LONG>(2048);
 
-                PIXBeginEvent(ctx.commandContext->GetDirectCommandList(), PixColors::ShadowMapPass, L"Write Point Light %u Face %u", pointShadow.lightIndex + 1, face + 1);
-                ctx.commandContext->SetViewportAndScissor(m_viewport, m_scissorRect);
-                ctx.commandContext->SetRenderTarget(0, nullptr, &shadowCube->dsv[face]);
-                ctx.commandContext->ClearDepthStencil(shadowCube->dsv[face], 1.0f, 0);
+                PIXBeginEvent(ctx.frameContext->commandContext->GetDirectCommandList(), PixColors::ShadowMapPass, L"Write Point Light %u Face %u", pointShadow.lightIndex + 1, face + 1);
+                ctx.frameContext->commandContext->SetViewportAndScissor(m_viewport, m_scissorRect);
+                ctx.frameContext->commandContext->SetRenderTarget(0, nullptr, &shadowCube->dsv[face]);
+                ctx.frameContext->commandContext->ClearDepthStencil(shadowCube->dsv[face], 1.0f, 0);
                 LightViewConstants constants = {};
                 constants.viewProjection = pointShadow.faceViewProjection[face];
-                resources.lightViewCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &constants, sizeof(LightViewConstants));
+                resources.lightViewCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &constants, sizeof(LightViewConstants));
                 BindPassResources(ctx, resources);
                 DrawAllRenderObjects(ctx, scene);
-                PIXEndEvent(ctx.commandContext->GetDirectCommandList());
+                PIXEndEvent(ctx.frameContext->commandContext->GetDirectCommandList());
             }
-            PIXEndEvent(ctx.commandContext->GetDirectCommandList());
+            PIXEndEvent(ctx.frameContext->commandContext->GetDirectCommandList());
         }
     }
 
-    void D3D12ShadowMapRenderPass::BindPassResources(const FrameContext& ctx, ShadowMapPassResources& resources)
+    void D3D12ShadowMapRenderPass::BindPassResources(D3D12PassContext& ctx, ShadowMapPassResources& resources)
     {
-        ctx.commandContext->BindPipeline(m_pipelineLibrary->Get(PipelineId::ShadowMap));
-        ctx.commandContext->SetGraphicsRootConstantBufferView(0, resources.lightViewCB);
+        ctx.frameContext->commandContext->BindPipeline(ctx.services->pipelines->Get(PipelineId::ShadowMap));
+        ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(0, resources.lightViewCB);
     }
 
-    void D3D12ShadowMapRenderPass::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
+    void D3D12ShadowMapRenderPass::DrawAllRenderObjects(D3D12PassContext& ctx, const FramePacket& scene)
     {
         for (const auto& batch : ctx.renderQueue->batches)
         {
             const Freeside::RenderObject& first = scene.renderObjects[ctx.renderQueue->sortedIndices[batch.firstSortedIndex]];
             const UINT64 instanceBufferSize = static_cast<UINT64>(batch.instanceCount) * sizeof(InstanceData);
-            GpuUploadBufferAllocation instanceAllocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, instanceBufferSize, InstanceDataAlignment);
+            GpuUploadBufferAllocation instanceAllocation = ctx.services->buffers->AllocateUploadBufferArena(ctx.frameContext->frameResource->uploadBufferArena, instanceBufferSize, InstanceDataAlignment);
             InstanceData* instances = reinterpret_cast<InstanceData*>(instanceAllocation.cpu);
             for (uint32_t i = 0; i < batch.instanceCount; ++i)
             {
@@ -104,8 +96,8 @@ namespace efg::d3d12
                 instances[i].world = Freeside::Math::Transpose(object.world);
             }
 
-            ctx.commandContext->SetGraphicsRootShaderResourceView(1, instanceAllocation.gpu);
-            ctx.commandContext->DrawMeshInstanced(m_meshLibrary->Get(batch.mesh), batch.instanceCount);
+            ctx.frameContext->commandContext->SetGraphicsRootShaderResourceView(1, instanceAllocation.gpu);
+            ctx.frameContext->commandContext->DrawMeshInstanced(ctx.libraries->meshes->Get(batch.mesh), batch.instanceCount);
         }
     }
 }

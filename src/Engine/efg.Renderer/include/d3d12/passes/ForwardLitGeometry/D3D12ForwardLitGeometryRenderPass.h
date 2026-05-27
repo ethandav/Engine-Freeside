@@ -1,29 +1,20 @@
 #pragma once
 #include "D3D12ForwardLitGeometryTypes.h"
+#include "..\..\types\ShadowFrameData.h"
+#include "..\..\frame\D3D12PassContext.h"
 #include "..\..\..\render\types\FramePacket.h"
 #include "..\..\..\render\types\Handles.h"
 #include "..\..\..\render\Lights.h"
 #include "..\..\..\render\Camera.h"
-#include "..\..\frame\D3D12FrameContext.h"
-#include "..\..\..\d3d12\resources\D3D12GpuTexture.h"
-#include "..\..\types\ShadowFrameData.h"
 
 #include <d3d12.h>
 
 namespace efg::d3d12
 {
-	class D3D12GraphicsPipelineLibrary;
-	class D3D12DescriptorContext;
-	class D3D12MeshLibrary;
-	class D3D12MaterialLibrary;
-	class D3D12MaterialTextureLibrary;
-	class D3D12BufferFactory;
-
 	class D3D12ForwardLitGeometryRenderPass
 	{
 	public:
-		void Initialize(D3D12GraphicsPipelineLibrary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12MaterialTextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory);
-		void Execute(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData);
+		void Execute(D3D12PassContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData);
 	private:
 		struct ForwardLitPassResources
 		{
@@ -41,21 +32,14 @@ namespace efg::d3d12
 			PointLightConstants pointLightConstants = {};
 			ShadowMetadataConstants shadowMetadata = {};
 		};
-		void UploadPassResources(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
-		void BindPassResources(const FrameContext& ctx, ForwardLitPassResources& resources);
-		void UploadPointLights(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
-		void UploadDirectionalLights(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
-		void UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
-		void UploadShadowResources(const FrameContext& ctx, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
+		void UploadPassResources(D3D12PassContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
+		void BindPassResources(D3D12PassContext& ctx, ForwardLitPassResources& resources);
+		void UploadPointLights(D3D12PassContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
+		void UploadDirectionalLights(D3D12PassContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
+		void UploadFrameConstants(D3D12PassContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources);
+		void UploadShadowResources(D3D12PassContext& ctx, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources);
 		CameraConstants BuildCameraConstants(const Freeside::Camera& camera);
 		DirectionalLightConstants BuildDirectionalLightConstants(const Freeside::Lights::Directional& light);
-		void DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene);
-
-		D3D12GraphicsPipelineLibrary* m_pipelineLibrary = nullptr;
-		D3D12DescriptorContext* m_descriptorContext = nullptr;
-		D3D12MeshLibrary* m_meshLibrary = nullptr;
-		D3D12MaterialLibrary* m_materialLibrary = nullptr;
-		D3D12MaterialTextureLibrary* m_textureLibrary = nullptr;
-		D3D12BufferFactory* m_bufferFactory = nullptr;
+		void DrawAllRenderObjects(D3D12PassContext& ctx, const FramePacket& scene);
 	};
 }

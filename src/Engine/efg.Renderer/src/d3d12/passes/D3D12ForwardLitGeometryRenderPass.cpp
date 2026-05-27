@@ -1,13 +1,8 @@
 #include "..\..\..\include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
-#include "..\..\..\include\d3d12\libraries\D3D12GraphicsPipelineLibrary.h"
-#include "..\..\..\include\d3d12\libraries\D3D12MeshLibrary.h"
-#include "..\..\..\include\d3d12\libraries\D3D12MaterialTextureLibrary.h"
-#include "..\..\..\include\d3d12\libraries\D3D12MaterialLibrary.h"
-#include "..\..\..\include\d3d12\factories\D3D12BufferFactory.h"
-#include "..\..\..\include\d3d12\descriptors\D3D12DescriptorContext.h"
 #include "..\..\..\include\d3d12\core\D3D12Context.h"
 #include "..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
 #include "..\..\..\include\d3d12\types\D3D12DrawTypes.h"
+#include "..\..\..\include\d3d12\resources\D3D12GpuTexture.h"
 
 #include <algorithm>
 
@@ -57,17 +52,7 @@ namespace efg::d3d12
         return {};
     }
 
-    void D3D12ForwardLitGeometryRenderPass::Initialize(D3D12GraphicsPipelineLibrary* pipelineLib, D3D12DescriptorContext* descriptorCtx, D3D12MeshLibrary* meshLibrary, D3D12MaterialLibrary* materialLibrary, D3D12MaterialTextureLibrary* textureLibrary, D3D12BufferFactory* bufferFactory)
-    {
-        m_pipelineLibrary = pipelineLib;
-        m_descriptorContext = descriptorCtx;
-        m_meshLibrary = meshLibrary;
-        m_materialLibrary = materialLibrary;
-        m_textureLibrary = textureLibrary;
-        m_bufferFactory = bufferFactory;
-    }
-
-    void D3D12ForwardLitGeometryRenderPass::Execute(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData)
+    void D3D12ForwardLitGeometryRenderPass::Execute(D3D12PassContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData)
     {
         ForwardLitPassResources resources = {};
 
@@ -76,7 +61,7 @@ namespace efg::d3d12
         DrawAllRenderObjects(ctx, scene);
     }
 
-    void D3D12ForwardLitGeometryRenderPass::UploadPassResources(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources)
+    void D3D12ForwardLitGeometryRenderPass::UploadPassResources(D3D12PassContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources)
     {
         UploadDirectionalLights(ctx, scene, shadowMapFrameData, resources);
         UploadPointLights(ctx, scene, shadowMapFrameData, resources);
@@ -84,31 +69,31 @@ namespace efg::d3d12
         UploadFrameConstants(ctx, scene, resources);
     }
 
-    void D3D12ForwardLitGeometryRenderPass::BindPassResources(const FrameContext& ctx, ForwardLitPassResources& resources)
+    void D3D12ForwardLitGeometryRenderPass::BindPassResources(D3D12PassContext& ctx, ForwardLitPassResources& resources)
     {
         ID3D12DescriptorHeap* heaps[] =
         {
-            m_descriptorContext->GetCBVSRVUAVHeap()
+            ctx.services->descriptors->GetCBVSRVUAVHeap()
         };
-        ctx.commandContext->SetDescriptorHeaps(_countof(heaps), heaps);
-        ctx.commandContext->BindPipeline(m_pipelineLibrary->Get(PipelineId::ForwardLitGeometry));
+        ctx.frameContext->commandContext->SetDescriptorHeaps(_countof(heaps), heaps);
+        ctx.frameContext->commandContext->BindPipeline(ctx.services->pipelines->Get(PipelineId::ForwardLitGeometry));
 
-        ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), resources.cameraCB);
-        ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLightMetadata), resources.directionalLightConstantsCB);
-        ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightMetadata), resources.pointLightConstantsCB);
-        ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::ShadowMetadata), resources.shadowMetadataCB);
-        ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv), resources.pointLightsSRV);
-        ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLightsSrv), resources.directionalLightsSRV);
-        ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowDataSrv), resources.directionalShadowDataSRV);
-        ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointShadowDataSrv), resources.pointShadowDataSRV);
+        ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Camera), resources.cameraCB);
+        ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLightMetadata), resources.directionalLightConstantsCB);
+        ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::PointLightMetadata), resources.pointLightConstantsCB);
+        ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::ShadowMetadata), resources.shadowMetadataCB);
+        ctx.frameContext->commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv), resources.pointLightsSRV);
+        ctx.frameContext->commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::DirectionalLightsSrv), resources.directionalLightsSRV);
+        ctx.frameContext->commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowDataSrv), resources.directionalShadowDataSRV);
+        ctx.frameContext->commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::PointShadowDataSrv), resources.pointShadowDataSRV);
     }
 
-    void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(const FrameContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
+    void D3D12ForwardLitGeometryRenderPass::UploadFrameConstants(D3D12PassContext& ctx, const FramePacket& scene, ForwardLitPassResources& resources)
     {
         CameraConstants cameraConstants = BuildCameraConstants(scene.camera);
-        resources.cameraCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &cameraConstants, sizeof(CameraConstants));
-        resources.directionalLightConstantsCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.directionalLightConstants, sizeof(DirectionalLightConstants));
-        resources.pointLightConstantsCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.pointLightConstants, sizeof(PointLightConstants));
+        resources.cameraCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &cameraConstants, sizeof(CameraConstants));
+        resources.directionalLightConstantsCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &resources.directionalLightConstants, sizeof(DirectionalLightConstants));
+        resources.pointLightConstantsCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &resources.pointLightConstants, sizeof(PointLightConstants));
     }
 
     CameraConstants D3D12ForwardLitGeometryRenderPass::BuildCameraConstants(const Freeside::Camera& camera)
@@ -121,33 +106,33 @@ namespace efg::d3d12
         return cameraConstants;
     }
 
-    void D3D12ForwardLitGeometryRenderPass::DrawAllRenderObjects(const FrameContext& ctx, const FramePacket& scene)
+    void D3D12ForwardLitGeometryRenderPass::DrawAllRenderObjects(D3D12PassContext& ctx, const FramePacket& scene)
     {
         for (const auto& batch : ctx.renderQueue->batches)
         {
             const Freeside::RenderObject& first = scene.renderObjects[ctx.renderQueue->sortedIndices[batch.firstSortedIndex]];
-            const Material& material = batch.material.IsValid() ? m_materialLibrary->GetMaterialByHandle(batch.material) : m_materialLibrary->GetDefaultMaterial();
-            const GpuTexture2D baseColorTexture = material.baseColorTexture.IsValid() ? m_textureLibrary->GetTexture2DByHandle(material.baseColorTexture) : m_textureLibrary->GetDefaultMaterialTexture();
-            const GpuTexture2D normalTexture = material.normalTexture.IsValid() ? m_textureLibrary->GetTexture2DByHandle(material.normalTexture) : m_textureLibrary->GetDefaultNormalTexture();
-            const GpuTexture2D heightTexture = material.heightTexture.IsValid() ? m_textureLibrary->GetTexture2DByHandle(material.heightTexture) : m_textureLibrary->GetDefaultHeightTexture();
+            const Material& material = batch.material.IsValid() ? ctx.libraries->materials->GetMaterialByHandle(batch.material) : ctx.libraries->materials->GetDefaultMaterial();
+            const GpuTexture2D baseColorTexture = material.baseColorTexture.IsValid() ? ctx.libraries->textures->GetTexture2DByHandle(material.baseColorTexture) : ctx.libraries->textures->GetDefaultMaterialTexture();
+            const GpuTexture2D normalTexture = material.normalTexture.IsValid() ? ctx.libraries->textures->GetTexture2DByHandle(material.normalTexture) : ctx.libraries->textures->GetDefaultNormalTexture();
+            const GpuTexture2D heightTexture = material.heightTexture.IsValid() ? ctx.libraries->textures->GetTexture2DByHandle(material.heightTexture) : ctx.libraries->textures->GetDefaultHeightTexture();
 
-            D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &material.constants, sizeof(MaterialConstants));
-            ctx.commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
+            D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &material.constants, sizeof(MaterialConstants));
+            ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
 
-            GpuDescriptorTable textureTable = m_descriptorContext->AllocateShaderVisibleTableFromFrameArena(ctx.frame->descriptorArena, 3);
-            ctx.graphicsContext->GetDevice()->CopyDescriptorsSimple(1, textureTable.cpuStart, baseColorTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            GpuDescriptorTable textureTable = ctx.services->descriptors->AllocateShaderVisibleTableFromFrameArena(ctx.frameContext->frameResource->descriptorArena, 3);
+            ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, textureTable.cpuStart, baseColorTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
             D3D12_CPU_DESCRIPTOR_HANDLE normalDst = textureTable.cpuStart;
-            normalDst.ptr += m_descriptorContext->GetCBVSRVUAVDescriptorSize();
-            ctx.graphicsContext->GetDevice()->CopyDescriptorsSimple(1, normalDst, normalTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            normalDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize();
+            ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, normalDst, normalTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
             D3D12_CPU_DESCRIPTOR_HANDLE heightDst = textureTable.cpuStart;
-            heightDst.ptr += m_descriptorContext->GetCBVSRVUAVDescriptorSize() * 2;
-            ctx.graphicsContext->GetDevice()->CopyDescriptorsSimple(1, heightDst, heightTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            heightDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize() * 2;
+            ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, heightDst, heightTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-            ctx.commandContext->SetGraphicsRootDescriptorTable(7, textureTable.gpuStart);
+            ctx.frameContext->commandContext->SetGraphicsRootDescriptorTable(7, textureTable.gpuStart);
 
             const UINT64 instanceBufferSize = static_cast<UINT64>(batch.instanceCount) * sizeof(InstanceData);
-            GpuUploadBufferAllocation instanceAllocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, instanceBufferSize, InstanceDataAlignment);
+            GpuUploadBufferAllocation instanceAllocation = ctx.services->buffers->AllocateUploadBufferArena(ctx.frameContext->frameResource->uploadBufferArena, instanceBufferSize, InstanceDataAlignment);
             InstanceData* instances = reinterpret_cast<InstanceData*>(instanceAllocation.cpu);
             for (uint32_t i = 0; i < batch.instanceCount; ++i)
             {
@@ -156,12 +141,12 @@ namespace efg::d3d12
                 instances[i].world = Freeside::Math::Transpose(object.world);
             }
 
-            ctx.commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::InstanceData), instanceAllocation.gpu);
-            ctx.commandContext->DrawMeshInstanced(m_meshLibrary->Get(batch.mesh), batch.instanceCount);
+            ctx.frameContext->commandContext->SetGraphicsRootShaderResourceView(static_cast<UINT>(ForwardLitRootParameter::InstanceData), instanceAllocation.gpu);
+            ctx.frameContext->commandContext->DrawMeshInstanced(ctx.libraries->meshes->Get(batch.mesh), batch.instanceCount);
         }
     }
 
-    void D3D12ForwardLitGeometryRenderPass::UploadPointLights(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources)
+    void D3D12ForwardLitGeometryRenderPass::UploadPointLights(D3D12PassContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources)
     {
         uint32_t count = 0;
 
@@ -169,7 +154,7 @@ namespace efg::d3d12
         {
             count = static_cast<uint32_t>(scene.pointLights.size());
 
-            GpuUploadBufferAllocation allocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, count * sizeof(GpuPointLight), StructuredBufferAlignment);
+            GpuUploadBufferAllocation allocation = ctx.services->buffers->AllocateUploadBufferArena(ctx.frameContext->frameResource->uploadBufferArena, count * sizeof(GpuPointLight), StructuredBufferAlignment);
             GpuPointLight* instances = reinterpret_cast<GpuPointLight*>(allocation.cpu);
             resources.pointLightsSRV = allocation.gpu;
 
@@ -202,14 +187,14 @@ namespace efg::d3d12
         resources.pointLightConstants.pointLightCount = count;
     }
 
-    void D3D12ForwardLitGeometryRenderPass::UploadDirectionalLights(const FrameContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources)
+    void D3D12ForwardLitGeometryRenderPass::UploadDirectionalLights(D3D12PassContext& ctx, const FramePacket& scene, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources)
     {
         uint32_t count = 0;
 
         if (!scene.directionalLights.empty())
         {
             count = static_cast<uint32_t>(scene.directionalLights.size());
-            GpuUploadBufferAllocation allocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, count * sizeof(GpuDirectionalLight), StructuredBufferAlignment);
+            GpuUploadBufferAllocation allocation = ctx.services->buffers->AllocateUploadBufferArena(ctx.frameContext->frameResource->uploadBufferArena, count * sizeof(GpuDirectionalLight), StructuredBufferAlignment);
             GpuDirectionalLight* instances = reinterpret_cast<GpuDirectionalLight*>(allocation.cpu);
             resources.directionalLightsSRV = allocation.gpu;
 
@@ -242,7 +227,7 @@ namespace efg::d3d12
         resources.directionalLightConstants.directionalLightCount = count;
     }
 
-    void D3D12ForwardLitGeometryRenderPass::UploadShadowResources(const FrameContext& ctx, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources)
+    void D3D12ForwardLitGeometryRenderPass::UploadShadowResources(D3D12PassContext& ctx, const ShadowMapFrameData& shadowMapFrameData, ForwardLitPassResources& resources)
     {
         const uint32_t directionalShadowCount = std::min<uint32_t>(static_cast<uint32_t>(shadowMapFrameData.directionalShadows.size()), MaxDirectionalShadows);
         const uint32_t pointShadowCount = std::min<uint32_t>(static_cast<uint32_t>(shadowMapFrameData.pointShadows.size()), MaxPointShadows);
@@ -251,11 +236,11 @@ namespace efg::d3d12
         resources.shadowMetadata.pointShadowCount = pointShadowCount;
         resources.shadowMetadata.shadowBias = 0.001f;
         resources.shadowMetadata.shadowStrength = 1.0f;
-        resources.shadowMetadataCB = m_bufferFactory->CopyToConstantBufferArena(ctx.frame->constantBufferArena, &resources.shadowMetadata, sizeof(ShadowMetadataConstants));
+        resources.shadowMetadataCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &resources.shadowMetadata, sizeof(ShadowMetadataConstants));
 
         if (directionalShadowCount > 0)
         {
-            GpuUploadBufferAllocation allocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, directionalShadowCount * sizeof(GpuDirectionalShadowData), StructuredBufferAlignment);
+            GpuUploadBufferAllocation allocation = ctx.services->buffers->AllocateUploadBufferArena(ctx.frameContext->frameResource->uploadBufferArena, directionalShadowCount * sizeof(GpuDirectionalShadowData), StructuredBufferAlignment);
             GpuDirectionalShadowData* shadowData = reinterpret_cast<GpuDirectionalShadowData*>(allocation.cpu);
             resources.directionalShadowDataSRV = allocation.gpu;
 
@@ -267,7 +252,7 @@ namespace efg::d3d12
 
         if (pointShadowCount > 0)
         {
-            GpuUploadBufferAllocation allocation = m_bufferFactory->AllocateUploadBufferArena(ctx.frame->uploadBufferArena, pointShadowCount * sizeof(GpuPointShadowData), StructuredBufferAlignment);
+            GpuUploadBufferAllocation allocation = ctx.services->buffers->AllocateUploadBufferArena(ctx.frameContext->frameResource->uploadBufferArena, pointShadowCount * sizeof(GpuPointShadowData), StructuredBufferAlignment);
             GpuPointShadowData* shadowData = reinterpret_cast<GpuPointShadowData*>(allocation.cpu);
             resources.pointShadowDataSRV = allocation.gpu;
 
