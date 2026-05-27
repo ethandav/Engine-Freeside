@@ -145,14 +145,12 @@
     <ClInclude Include="include\d3d12\libraries\D3D12MaterialTextureLibrary.h" />
     <ClInclude Include="include\d3d12\frame\D3D12RenderTargets.h" />
     <ClInclude Include="include\d3d12\passes\D3D12BackBufferSetup.h" />
-    <ClInclude Include="include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryPipeline.h" />
+    <ClInclude Include="include\d3d12\passes\D3D12Pipelines.h" />
     <ClInclude Include="include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h" />
     <ClInclude Include="include\d3d12\factories\D3D12TextrureFactory.h" />
     <ClInclude Include="include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryTypes.h" />
-    <ClInclude Include="include\d3d12\passes\ShadowMap\D3D12ShadowMapPipeline.h" />
     <ClInclude Include="include\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPass.h" />
     <ClInclude Include="include\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPassTypes.h" />
-    <ClInclude Include="include\d3d12\passes\Skybox\D3D12SkyboxPipeline.h" />
     <ClInclude Include="include\d3d12\passes\Skybox\D3D12SkyboxRenderPass.h" />
     <ClInclude Include="include\d3d12\passes\Skybox\D3D12SkyboxRenderPassTypes.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuAlignment.h" />

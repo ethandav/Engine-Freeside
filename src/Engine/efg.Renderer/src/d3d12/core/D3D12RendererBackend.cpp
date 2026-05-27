@@ -9,9 +9,7 @@
 #include "..\..\..\include\d3d12\core\D3D12Format.h"
 #include "..\..\..\include\d3d12\types\D3D12DrawTypes.h"
 
-#include "..\..\..\include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryPipeline.h"
-#include "..\..\..\include\d3d12\passes\ShadowMap\D3D12ShadowMapPipeline.h"
-#include "..\..\..\include\d3d12\passes\Skybox\D3D12SkyboxPipeline.h"
+#include "..\..\..\include\d3d12\passes\D3D12Pipelines.h"
 
 namespace efg::d3d12
 {
