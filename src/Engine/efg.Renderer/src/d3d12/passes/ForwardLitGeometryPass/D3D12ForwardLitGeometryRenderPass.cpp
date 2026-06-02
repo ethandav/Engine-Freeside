@@ -1,5 +1,5 @@
 #include "..\..\..\..\include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
-#include "..\..\..\..\include\d3d12\core\D3D12Context.h"
+#include "..\..\..\..\include\d3d12\core\D3D12DeviceContext.h"
 #include "..\..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
 #include "..\..\..\..\include\d3d12\types\D3D12DrawTypes.h"
 #include "..\..\..\..\include\d3d12\resources\D3D12GpuTexture.h"

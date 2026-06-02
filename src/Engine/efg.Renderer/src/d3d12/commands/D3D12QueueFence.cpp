@@ -1,10 +1,10 @@
 #include "..\..\..\include\d3d12\commands\D3D12QueueFence.h"
-#include "..\..\..\include\d3d12\core\D3D12Context.h"
+#include "..\..\..\include\d3d12\core\D3D12DeviceContext.h"
 #include "..\..\..\include\d3d12\core\D3D12Error.h"
 
 namespace efg::d3d12
 {
-    void D3D12QueueFence::Initialize(D3D12Context* graphicsContext)
+    void D3D12QueueFence::Initialize(D3D12DeviceContext* graphicsContext)
     {
         m_graphicsContext = graphicsContext;
     }

@@ -6,7 +6,7 @@
 
 namespace efg::d3d12
 {
-    void D3D12SwapChain::Initialize(D3D12Context* graphicsContext, D3D12DirectCommandContext* commandContext, D3D12DescriptorFactory* descriptorFactory)
+    void D3D12SwapChain::Initialize(D3D12DeviceContext* graphicsContext, D3D12DirectCommandContext* commandContext, D3D12DescriptorFactory* descriptorFactory)
     {
         m_graphicsContext = graphicsContext;
         m_commandContext = commandContext;

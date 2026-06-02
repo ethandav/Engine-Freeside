@@ -4,12 +4,12 @@
 
 namespace efg::d3d12
 {
-	class D3D12Context;
+	class D3D12DeviceContext;
 
 	class D3D12QueueFence
 	{
 	public:
-		void Initialize(D3D12Context* graphicsContext);
+		void Initialize(D3D12DeviceContext* graphicsContext);
 		void CreateFence(UINT64 fenceValue);
 		void WaitForGPU(ID3D12CommandQueue* queue);
 		UINT64 Signal(ID3D12CommandQueue* queue);
@@ -18,7 +18,7 @@ namespace efg::d3d12
 		UINT64 GetCompletedValue() const;
 
 	private:
-		D3D12Context* m_graphicsContext = nullptr;
+		D3D12DeviceContext* m_graphicsContext = nullptr;
 		Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
 		HANDLE m_fenceEvent = 0;
 		UINT64 m_fenceValue = 0;

@@ -10,12 +10,12 @@
 
 namespace efg::d3d12
 {
-	class D3D12Context;
+	class D3D12DeviceContext;
 
 	class D3D12DirectCommandContext
 	{
 	public:
-		void Initialize(D3D12Context* graphicsContext);
+		void Initialize(D3D12DeviceContext* graphicsContext);
 		void BeginRecording(ID3D12CommandAllocator* commandAllocator);
 		void EndRecording();
 		ID3D12GraphicsCommandList* GetDirectCommandList();
@@ -48,7 +48,7 @@ namespace efg::d3d12
 			D3D12_RESOURCE_STATES after = {};
 		};
 
-		D3D12Context* m_graphicsContext = {};
+		D3D12DeviceContext* m_graphicsContext = {};
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_directCommandAllocator;
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_directQueue;
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_directCommandList;

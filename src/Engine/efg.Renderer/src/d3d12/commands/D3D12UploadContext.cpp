@@ -1,5 +1,5 @@
 #include "..\..\..\include\d3d12\commands\D3D12UploadContext.h"
-#include "..\..\..\include\d3d12\core\D3D12Context.h"
+#include "..\..\..\include\d3d12\core\D3D12DeviceContext.h"
 #include "..\..\..\include\d3d12\factories\D3D12ResourceFactory.h"
 #include "..\..\..\include\d3d12\core\D3D12Error.h"
 #include "..\..\..\include\d3d12\core\D3D12Pix.h"
@@ -8,7 +8,7 @@
 
 namespace efg::d3d12
 {
-	void D3D12UploadContext::Initialize(D3D12Context* graphicsContext, D3D12ResourceFactory* resourceFactory)
+	void D3D12UploadContext::Initialize(D3D12DeviceContext* graphicsContext, D3D12ResourceFactory* resourceFactory)
 	{
 		m_graphicsContext = graphicsContext;
 		m_resourceFactory = resourceFactory;

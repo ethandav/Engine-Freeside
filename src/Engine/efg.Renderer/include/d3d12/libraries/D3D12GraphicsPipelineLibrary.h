@@ -7,7 +7,7 @@
 
 namespace efg::d3d12
 {
-	class D3D12Context;
+	class D3D12DeviceContext;
 
 	class D3D12GraphicsPipelineLibrary
 	{

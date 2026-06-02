@@ -1,16 +1,44 @@
-#include "..\..\..\include\d3d12\core\D3D12Context.h"
+#include "..\..\..\include\d3d12\core\D3D12DeviceContext.h"
 #include "..\..\..\include\d3d12\core\D3D12Error.h"
 
 
 namespace efg::d3d12
 {
-    void D3D12Context::CreateFactory()
+    void D3D12DeviceContext::Initialize(bool useWarpDevice)
+    {
+        UINT dxgiFactoryFlags = 0;
+#if defined(_DEBUG)
+        {
+            ComPtr<ID3D12Debug> debugController;
+            if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+            {
+                debugController->EnableDebugLayer();
+
+                dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+            }
+        }
+#endif
+        CreateFactory();
+        CreateDevice(useWarpDevice);
+    }
+
+    ID3D12Device* D3D12DeviceContext::GetDevice()
+    {
+        return m_device.Get();
+    }
+
+    IDXGIFactory4* D3D12DeviceContext::GetFactory()
+    {
+        return m_factory.Get();
+    }
+
+    void D3D12DeviceContext::CreateFactory()
     {
         UINT dxgiFactoryFlags = 0;
         D3D12_THROW_IF_FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&m_factory)));
     }
 
-    void D3D12Context::CreateDevice(bool useWarpDevice)
+    void D3D12DeviceContext::CreateDevice(bool useWarpDevice)
     {
         if (useWarpDevice)
         {
@@ -26,7 +54,7 @@ namespace efg::d3d12
         }
     }
 
-    void D3D12Context::GetHardwareAdapter(bool requestHighPerformanceAdapter)
+    void D3D12DeviceContext::GetHardwareAdapter(bool requestHighPerformanceAdapter)
     {
         m_hardwareAdapter.Reset();
 

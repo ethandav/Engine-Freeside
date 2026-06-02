@@ -18,7 +18,7 @@ namespace efg::d3d12
 		m_directFence.WaitForGPU(m_directCommandContext.GetDirectCommandQueue());
 	}
 
-	D3D12Context& D3D12DeviceSystem::GraphicsContext()
+	D3D12DeviceContext& D3D12DeviceSystem::GraphicsContext()
 	{
 		return m_graphicsContext;
 	}

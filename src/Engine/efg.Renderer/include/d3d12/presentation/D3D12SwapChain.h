@@ -10,14 +10,14 @@
 
 namespace efg::d3d12
 {
-	class D3D12Context;
+	class D3D12DeviceContext;
 	class D3D12DirectCommandContext;
 	class D3D12DescriptorFactory;
 
 	class D3D12SwapChain
 	{
 	public:
-		void Initialize(D3D12Context* graphicsContext, D3D12DirectCommandContext* commandContext, D3D12DescriptorFactory* descriptorFactory);
+		void Initialize(D3D12DeviceContext* graphicsContext, D3D12DirectCommandContext* commandContext, D3D12DescriptorFactory* descriptorFactory);
 		void CreateSwapChain(void* nativeWindowHandle, uint32_t width, uint32_t height);
 		uint64_t GetFrameIndex();
 		ID3D12Resource* GetCurrentBackBuffer() const;
@@ -30,7 +30,7 @@ namespace efg::d3d12
 	private:
 
 		uint64_t m_frameIndex = 0;
-		D3D12Context* m_graphicsContext = nullptr;
+		D3D12DeviceContext* m_graphicsContext = nullptr;
 		D3D12DirectCommandContext* m_commandContext = nullptr;
 		D3D12DescriptorFactory* m_descriptorFactory = nullptr;
 		Microsoft::WRL::ComPtr<IDXGISwapChain3> m_swapChain;

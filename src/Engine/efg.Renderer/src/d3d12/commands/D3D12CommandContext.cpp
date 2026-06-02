@@ -1,12 +1,12 @@
 #include "..\..\..\include\d3d12\commands\D3D12CommandContext.h"
-#include "..\..\..\include\d3d12\core\D3D12Context.h"
+#include "..\..\..\include\d3d12\core\D3D12DeviceContext.h"
 #include "..\..\..\include\d3d12\core\D3D12Error.h"
 
 #include <d3dx12.h>
 
 namespace efg::d3d12
 {
-    void D3D12DirectCommandContext::Initialize(D3D12Context* context)
+    void D3D12DirectCommandContext::Initialize(D3D12DeviceContext* context)
     {
         m_graphicsContext = context;
         CreateCommandObjects();
