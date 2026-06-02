@@ -4,12 +4,12 @@ namespace efg::d3d12
 {
 	void D3D12DeviceSystem::Initialize(const Freeside::RendererDesc& desc)
 	{
-		m_graphicsContext.Initialize(false);
-		m_directCommandContext.Initialize(&m_graphicsContext);
-		m_descriptorContext.Initialize(m_graphicsContext.GetDevice());
-		m_descriptorFactory.Initialize(m_graphicsContext.GetDevice(), &m_descriptorContext);
-		m_swapChain.Initialize(&m_graphicsContext, &m_directCommandContext, &m_descriptorFactory);
-		m_directFence.Initialize(&m_graphicsContext);
+		m_deviceContext.Initialize(false);
+		m_directCommandContext.Initialize(&m_deviceContext);
+		m_descriptorContext.Initialize(m_deviceContext.GetDevice());
+		m_descriptorFactory.Initialize(m_deviceContext.GetDevice(), &m_descriptorContext);
+		m_swapChain.Initialize(&m_deviceContext, &m_directCommandContext, &m_descriptorFactory);
+		m_directFence.Initialize(&m_deviceContext);
 		m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
 		m_descriptorContext.CreateAllHeaps();
 		m_swapChain.CreateBackBufferViews();
@@ -20,7 +20,7 @@ namespace efg::d3d12
 
 	D3D12DeviceContext& D3D12DeviceSystem::GraphicsContext()
 	{
-		return m_graphicsContext;
+		return m_deviceContext;
 	}
 
 	D3D12DescriptorFactory& D3D12DeviceSystem::DescriptorFactory()

@@ -21,7 +21,7 @@ namespace efg::d3d12
 		D3D12SwapChain& SwapChain();
 
 	private:
-		D3D12DeviceContext m_graphicsContext = {};
+		D3D12DeviceContext m_deviceContext = {};
 		D3D12SwapChain m_swapChain = {};
 		D3D12DirectCommandContext m_directCommandContext = {};
 		D3D12DescriptorContext m_descriptorContext = {};
