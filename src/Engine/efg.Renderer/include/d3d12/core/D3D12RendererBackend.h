@@ -1,6 +1,4 @@
 #pragma once
-
-#include "D3D12Context.h"
 #include "..\..\render\IRendererBackend.h"
 #include "..\..\render\RenderQueue.h"
 #include "..\..\render\ImageLoader.h"
@@ -12,9 +10,7 @@
 #include "..\frame\D3D12FrameConfig.h"
 #include "..\frame\D3D12RenderTargets.h"
 #include "..\commands\D3D12UploadTypes.h"
-#include "..\commands\D3D12CommandContext.h"
 #include "..\commands\D3D12UploadContext.h"
-#include "..\descriptors\D3D12DescriptorContext.h"
 #include "..\libraries\D3D12GraphicsPipelineLibrary.h"
 #include "..\libraries\D3D12MaterialLibrary.h"
 #include "..\libraries\D3D12MaterialTextureLibrary.h"
@@ -23,14 +19,14 @@
 #include "..\factories\D3D12BufferFactory.h"
 #include "..\factories\D3D12TextrureFactory.h"
 #include "..\factories\D3D12ResourceFactory.h"
-#include "..\factories\D3D12DescriptorFactory.h"
 #include "..\factories\D3D12PipelineFactory.h"
 #include "..\factories\D3D12RootSignatureFactory.h"
 #include "..\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
 #include "..\passes\Skybox\D3D12SkyboxRenderPass.h"
 #include "..\passes\ShadowMap\D3D12ShadowMapRenderPass.h"
-#include "..\presentation\D3D12SwapChain.h"
 #include "..\systems\D3D12ShadowSystem.h"
+
+#include "..\systems\D3D12DeviceSystem.h"
 
 
 namespace efg::d3d12
@@ -60,9 +56,8 @@ namespace efg::d3d12
 		D3D12_VIEWPORT m_viewport;
 		D3D12_RECT m_scissorRect;
 
-		D3D12Context m_graphicsContext = {};
-		D3D12DirectCommandContext m_commandContext = {};
-		D3D12DescriptorContext m_descriptorContext = {};
+		D3D12DeviceSystem m_device = {};
+
 		D3D12UploadContext m_uploadContext = {};
 		D3D12GraphicsPipelineLibrary m_graphicsPipelineLibrary = {};
 		D3D12ShaderLibrary m_shaderLibrary = {};
@@ -71,12 +66,9 @@ namespace efg::d3d12
 		D3D12BufferFactory m_bufferFactory = {};
 		D3D12TextureFactory m_textureFactory = {};
 		D3D12ResourceFactory m_resourceFactory = {};
-		D3D12DescriptorFactory m_descriptorFactory = {};
 		D3D12PipelineFactory m_pipelineFactory = {};
 		D3D12RootSignatureFactory m_rootSignatureFactory = {};
 		D3D12MeshLibrary m_meshLibrary;
-		D3D12SwapChain m_swapChain = {};
-		D3D12QueueFence m_directFence = {};
 		D3D12ShadowSystem m_shadowSystem = {};
 		D3D12RenderServices m_renderServices = {};
 		D3D12RenderResourcesLibraries m_renderResources = {};

@@ -20,7 +20,6 @@ namespace efg::d3d12
         CreateRenderTargets(desc.width, desc.height);
         CreateFrameResources();
         CreateBuiltIns();
-        m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
     }
 
     void D3D12RendererBackend::CreateViewportAndScissor(uint32_t width, uint32_t height)
@@ -45,31 +44,21 @@ namespace efg::d3d12
 
     void D3D12RendererBackend::InitializeD3D12Systems(const Freeside::RendererDesc& desc)
     {
-        m_graphicsContext.Initialize(false);
-        m_commandContext.Initialize(&m_graphicsContext);
-        m_descriptorContext.Initialize(m_graphicsContext.GetDevice());
-        m_swapChain.Initialize(&m_graphicsContext, &m_commandContext, &m_descriptorFactory);
-        m_resourceFactory.Initialize(m_graphicsContext.GetDevice());
-        m_uploadContext.Initialize(&m_graphicsContext, &m_resourceFactory);
+        m_device.Initialize(desc);
+
+        m_resourceFactory.Initialize(m_device.GraphicsContext().GetDevice());
+        m_uploadContext.Initialize(&m_device.GraphicsContext(), &m_resourceFactory);
         m_bufferFactory.Initialize(&m_resourceFactory);
-        m_textureFactory.Initialize(m_graphicsContext.GetDevice(), &m_resourceFactory, &m_descriptorFactory);
-        m_descriptorFactory.Initialize(m_graphicsContext.GetDevice(), &m_descriptorContext);
-        m_directFence.Initialize(&m_graphicsContext);
-        m_swapChain.CreateSwapChain(desc.nativeWindowHandle, desc.width, desc.height);
-        m_descriptorContext.CreateAllHeaps();
-        m_swapChain.CreateBackBufferViews();
-        m_directFence.CreateFence(0);
+        m_textureFactory.Initialize(m_device.GraphicsContext().GetDevice(), &m_resourceFactory, &m_device.DescriptorFactory());
         m_shaderLibrary.Initialize();
         m_shadowSystem.Initialize(&m_textureFactory);
-        m_pipelineFactory.Initialize(m_graphicsContext.GetDevice());
-        m_rootSignatureFactory.Initialize(m_graphicsContext.GetDevice());
-
+        m_pipelineFactory.Initialize(m_device.GraphicsContext().GetDevice());
+        m_rootSignatureFactory.Initialize(m_device.GraphicsContext().GetDevice());
         m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::ForwardLitGeometry, ForwardLitGeometryPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
         m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::ShadowMap, ShadowMapPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
         m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::Skybox, SkyboxPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
-
         m_renderServices.buffers = &m_bufferFactory;
-        m_renderServices.descriptors = &m_descriptorContext;
+        m_renderServices.descriptors = &m_device.DescriptorContext();
         m_renderServices.pipelines = &m_graphicsPipelineLibrary;
 
         m_renderResources.materials = &m_materialLibrary;
@@ -137,10 +126,10 @@ namespace efg::d3d12
     {
         for (UINT i = 0; i < NumFramesInFlight; i++)
         {
-            m_frameResources[i].commandAllocator = m_commandContext.CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
+            m_frameResources[i].commandAllocator = m_device.DirectCommandContext().CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
             m_frameResources[i].uploadBufferArena = m_bufferFactory.CreateUploadBufferArena(100000 * sizeof(InstanceData));
             m_frameResources[i].constantBufferArena = m_bufferFactory.CreateConstantBufferArena(ConstantArenaSize);
-            m_frameResources[i].descriptorArena = m_descriptorContext.CreateFrameDescriptorArena(i);
+            m_frameResources[i].descriptorArena = m_device.DescriptorContext().CreateFrameDescriptorArena(i);
         }
     }
 
@@ -155,7 +144,7 @@ namespace efg::d3d12
 
     void D3D12RendererBackend::Shutdown()
     {
-        m_directFence.WaitForGPU(m_commandContext.GetDirectCommandQueue());
+        m_device.DirectFence().WaitForGPU(m_device.DirectCommandContext().GetDirectCommandQueue());
         DestroyFrameResources();
     }
 
@@ -179,7 +168,7 @@ namespace efg::d3d12
         PIXBeginEvent(commandList, PixColors::ShadowMapPass, L"Shadow Map Pass");
         m_shadowMapRenderPass.Execute(passCtx, scene, shadowMapFrameData);
         PIXEndEvent(commandList);
-        m_commandContext.FlushPendingBarrierTransitions();
+        m_device.DirectCommandContext().FlushPendingBarrierTransitions();
         PIXBeginEvent(commandList, PixColors::BackbufferSetup, L"BackBuffer Setup");
         RecordBackBufferSetup(frameCtx);
         PIXEndEvent(commandList);
@@ -190,7 +179,7 @@ namespace efg::d3d12
         m_forwarLitGeometryRenderPass.Execute(passCtx, scene, shadowMapFrameData);
         PIXEndEvent(commandList);
         PIXEndEvent(commandList);
-        m_commandContext.FlushPendingBarrierTransitions();
+        m_device.DirectCommandContext().FlushPendingBarrierTransitions();
         EndFrame(frameCtx);
     }
 
@@ -259,10 +248,10 @@ namespace efg::d3d12
 
     void D3D12RendererBackend::RecordUploadedResourceTransitions(const UploadTicket& ticket)
     {
-        m_uploadContext.copyfence.WaitForQueue(m_commandContext.GetDirectCommandQueue(), ticket.copyFenceValue);
+        m_uploadContext.copyfence.WaitForQueue(m_device.DirectCommandContext().GetDirectCommandQueue(), ticket.copyFenceValue);
         for (const auto& upload : ticket.resources)
         {
-            m_commandContext.ResourceBarrierTransition(upload.destination.Get(), D3D12_RESOURCE_STATE_COPY_DEST, upload.finalState);
+            m_device.DirectCommandContext().ResourceBarrierTransition(upload.destination.Get(), D3D12_RESOURCE_STATE_COPY_DEST, upload.finalState);
         }
     }
 }

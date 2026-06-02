@@ -158,6 +158,7 @@
     <ClInclude Include="include\d3d12\resources\D3D12GpuMesh.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuResourceData.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuTexture.h" />
+    <ClInclude Include="include\d3d12\systems\D3D12DeviceSystem.h" />
     <ClInclude Include="include\d3d12\systems\D3D12ShadowSystem.h" />
     <ClInclude Include="include\d3d12\types\D3D12DrawTypes.h" />
     <ClInclude Include="include\d3d12\types\D3D12PipelineTypes.h" />
@@ -210,6 +211,7 @@
     <ClCompile Include="src\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPass.cpp" />
     <ClCompile Include="src\d3d12\passes\Skybox\D3D12SkyboxPipeline.cpp" />
     <ClCompile Include="src\d3d12\passes\Skybox\D3D12SkyboxRenderPass.cpp" />
+    <ClCompile Include="src\d3d12\systems\D3D12DeviceSystem.cpp" />
     <ClCompile Include="src\d3d12\systems\D3D12ShadowSystem.cpp" />
     <ClCompile Include="src\render\types\FormatUtils.cpp" />
     <ClCompile Include="src\render\ImageLoader.cpp" />
