@@ -10,6 +10,7 @@
 #include "..\..\render\ImageLoader.h"
 
 #include "D3D12DeviceSystem.h"
+#include "..\commands\D3D12CommandContext.h"
 
 namespace efg::d3d12
 {
@@ -26,6 +27,7 @@ namespace efg::d3d12
 		void CreateBuiltIns();
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& materialDesc);
 		Freeside::MeshHandle CreateMesh(const Freeside::MeshData& mesh);
+		void ProcessUploads(D3D12DirectCommandContext* commandContext);
 
 	private:
 		D3D12ResourceFactory m_resourceFactory = {};

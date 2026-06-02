@@ -145,4 +145,21 @@ namespace efg::d3d12
         m_uploadContext.QueueBufferUpload(indexBuffer.resource.Get(), mesh.indices.data(), indexBuffer.sizeInBytes, D3D12_RESOURCE_STATE_INDEX_BUFFER);
         return handle;
     }
+
+    void D3D12ResourceSystem::ProcessUploads(D3D12DirectCommandContext* commandContext)
+    {
+        if (m_uploadContext.queueSize > 0)
+        {
+            UploadTicket uploadTicket = m_uploadContext.FlushUploads();
+            m_uploadContext.copyfence.WaitForQueue(commandContext->GetDirectCommandQueue(), uploadTicket.copyFenceValue);
+            for (const auto& upload : uploadTicket.resources)
+            {
+                commandContext->ResourceBarrierTransition(upload.destination.Get(), D3D12_RESOURCE_STATE_COPY_DEST, upload.finalState);
+            }
+        }
+        if (m_uploadContext.pendingBatchesSize > 0)
+        {
+            m_uploadContext.RetireCompletedUploads();
+        }
+    }
 }

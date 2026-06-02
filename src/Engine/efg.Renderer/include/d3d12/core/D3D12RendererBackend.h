@@ -40,8 +40,6 @@ namespace efg::d3d12
 		void CreateFrameResources();
 		void DestroyFrameResources();
 		FrameContext BeginFrame();
-		void ProcessUploads();
-		void RecordUploadedResourceTransitions(const UploadTicket& ticket);
 		void EndFrame(const FrameContext& ctx);
 		void RecordBackBufferSetup(const FrameContext& ctx);
 

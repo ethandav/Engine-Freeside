@@ -99,7 +99,7 @@ namespace efg::d3d12
 
         ID3D12GraphicsCommandList* commandList = frameCtx.commandContext->GetDirectCommandList();
         PIXBeginEvent(commandList, PIX_COLOR(0, 0, 0), L"Begin Frame");
-        ProcessUploads();
+        m_resources.ProcessUploads(&m_device.DirectCommandContext());
         m_renderQueue.BuildForwardGeometryBatches(scene.renderObjects);
         PIXBeginEvent(PixColors::ShadowMapPass, L"Shadow System Update");
         ShadowMapFrameData shadowMapFrameData = m_shadowSystem.Update(scene);
@@ -130,27 +130,5 @@ namespace efg::d3d12
     Freeside::MaterialHandle D3D12RendererBackend::RegisterMaterial(const Freeside::MaterialDesc& mat)
     {
         return m_resources.RegisterMaterial(mat);
-    }
-
-    void D3D12RendererBackend::ProcessUploads()
-    {
-        if (m_resources.UploadContext().queueSize > 0)
-        {
-            UploadTicket uploadTicket = m_resources.UploadContext().FlushUploads();
-            RecordUploadedResourceTransitions(uploadTicket);
-        }
-        if (m_resources.UploadContext().pendingBatchesSize > 0)
-        {
-            m_resources.UploadContext().RetireCompletedUploads();
-        }
-    }
-
-    void D3D12RendererBackend::RecordUploadedResourceTransitions(const UploadTicket& ticket)
-    {
-        m_resources.UploadContext().copyfence.WaitForQueue(m_device.DirectCommandContext().GetDirectCommandQueue(), ticket.copyFenceValue);
-        for (const auto& upload : ticket.resources)
-        {
-            m_device.DirectCommandContext().ResourceBarrierTransition(upload.destination.Get(), D3D12_RESOURCE_STATE_COPY_DEST, upload.finalState);
-        }
     }
 }
