@@ -20,6 +20,7 @@
 
 #include "..\systems\D3D12DeviceSystem.h"
 #include "..\systems\D3D12ResourceSystem.h"
+#include "..\systems\D3D12PipelineSystem.h"
 
 
 namespace efg::d3d12
@@ -48,11 +49,8 @@ namespace efg::d3d12
 
 		D3D12DeviceSystem m_device = {};
 		D3D12ResourceSystem m_resources = {};
+		D3D12PipelineSystem m_pipeline = {};
 
-		D3D12GraphicsPipelineLibrary m_graphicsPipelineLibrary = {};
-		D3D12ShaderLibrary m_shaderLibrary = {};
-		D3D12PipelineFactory m_pipelineFactory = {};
-		D3D12RootSignatureFactory m_rootSignatureFactory = {};
 		D3D12ShadowSystem m_shadowSystem = {};
 		D3D12RenderServices m_renderServices = {};
 		D3D12RenderResourcesLibraries m_renderResources = {};

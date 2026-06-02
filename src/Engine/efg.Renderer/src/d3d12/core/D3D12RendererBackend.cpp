@@ -8,7 +8,6 @@
 #include "..\..\..\include\d3d12\core\D3D12Pix.h"
 #include "..\..\..\include\d3d12\types\D3D12DrawTypes.h"
 
-#include "..\..\..\include\d3d12\passes\D3D12Pipelines.h"
 
 namespace efg::d3d12
 {
@@ -44,17 +43,13 @@ namespace efg::d3d12
     {
         m_device.Initialize(desc);
         m_resources.Initialize(&m_device);
-
-        m_shaderLibrary.Initialize();
+        m_pipeline.Initialize(m_device.GraphicsContext().GetDevice());
+        
         m_shadowSystem.Initialize(&m_resources.TextureFactory());
-        m_pipelineFactory.Initialize(m_device.GraphicsContext().GetDevice());
-        m_rootSignatureFactory.Initialize(m_device.GraphicsContext().GetDevice());
-        m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::ForwardLitGeometry, ForwardLitGeometryPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
-        m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::ShadowMap, ShadowMapPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
-        m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::Skybox, SkyboxPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
+
         m_renderServices.buffers = &m_resources.BufferFactory();
         m_renderServices.descriptors = &m_device.DescriptorContext();
-        m_renderServices.pipelines = &m_graphicsPipelineLibrary;
+        m_renderServices.pipelines = &m_pipeline.GraphicsPipelineLibrary();
 
         m_renderResources.materials = &m_resources.Materials();
         m_renderResources.meshes = &m_resources.Meshes();
