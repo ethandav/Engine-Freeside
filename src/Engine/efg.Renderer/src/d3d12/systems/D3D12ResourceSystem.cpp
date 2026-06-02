@@ -1,4 +1,4 @@
-#include "D3D12ResourceSystem.h"
+#include "..\..\..\include\d3d12\systems\D3D12ResourceSystem.h"
 #include "..\..\..\include\d3d12\core\D3D12Format.h"
 
 namespace efg::d3d12

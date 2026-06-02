@@ -198,7 +198,7 @@
   <ItemGroup>
     <ClInclude Include="include\d3d12\factories\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\libraries\D3D12MeshLibrary.h" />
-    <ClCompile Include="include\d3d12\systems\D3D12ResourceSystem.cpp" />
+    <ClCompile Include="src\d3d12\systems\D3D12ResourceSystem.cpp" />
     <ClCompile Include="src\d3d12\factories\D3D12DescriptorFactory.cpp" />
     <ClCompile Include="src\d3d12\factories\D3D12PipelineFactory.cpp" />
     <ClCompile Include="src\d3d12\factories\D3D12RootSignatureFactory.cpp" />

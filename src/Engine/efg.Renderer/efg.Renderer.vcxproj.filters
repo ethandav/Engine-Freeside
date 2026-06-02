@@ -320,7 +320,7 @@
     <ClCompile Include="src\d3d12\systems\D3D12DeviceSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\d3d12\systems\D3D12ResourceSystem.cpp">
+    <ClCompile Include="src\d3d12\systems\D3D12ResourceSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
