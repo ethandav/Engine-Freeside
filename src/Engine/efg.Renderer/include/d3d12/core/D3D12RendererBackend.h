@@ -4,9 +4,6 @@
 #include "..\..\render\types\Handles.h"
 #include "..\..\render\types\MeshTypes.h"
 #include "..\..\render\types\FramePacket.h"
-#include "..\frame\D3D12FrameContext.h"
-#include "..\frame\D3D12FrameResouce.h"
-#include "..\frame\D3D12FrameConfig.h"
 #include "..\frame\D3D12RenderTargets.h"
 #include "..\commands\D3D12UploadTypes.h"
 #include "..\libraries\D3D12GraphicsPipelineLibrary.h"
@@ -17,11 +14,10 @@
 #include "..\passes\Skybox\D3D12SkyboxRenderPass.h"
 #include "..\passes\ShadowMap\D3D12ShadowMapRenderPass.h"
 #include "..\systems\D3D12ShadowSystem.h"
-
 #include "..\systems\D3D12DeviceSystem.h"
 #include "..\systems\D3D12ResourceSystem.h"
 #include "..\systems\D3D12PipelineSystem.h"
-
+#include "..\systems\D3D12FrameSystem.h"
 
 namespace efg::d3d12
 {
@@ -35,21 +31,13 @@ namespace efg::d3d12
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) override;
 
 	private:
-		void CreateViewportAndScissor(uint32_t width, uint32_t height);
 		void CreateRenderTargets(uint32_t width, uint32_t height);
 		void InitializeD3D12Systems(const Freeside::RendererDesc& desc);
-		void CreateFrameResources();
-		void DestroyFrameResources();
-		FrameContext BeginFrame();
-		void EndFrame(const FrameContext& ctx);
-		void RecordBackBufferSetup(const FrameContext& ctx);
-
-		D3D12_VIEWPORT m_viewport;
-		D3D12_RECT m_scissorRect;
 
 		D3D12DeviceSystem m_device = {};
 		D3D12ResourceSystem m_resources = {};
 		D3D12PipelineSystem m_pipeline = {};
+		D3D12FrameSystem m_frame = {};
 
 		D3D12ShadowSystem m_shadowSystem = {};
 		D3D12RenderServices m_renderServices = {};

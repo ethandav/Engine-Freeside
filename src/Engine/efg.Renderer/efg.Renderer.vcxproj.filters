@@ -219,6 +219,9 @@
     <ClInclude Include="include\d3d12\systems\D3D12PipelineSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\d3d12\systems\D3D12FrameSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\render\Renderer.cpp">
@@ -324,6 +327,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\d3d12\systems\D3D12PipelineSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\systems\D3D12FrameSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

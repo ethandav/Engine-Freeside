@@ -159,6 +159,7 @@
     <ClInclude Include="include\d3d12\resources\D3D12GpuResourceData.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuTexture.h" />
     <ClInclude Include="include\d3d12\systems\D3D12DeviceSystem.h" />
+    <ClInclude Include="include\d3d12\systems\D3D12FrameSystem.h" />
     <ClInclude Include="include\d3d12\systems\D3D12PipelineSystem.h" />
     <ClInclude Include="include\d3d12\systems\D3D12ResourceSystem.h" />
     <ClInclude Include="include\d3d12\systems\D3D12ShadowSystem.h" />
@@ -199,6 +200,7 @@
   <ItemGroup>
     <ClInclude Include="include\d3d12\factories\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\libraries\D3D12MeshLibrary.h" />
+    <ClCompile Include="src\d3d12\systems\D3D12FrameSystem.cpp" />
     <ClCompile Include="src\d3d12\systems\D3D12PipelineSystem.cpp" />
     <ClCompile Include="src\d3d12\systems\D3D12ResourceSystem.cpp" />
     <ClCompile Include="src\d3d12\factories\D3D12DescriptorFactory.cpp" />
