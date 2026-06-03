@@ -1,10 +1,4 @@
-#include "..\..\..\include\render\types\RendererDesc.h"
-#include "..\..\..\include\render\types\MeshTypes.h"
-#include "..\..\..\include\render\types\Handles.h"
-#include "..\..\..\..\efg.Core\include\shapes\skybox.h"
-
 #include "..\..\..\include\d3d12\core\D3D12RendererBackend.h"
-#include "..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
 #include "..\..\..\include\d3d12\core\D3D12Pix.h"
 
 
