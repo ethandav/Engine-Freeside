@@ -38,7 +38,7 @@ namespace Freeside
         Freeside::Math::Mat4 GetViewProjectionMatrix() const;
 
     private:
-        Freeside::Math::Vec3 m_position = Freeside::Math::Vec3(0.0f, 0.0f, -5.0f);
+        Freeside::Math::Vec3 m_position = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
         Freeside::Math::Vec3 m_target = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
         Freeside::Math::Vec3 m_up = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 

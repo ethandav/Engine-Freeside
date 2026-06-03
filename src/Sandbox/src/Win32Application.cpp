@@ -42,8 +42,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	};
 
 	Freeside::MeshData cubeMeshData = Freeside::Shapes::Cube().mesh;
-	Freeside::MeshData sphereMeshData = Freeside::Shapes::Sphere().mesh;
-	Freeside::MeshData pyramidMeshData = Freeside::Shapes::Pyramid().mesh;
 	Freeside::MeshData planeMeshData = Freeside::Shapes::Plane().mesh;
 	Freeside::MeshData wallMeshData = Freeside::Shapes::Wall().mesh;
 
@@ -57,15 +55,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	sceneManager.Initialize(&renderer);
 
 	Freeside::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
-	Freeside::MeshHandle sphereMeshHandle = renderer.CreateMesh(sphereMeshData);
-	Freeside::MeshHandle pyramidMeshHandle = renderer.CreateMesh(pyramidMeshData);
 	Freeside::MeshHandle planeMeshHandle = renderer.CreateMesh(planeMeshData);
 	Freeside::MeshHandle wallMeshHandle = renderer.CreateMesh(wallMeshData);
-
-	Freeside::MaterialDesc earthMaterial;
-	earthMaterial.baseColor = Freeside::Math::Vec3(0.0f, 0.0f, 1.0f);
-	earthMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
-	Freeside::MaterialHandle earthMaterialHandle = renderer.RegisterMaterial(earthMaterial);
 
 	Freeside::MaterialDesc crateMaterial;
 	crateMaterial.baseColor = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
@@ -74,18 +65,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	crateMaterial.normalTexturePath = L"assets/textures/crate_normals.png";
 	crateMaterial.heightTexturePath = L"assets/textures/crate_height.png";
 	Freeside::MaterialHandle crateMaterialHandle = renderer.RegisterMaterial(crateMaterial);
-
-
-	Freeside::MaterialDesc pyramidMaterial;
-	pyramidMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
-	pyramidMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
-	Freeside::MaterialHandle pyramidMaterialHandle = renderer.RegisterMaterial(pyramidMaterial);
-
-	Freeside::MaterialDesc grassMaterial;
-	grassMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
-	grassMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
-	grassMaterial.uvScale = Freeside::Math::Vec2(10.0f, 10.0f);
-	Freeside::MaterialHandle grassMaterialHandle = renderer.RegisterMaterial(grassMaterial);
 
 	Freeside::MaterialDesc wallMaterial;
 	wallMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
@@ -105,89 +84,13 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	floorMaterial.heightTexturePath = L"assets/textures/floor_height.png";
 	Freeside::MaterialHandle floorMaterialHandle = renderer.RegisterMaterial(floorMaterial);
 
-	std::mt19937 rng{ std::random_device{}() };
-
-	std::uniform_real_distribution<float> posDist(-50.0f, 50.0f);
-	std::uniform_real_distribution<float> heightDist(-50.0f, 50.0f);
-
-	/*
-	for (uint32_t i = 0; i < ObjectCount; ++i)
-	{
-		efg::RenderObject object = {};
-
-		const float x = posDist(rng);
-		const float y = heightDist(rng);
-		const float z = posDist(rng);
-
-		Freeside::Math::Mat4 transform = Freeside::Math::Translation(x, y, z);
-
-		object.mesh = sphereMeshHandle;
-		object.material = earthMaterialHandle;
-		object.world = transform;
-		object.initialTransform = transform;
-		sceneManager.AddRenderObjectToRenderQueue(testSceneHandle, object);
-	}
-	*/
-
-	Freeside::RenderObject box1;
-	Freeside::RenderObject box2;
-	Freeside::RenderObject box3;
-	Freeside::RenderObject pyramid;
-	Freeside::RenderObject sphere;
-	Freeside::RenderObject wallBack;
-	Freeside::RenderObject floor;
-	Freeside::RenderObject wallLeft;
-	Freeside::RenderObject wallRight;
-
-	box1.mesh = cubeMeshHandle;
-	box1.material = crateMaterialHandle;
-	box1.transform.position = Freeside::Math::Vec3(-1.0f, 0.0f, 0.0f);
-	box1.transform.rotation = Freeside::Math::Vec3(0.0f, Freeside::Math::PI * 0.1f, 0.0f);
-	box1.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	box1.world = Freeside::Math::TransformMatrix(box1.transform.position, box1.transform.rotation, box1.transform.scale);
-	box1.initialTransform = box1.world;
-	box1.name = L"Cube";
-
-	box2.mesh = cubeMeshHandle;
-	box2.material = crateMaterialHandle;
-	box2.transform.position = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
-	box2.transform.rotation = Freeside::Math::Vec3(0.0f, Freeside::Math::PI * 0.2f, 0.0f);
-	box2.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	box2.world = Freeside::Math::TransformMatrix(box2.transform.position, box2.transform.rotation, box2.transform.scale);
-	box2.initialTransform = box2.world;
-	box2.name = L"Cube";
-
-	box3.mesh = cubeMeshHandle;
-	box3.material = crateMaterialHandle;
-	box3.transform.position = Freeside::Math::Vec3(1.0f, 1.0f, 0.0f);
-	box3.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
-	box3.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	box3.world = Freeside::Math::TransformMatrix(box3.transform.position, box3.transform.rotation, box3.transform.scale);
-	box3.initialTransform = box3.world;
-	box3.name = L"Cube";
-
-	pyramid.mesh = pyramidMeshHandle;
-	pyramid.material = pyramidMaterialHandle;
-	pyramid.transform.position = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
-	pyramid.transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
-	pyramid.transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	pyramid.world = Freeside::Math::TransformMatrix(pyramid.transform.position, pyramid.transform.rotation, pyramid.transform.scale);
-	pyramid.initialTransform = pyramid.world;
-	pyramid.name = L"Pyramid";
-
-	sphere.mesh = sphereMeshHandle;
-	sphere.material = earthMaterialHandle;
-	sphere.world = Freeside::Math::Translation(0.0f, 1.0f, 0.0f);
-	sphere.initialTransform = Freeside::Math::Translation(0.0f, 1.0f, 0.0f);
-	sphere.name = L"Sphere";
-
-
 
 	Freeside::Scene::Scene testScene(L"Test Scene");
 
 	Freeside::Entity eCamera = testScene.CreateEntity();
 	Freeside::CameraComponent& cCamera = testScene.AddCamera(eCamera);
 	cCamera.camera.SetPosition(Freeside::Math::Vec3(0.0f, 1.0f, -5.0f));
+	cCamera.camera.SetTarget(Freeside::Math::Vec3(0.0f, 1.0f, 0.0f));
 	cCamera.isMainCamera = true;
 
 	Freeside::FirstPersonCameraController cameraController;
