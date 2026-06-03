@@ -1,9 +1,18 @@
 #include "..\..\..\..\include\d3d12\passes\Skybox\D3D12SkyboxRenderPass.h"
 #include "..\..\..\..\include\d3d12\resources\D3D12GpuTexture.h"
 #include "..\..\..\..\include\d3d12\passes\Skybox\D3D12SkyboxRenderPassTypes.h"
+#include "..\..\..\..\..\efg.Core\include\shapes\skybox.h"
+#include "..\..\..\..\include\d3d12\systems\D3D12ResourceSystem.h"
 
 namespace efg::d3d12
 {
+	void D3D12SkyboxRenderPass::Initialize(D3D12ResourceSystem* resources)
+	{
+		Freeside::MeshData skybox = Freeside::Shapes::SkyboxCube().mesh;
+		Freeside::MeshHandle hSkybox = resources->CreateMesh(skybox);
+		m_skyboxMesh = resources->Meshes().Get(hSkybox);
+	}
+
 	void D3D12SkyboxRenderPass::Execute(D3D12PassContext& ctx, const FramePacket& scene)
 	{
 		ID3D12DescriptorHeap* heaps[] =

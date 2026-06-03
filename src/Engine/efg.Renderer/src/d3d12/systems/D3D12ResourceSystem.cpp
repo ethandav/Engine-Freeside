@@ -9,6 +9,7 @@ namespace efg::d3d12
 		m_uploadContext.Initialize(&device->GraphicsContext(), &m_resourceFactory);
 		m_bufferFactory.Initialize(&m_resourceFactory);
 		m_textureFactory.Initialize(device->GraphicsContext().GetDevice(), &m_resourceFactory, &device->DescriptorFactory());
+        CreateBuiltIns();
 	}
 
 	D3D12TextureFactory& D3D12ResourceSystem::TextureFactory()
@@ -88,11 +89,6 @@ namespace efg::d3d12
             GpuTextureCube texture = m_textureFactory.CreateTextureCube(faces[0].width, faces[0].height, DescriptorVisibility::CpuOnlyAndShaderVisible, DXGI_FORMAT_R8G8B8A8_UNORM);
             m_textureLibrary.RegisterDefaultSkyboxTexture(texture);
             m_uploadContext.QueueTextureCubeUpload(texture.resource.Get(), faces, texture.resource.Get()->GetDesc(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-            //Freeside::MeshData skybox = Freeside::Shapes::SkyboxCube().mesh;
-            //Freeside::MeshHandle hSkybox = CreateMesh(skybox);
-
-            //m_skyboxRenderPass.SetSkyboxMesh(m_meshLibrary.Get(hSkybox));
         }
     }
 

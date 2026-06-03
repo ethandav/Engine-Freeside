@@ -6,9 +6,12 @@
 
 namespace efg::d3d12
 {
+    class D3D12ResourceSystem;
+
     class D3D12SkyboxRenderPass
     {
     public:
+        void Initialize(D3D12ResourceSystem* resources);
         void Execute(D3D12PassContext& ctx, const FramePacket& scene);
         void SetSkyboxMesh(GpuMesh mesh);
     private:

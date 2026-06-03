@@ -17,6 +17,7 @@ namespace efg::d3d12
 		m_renderTargets = renderTargets;
 
 		m_shadowSystem.Initialize(&m_resources->TextureFactory());
+		m_skyboxRenderPass.Initialize(m_resources);
 
 		m_renderServices.buffers = &m_resources->BufferFactory();
 		m_renderServices.descriptors = &m_device->DescriptorContext();
