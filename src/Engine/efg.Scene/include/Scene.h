@@ -1,11 +1,10 @@
 #pragma once
+#include "Entity.h"
+#include "..\..\efg.Renderer\include\render\types\FramePacket.h"
+
 #include <cstdint>
 #include <string>
-#include <vector>
-
-#include "..\..\efg.Renderer\include\render\types\RenderObject.h"
-#include "..\..\efg.Renderer\include\render\Lights.h"
-#include "..\..\efg.Renderer\include\render\Camera.h"
+#include <unordered_map>
 
 namespace Freeside
 {
@@ -13,64 +12,42 @@ namespace Freeside
 
 	namespace Scene
 	{
-		struct SceneHandle
-		{
-			uint32_t index = UINT32_MAX;
+        class Scene
+        {
+        public:
+            Scene(std::wstring name);
+            Entity CreateEntity();
+            TransformComponent& AddTransform(Entity entity);
+            MeshRendererComponent& AddMeshRenderer(Entity entity);
+            CameraComponent& AddCamera(Entity entity);
+            DirectionalLightComponent& AddDirectionalLight(Entity entity);
+            PointLightComponent& AddPointLight(Entity entity);
 
-			bool IsValid() const
-			{
-				return index != UINT32_MAX;
-			}
-		};
+            efg::FramePacket BuildFramePacket(uint64_t frameId) const;
 
-		struct SceneRenderObjectHandle
-		{
-			uint32_t index = UINT32_MAX;
+            SceneEnvironment& Environment() { return m_environment; }
 
-			bool IsValid() const
-			{
-				return index != UINT32_MAX;
-			}
-		};
+            std::wstring name;
 
-		struct CameraHandle
-		{
-			uint32_t index = UINT32_MAX;
+        private:
+            void BuildCamera(efg::FramePacket& packet) const;
+            void BuildRenderObjects(efg::FramePacket& packet) const;
+            void BuildDirectionalLights(efg::FramePacket& packet) const;
+            void BuildPointLights(efg::FramePacket& packet) const;
+            void BuildEnvironment(efg::FramePacket& packet) const;
 
-			bool IsValid() const
-			{
-				return index != UINT32_MAX;
-			}
-		};
+        private:
+            EntityId m_nextEntityId = 1;
 
-		class Scene
-		{
-		public:
-			Scene(std::wstring name);
-			SceneRenderObjectHandle AddRenderObjectToRenderQueue(RenderObject object);
-			PointLightHandle AddPointLightToScene(Lights::Point light);
-			DirectionalLightHandle AddDirectionalLightToScene(Lights::Directional light);
-			RenderObject* GetRenderObjectByHandle(SceneRenderObjectHandle handle);
-			Lights::Directional* GetDirectionalLightByHandle(DirectionalLightHandle handle);
-			Lights::Point* GetPointLightByHandle(PointLightHandle handle);
-			void CreateScenefromDefault(float aspectRatio);
-			CameraHandle AddCamera(Camera camera);
-			Camera* GetCameraByHandle(CameraHandle handle);
-			void SetActiveCamera(CameraHandle handle);
-			void Render(Renderer* renderer);
+            std::vector<Entity> m_entities;
 
-			std::wstring name;
-		private:
+            std::unordered_map<EntityId, TransformComponent> m_transforms;
+            std::unordered_map<EntityId, MeshRendererComponent> m_meshRenderers;
+            std::unordered_map<EntityId, CameraComponent> m_cameras;
+            std::unordered_map<EntityId, DirectionalLightComponent> m_directionalLights;
+            std::unordered_map<EntityId, PointLightComponent> m_pointLights;
 
-			uint32_t handle = 0;
-			uint32_t pointLightCount = 0;
-			uint32_t directionalLightCount = 0;
-			uint32_t objectCount = 0;
-			Camera* m_ActiveCamera = {};
-			std::vector<Camera> m_cameras = {};
-			std::vector<Lights::Point> m_pointLights = {};
-			std::vector<Lights::Directional> m_directionalLights = {};
-			std::vector<RenderObject> m_renderObjectQueue = {};
-		};
+            SceneEnvironment m_environment;
+        };
 	}
 }

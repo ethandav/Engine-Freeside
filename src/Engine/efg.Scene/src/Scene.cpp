@@ -1,6 +1,4 @@
 #include "..\include\Scene.h"
-#include "..\..\efg.Renderer\include\render\Renderer.h"
-#include "..\..\efg.Renderer\include\render\types\FramePacket.h"
 
 #include <stdexcept>
 
@@ -12,112 +10,147 @@ namespace Freeside
 		{
 		}
 
-		void Scene::CreateScenefromDefault(float aspectRatio)
+		Entity Scene::CreateEntity()
 		{
-
+			Entity entity = {};
+			entity.id = m_nextEntityId++;
+			m_entities.push_back(entity);
+			return entity;
 		}
 
-		SceneRenderObjectHandle Scene::AddRenderObjectToRenderQueue(RenderObject object)
+		TransformComponent& Scene::AddTransform(Entity entity)
 		{
-			m_renderObjectQueue.push_back(std::move(object));
-			objectCount++;
-			return SceneRenderObjectHandle
-			{
-				static_cast<uint32_t>(m_renderObjectQueue.size() - 1)
-			};
+			TransformComponent comp = {};
+			m_transforms[entity.id] = comp;
+			return m_transforms[entity.id];
 		}
 
-		PointLightHandle Scene::AddPointLightToScene(Lights::Point light)
+		MeshRendererComponent& Scene::AddMeshRenderer(Entity entity)
 		{
-			m_pointLights.push_back(std::move(light));
-			pointLightCount++;
-			return PointLightHandle
-			{
-				static_cast<uint32_t>(m_pointLights.size() - 1)
-			};
+			MeshRendererComponent comp = {};
+			m_meshRenderers[entity.id] = comp;
+			return m_meshRenderers[entity.id];
 		}
 
-		DirectionalLightHandle Scene::AddDirectionalLightToScene(Lights::Directional light)
+		CameraComponent& Scene::AddCamera(Entity entity)
 		{
-			m_directionalLights.push_back(std::move(light));
-			directionalLightCount++;
-			return DirectionalLightHandle
-			{
-				static_cast<uint32_t>(m_directionalLights.size() - 1)
-			};
+			CameraComponent comp = {};
+			m_cameras[entity.id] = comp;
+			return m_cameras[entity.id];
 		}
 
-		RenderObject* Scene::GetRenderObjectByHandle(SceneRenderObjectHandle handle)
+		DirectionalLightComponent& Scene::AddDirectionalLight(Entity entity)
 		{
-			if (!handle.IsValid() || handle.index >= m_renderObjectQueue.size())
+			DirectionalLightComponent comp = {};
+			m_directionalLights[entity.id] = comp;
+			return m_directionalLights[entity.id];
+		}
+
+		PointLightComponent& Scene::AddPointLight(Entity entity)
+		{
+			PointLightComponent comp = {};
+			m_pointLights[entity.id] = comp;
+			return m_pointLights[entity.id];
+		}
+
+		efg::FramePacket Scene::BuildFramePacket(uint64_t frameId) const
+		{
+			efg::FramePacket packet = {};
+			packet.frameId = frameId;
+
+			BuildCamera(packet);
+			BuildRenderObjects(packet);
+			BuildDirectionalLights(packet);
+			BuildPointLights(packet);
+			BuildEnvironment(packet);
+
+			return packet;
+		}
+
+		void Scene::BuildCamera(efg::FramePacket& packet) const
+		{
+			for (const auto& [entityId, cameraComponent] : m_cameras)
 			{
-				throw std::runtime_error("Invalid Object handle.");
+				if (!cameraComponent.isMainCamera)
+					continue;
+
+				//auto transformIt = m_transforms.find(entityId);
+				//if (transformIt == m_transforms.end())
+				//	continue;
+
+				packet.camera = cameraComponent.camera;
+
+				//const TransformComponent& transform = transformIt->second;
+				//packet.camera.SetPosition(transform.position);
+
+				return;
 			}
 
-			return &m_renderObjectQueue[handle.index];
+			// Optional fallback camera if no main camera exists.
+			packet.camera = {};
 		}
 
-		Lights::Directional* Scene::GetDirectionalLightByHandle(DirectionalLightHandle handle)
+		void Scene::BuildRenderObjects(efg::FramePacket& packet) const
 		{
-			if (!handle.IsValid() || handle.index >= m_directionalLights.size())
+			packet.renderObjects.clear();
+
+			for (const auto& [entityId, meshRenderer] : m_meshRenderers)
 			{
-				throw std::runtime_error("Invalid Directional Light handle.");
+				auto transformIt = m_transforms.find(entityId);
+				if (transformIt == m_transforms.end())
+					continue;
+
+				const TransformComponent& transform = transformIt->second;
+
+				Freeside::RenderObject object = {};
+				object.mesh = meshRenderer.mesh;
+				object.material = meshRenderer.material;
+				object.world = transform.GetWorldMatrix();
+
+				packet.renderObjects.push_back(object);
 			}
-
-			return &m_directionalLights[handle.index];
 		}
 
-		Lights::Point* Scene::GetPointLightByHandle(PointLightHandle handle)
+		void Scene::BuildDirectionalLights(efg::FramePacket& packet) const
 		{
-			if (!handle.IsValid() || handle.index >= m_pointLights.size())
+			packet.directionalLights.clear();
+
+			for (const auto& [entityId, light] : m_directionalLights)
 			{
-				throw std::runtime_error("Invalid Point Light handle.");
+				Freeside::Lights::Directional out = {};
+				out.direction = light.direction;
+				out.color = light.color;
+				out.intensity = light.intensity;
+
+				packet.directionalLights.push_back(out);
 			}
-
-			return &m_pointLights[handle.index];
 		}
 
-		CameraHandle Scene::AddCamera(Camera camera)
+		void Scene::BuildPointLights(efg::FramePacket& packet) const
 		{
-			m_cameras.push_back(camera);
-			return CameraHandle
-			{
-				static_cast<uint32_t>(m_cameras.size() - 1)
-			};
-		}
+			packet.pointLights.clear();
 
-		Camera* Scene::GetCameraByHandle(CameraHandle handle)
-		{
-			if (!handle.IsValid() || handle.index >= m_cameras.size())
+			for (const auto& [entityId, light] : m_pointLights)
 			{
-				throw std::runtime_error("Invalid Camera handle.");
+				auto transformIt = m_transforms.find(entityId);
+				if (transformIt == m_transforms.end())
+					continue;
+
+				const TransformComponent& transform = transformIt->second;
+
+				Freeside::Lights::Point out = {};
+				out.position = transform.position;
+				out.color = light.color;
+				out.intensity = light.intensity;
+				out.radius = light.radius;
+
+				packet.pointLights.push_back(out);
 			}
-
-			return &m_cameras[handle.index];
 		}
 
-		void Scene::SetActiveCamera(CameraHandle handle)
+		void Scene::BuildEnvironment(efg::FramePacket& packet) const
 		{
-			if (!handle.IsValid() || handle.index >= m_cameras.size())
-			{
-				throw std::runtime_error("Invalid Camera handle.");
-			}
-			m_ActiveCamera = &m_cameras[handle.index];
-		}
-
-		void Scene::Render(Renderer* renderer)
-		{
-			efg::FramePacket renderData = {};
-			renderData.renderObjects.reserve(objectCount);
-			renderData.pointLights.reserve(pointLightCount);
-			renderData.directionalLights.reserve(directionalLightCount);
-
-			renderData.camera = *m_ActiveCamera;
-			renderData.directionalLights = m_directionalLights;
-			renderData.renderObjects = m_renderObjectQueue;
-			renderData.pointLights = m_pointLights;
-
-			renderer->SubmitFrame(std::move(renderData));
+			packet.skyboxTexture = m_environment.skyboxTexture;
 		}
 	}
 }
