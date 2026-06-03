@@ -43,17 +43,12 @@ namespace efg::d3d12
 
 	void D3D12FrameSystem::EndFrame(const FrameContext& ctx)
 	{
-		auto& commandContext = m_device->DirectCommandContext();
-		auto& swapChain = m_device->SwapChain();
-		auto& fence = m_device->DirectFence();
+		D3D12DirectCommandContext& commandContext = m_device->DirectCommandContext();
+		D3D12SwapChain& swapChain = m_device->SwapChain();
+		D3D12QueueFence& fence = m_device->DirectFence();
 
 		ID3D12CommandQueue* queue = commandContext.GetDirectCommandQueue();
-
-		commandContext.ResourceBarrierTransition(
-			swapChain.GetCurrentBackBuffer(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_RESOURCE_STATE_PRESENT);
-
+		commandContext.ResourceBarrierTransition(swapChain.GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 		commandContext.EndRecording();
 		commandContext.ExecuteDirect();
 
