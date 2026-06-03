@@ -140,9 +140,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\AssetManager.h" />
+    <ClInclude Include="include\ImportedAssetTypes.h" />
+    <ClInclude Include="include\ModelImporter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AssetManager.cpp" />
+    <ClCompile Include="src\ModelImporter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

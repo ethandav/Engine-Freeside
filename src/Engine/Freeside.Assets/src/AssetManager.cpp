@@ -16,4 +16,9 @@ namespace Freeside::Assets
 	{
 		return m_renderer->RegisterMaterial(desc);
 	}
+
+	ImportedModel AssetManager::ImportModel(const std::filesystem::path& path)
+	{
+		return m_modelImporter.ImportModel(path);
+	}
 }

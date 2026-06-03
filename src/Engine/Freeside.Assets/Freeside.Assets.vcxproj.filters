@@ -18,9 +18,18 @@
     <ClInclude Include="include\AssetManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\ModelImporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImportedAssetTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AssetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModelImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

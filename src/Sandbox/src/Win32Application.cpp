@@ -90,6 +90,20 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	Freeside::Scene::Scene testScene(L"Test Scene");
 
+	Freeside::Assets::ImportedModel model = assets.ImportModel("assets\\models\\DamagedHelmet.glb");
+	for (const Freeside::Assets::ImportedPrimitive& prim : model.primitives)
+	{
+		Freeside::MeshHandle mesh = assets.CreateMesh(prim.meshData);
+		Freeside::Entity eMesh = testScene.CreateEntity();
+		Freeside::MeshRendererComponent& cMeshRenderer = testScene.AddMeshRenderer(eMesh);
+		Freeside::TransformComponent& cMeshTransform = testScene.AddTransform(eMesh);
+		cMeshRenderer.material = floorMaterialHandle;
+		cMeshRenderer.mesh = mesh;
+		cMeshTransform.position = Freeside::Math::Vec3(0.0f, 1.0f, -1.0f);
+		cMeshTransform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+		cMeshTransform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	}
+
 	Freeside::Entity eCamera = testScene.CreateEntity();
 	Freeside::CameraComponent& cCamera = testScene.AddCamera(eCamera);
 	cCamera.camera.SetPosition(Freeside::Math::Vec3(0.0f, 1.0f, -5.0f));
@@ -132,7 +146,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::PointLightComponent& cPointLight = testScene.AddPointLight(ePointLight);
 	Freeside::TransformComponent& cPointLightTransform = testScene.AddTransform(ePointLight);
 	cPointLight.intensity = 1.0f;
-	cPointLightTransform.position = Freeside::Math::Vec3(-1.0f, 0.5f, -1.0f);
+	cPointLightTransform.position = Freeside::Math::Vec3(-1.0f, 0.5f, -2.0f);
 
 	Freeside::Entity eWall1 = testScene.CreateEntity();
 	Freeside::MeshRendererComponent& cWall1Renderer = testScene.AddMeshRenderer(eWall1);
