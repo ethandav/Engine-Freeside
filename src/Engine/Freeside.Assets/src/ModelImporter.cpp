@@ -197,10 +197,7 @@ namespace Freeside::Assets
 
                 if (!hasTangents)
                 {
-                    Freeside::Math::GenerateTangents(
-                        outPrimitive.meshData.vertices,
-                        outPrimitive.meshData.indices
-                    );
+                    Freeside::Math::GenerateTangents(outPrimitive.meshData.vertices, outPrimitive.meshData.indices);
                 }
 
                 outModel.primitives.push_back(std::move(outPrimitive));

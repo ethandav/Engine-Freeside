@@ -148,6 +148,12 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cPointLight.intensity = 1.0f;
 	cPointLightTransform.position = Freeside::Math::Vec3(-1.0f, 0.5f, -2.0f);
 
+	Freeside::Entity ePointLight2 = testScene.CreateEntity();
+	Freeside::PointLightComponent& cPointLight2 = testScene.AddPointLight(ePointLight2);
+	Freeside::TransformComponent& cPointLightTransform2 = testScene.AddTransform(ePointLight2);
+	cPointLight2.intensity = 1.0f;
+	cPointLightTransform2.position = Freeside::Math::Vec3(1.0f, 0.5f, -2.0f);
+
 	Freeside::Entity eWall1 = testScene.CreateEntity();
 	Freeside::MeshRendererComponent& cWall1Renderer = testScene.AddMeshRenderer(eWall1);
 	Freeside::TransformComponent& cWall1Transform = testScene.AddTransform(eWall1);
