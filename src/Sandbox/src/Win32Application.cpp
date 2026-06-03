@@ -1,6 +1,6 @@
 #include "..\include\Win32Application.h"
-#include "..\..\Engine\efg.Core\freeside.h"
-#include "..\..\Engine\efg.Core\include\controllers\FirstPersonCameraController.h"
+#include "..\..\Engine\Freeside.Core\freeside.h"
+#include "..\..\Engine\Freeside.Core\include\controllers\FirstPersonCameraController.h"
 
 #include <random>
 

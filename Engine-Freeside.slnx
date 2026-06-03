@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="src/Engine/Freeside.Core/Freeside.Core.vcxproj" Id="1f3ee634-8f6a-4118-964c-ff915ca23935" />
+  <Project Path="src/Engine/Freeside.Platform/Freeside.Platform.vcxproj" Id="55f8282a-d0d6-48fc-bb2a-089bd1aec460" />
+  <Project Path="src/Engine/efg/efg.vcxproj" Id="a6d3881d-a23c-4ab4-b93f-d9fc5312cd53" />
+  <Project Path="src/Engine/Freeside.World/Freeside.World.vcxproj" Id="80132a87-973a-4f0d-aa73-38b46693166c" />
+  <Project Path="src/Sandbox/Sandbox.vcxproj" Id="fd8d2c59-a949-43ed-b361-6aac70f5b5b3" />
+</Solution>
