@@ -1,8 +1,8 @@
 #include "..\include\Win32Application.h"
-#include "..\..\Engine\efg.Renderer\efg.h"
+#include "..\..\Engine\efg.Core\freeside.h"
+#include "..\..\Engine\efg.Core\include\controllers\FirstPersonCameraController.h"
 
 #include <random>
-#include "../../Engine/efg.Core/include/controllers/FirstPersonCameraController.h"
 
 constexpr uint32_t ObjectCount = 10000;
 

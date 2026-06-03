@@ -75,9 +75,6 @@
     <ClInclude Include="include\d3d12\libraries\D3D12MaterialLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="efg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\d3d12\factories\D3D12ResourceFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>

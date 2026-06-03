@@ -1,7 +1,6 @@
 #include "..\..\..\include\d3d12\core\D3D12RendererBackend.h"
 #include "..\..\..\include\d3d12\core\D3D12Pix.h"
 
-
 namespace efg::d3d12
 {
     void D3D12RendererBackend::Initialize(const Freeside::RendererDesc& desc)

@@ -129,7 +129,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="efg.h" />
     <ClInclude Include="include\d3d12\commands\D3D12UploadTypes.h" />
     <ClInclude Include="include\d3d12\core\D3D12Format.h" />
     <ClInclude Include="include\d3d12\descriptors\D3D12DescriptorAllocation.h" />

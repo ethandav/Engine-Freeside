@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="freeside.h" />
     <ClInclude Include="include\controllers\FirstPersonCameraController.h" />
     <ClInclude Include="include\math\Mat4.h" />
     <ClInclude Include="include\math\math.h" />

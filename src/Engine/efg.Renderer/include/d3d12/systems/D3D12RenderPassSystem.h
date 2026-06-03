@@ -9,7 +9,6 @@
 
 namespace efg::d3d12
 {
-
     class D3D12DeviceSystem;
     class D3D12ResourceSystem;
     class D3D12PipelineSystem;
