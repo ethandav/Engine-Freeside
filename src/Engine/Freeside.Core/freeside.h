@@ -11,3 +11,5 @@
 #include "..\..\Engine\Freeside.World\include\SceneManager.h"
 #include "..\..\Engine\efg\include\render\types\RenderObject.h"
 #include "..\..\Engine\efg\include\render\Lights.h"
+
+#include "..\Freeside.Assets\include\AssetManager.h"

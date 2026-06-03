@@ -36,7 +36,7 @@ namespace efg::d3d12
         m_frame.EndFrame(frameCtx);
     }
 
-    Freeside::MeshHandle D3D12RendererBackend::CreateMesh(const Freeside::MeshData& mesh)
+    Freeside::MeshHandle D3D12RendererBackend::CreateMesh(const Freeside::MeshDesc& mesh)
     {
         return m_resources.CreateMesh(mesh);
     }

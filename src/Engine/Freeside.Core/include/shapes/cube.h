@@ -22,12 +22,12 @@ namespace Freeside
             uint32_t vertexCount = 24;
             uint32_t indexCount = 36;
 
-            MeshData mesh;
+            MeshDesc mesh;
 
         private:
-            static MeshData CreateMesh()
+            static MeshDesc CreateMesh()
             {
-                MeshData mesh =
+                MeshDesc mesh =
                 {
                     {
                         {Math::Vec3(-0.5f, 0.5f, -0.5f),Math::Vec3(0.0f, 1.0f, 0.0f),Math::Vec2(0.0f, 0.0f)},//Top

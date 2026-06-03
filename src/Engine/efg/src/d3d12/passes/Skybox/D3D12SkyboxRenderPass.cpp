@@ -8,7 +8,7 @@ namespace efg::d3d12
 {
 	void D3D12SkyboxRenderPass::Initialize(D3D12ResourceSystem* resources)
 	{
-		Freeside::MeshData skybox = Freeside::Shapes::SkyboxCube().mesh;
+		Freeside::MeshDesc skybox = Freeside::Shapes::SkyboxCube().mesh;
 		Freeside::MeshHandle hSkybox = resources->CreateMesh(skybox);
 		m_skyboxMesh = resources->Meshes().Get(hSkybox);
 	}

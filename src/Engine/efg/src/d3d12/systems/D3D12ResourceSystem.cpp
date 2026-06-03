@@ -130,7 +130,7 @@ namespace efg::d3d12
         return handle;
     }
 
-    Freeside::MeshHandle D3D12ResourceSystem::CreateMesh(const Freeside::MeshData& mesh)
+    Freeside::MeshHandle D3D12ResourceSystem::CreateMesh(const Freeside::MeshDesc& mesh)
     {
         Freeside::MeshHandle handle = m_meshLibrary.RegisterMesh(mesh);
         GpuBuffer vertexBuffer = m_bufferFactory.CreateStaticBuffer((mesh.vertices.size() * sizeof(Freeside::Vertex)));

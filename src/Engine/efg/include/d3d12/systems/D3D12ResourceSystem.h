@@ -26,7 +26,7 @@ namespace efg::d3d12
 		D3D12UploadContext& UploadContext();
 		void CreateBuiltIns();
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& materialDesc);
-		Freeside::MeshHandle CreateMesh(const Freeside::MeshData& mesh);
+		Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh);
 		void ProcessUploads(D3D12DirectCommandContext* commandContext);
 
 	private:

@@ -21,7 +21,7 @@ namespace efg::d3d12
 		void Initialize(const Freeside::RendererDesc& desc) override;
 		void Shutdown() override;
 		void Render(const FramePacket& scene) override;
-		Freeside::MeshHandle CreateMesh(const Freeside::MeshData& mesh) override;
+		Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh) override;
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) override;
 
 	private:

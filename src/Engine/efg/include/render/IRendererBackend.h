@@ -15,7 +15,7 @@ namespace efg::d3d12
         virtual void Initialize(const Freeside::RendererDesc& desc) = 0;
         virtual void Shutdown() = 0;
         virtual void Render(const FramePacket& sceneRenderData) = 0;
-        virtual Freeside::MeshHandle CreateMesh(const Freeside::MeshData& mesh) = 0;
+        virtual Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh) = 0;
         virtual Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) = 0;
 
     };

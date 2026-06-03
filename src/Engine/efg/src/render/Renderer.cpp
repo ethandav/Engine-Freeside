@@ -49,7 +49,7 @@ namespace Freeside
         m_renderThread->Submit(std::move(sceneRenderData));
     }
 
-    MeshHandle Renderer::CreateMesh(const MeshData& mesh)
+    MeshHandle Renderer::CreateMesh(const MeshDesc& mesh)
     {
         return m_backend->CreateMesh(mesh);
     }

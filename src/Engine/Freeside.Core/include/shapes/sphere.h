@@ -91,7 +91,7 @@ namespace Freeside
             uint32_t vertexCount = 24;
             uint32_t indexCount = 36;
             float diameter = 1.0f;
-            MeshData mesh;
+            MeshDesc mesh;
         };
     }
 }

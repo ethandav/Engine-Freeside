@@ -28,7 +28,7 @@ namespace Freeside
 		float GetRendererAspectRatio();
 		void Shutdown();
 		void SubmitFrame(efg::FramePacket sceneRenderData);
-		MeshHandle CreateMesh(const MeshData& mesh);
+		MeshHandle CreateMesh(const MeshDesc& mesh);
 		MaterialHandle RegisterMaterial(const MaterialDesc& mat);
 	private:
 		std::unique_ptr<efg::d3d12::IRendererBackend> m_backend;

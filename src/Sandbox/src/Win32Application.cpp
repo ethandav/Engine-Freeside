@@ -35,15 +35,17 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Timer timer;
 	Freeside::Renderer renderer;
 	Freeside::Scene::SceneManager sceneManager;
+	Freeside::Assets::AssetManager assets;
+
 	Freeside::RendererDesc rendererDesc = {
 		nullptr,
 		1920,
 		1080
 	};
 
-	Freeside::MeshData cubeMeshData = Freeside::Shapes::Cube().mesh;
-	Freeside::MeshData planeMeshData = Freeside::Shapes::Plane().mesh;
-	Freeside::MeshData wallMeshData = Freeside::Shapes::Wall().mesh;
+	Freeside::MeshDesc cubeMeshData = Freeside::Shapes::Cube().mesh;
+	Freeside::MeshDesc planeMeshData = Freeside::Shapes::Plane().mesh;
+	Freeside::MeshDesc wallMeshData = Freeside::Shapes::Wall().mesh;
 
 	window.Create(hInstance, rendererDesc.width, rendererDesc.height, L"Ethan's Framework (for) Graphics");
 	window.Show(nCmdShow);
@@ -53,10 +55,11 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	renderer.Initialize(rendererDesc);
 	float aspectRatio = renderer.GetRendererAspectRatio();
 	sceneManager.Initialize(&renderer);
+	assets.Initialize(&renderer);
 
-	Freeside::MeshHandle cubeMeshHandle = renderer.CreateMesh(cubeMeshData);
-	Freeside::MeshHandle planeMeshHandle = renderer.CreateMesh(planeMeshData);
-	Freeside::MeshHandle wallMeshHandle = renderer.CreateMesh(wallMeshData);
+	Freeside::MeshHandle cubeMeshHandle = assets.CreateMesh(cubeMeshData);
+	Freeside::MeshHandle planeMeshHandle = assets.CreateMesh(planeMeshData);
+	Freeside::MeshHandle wallMeshHandle = assets.CreateMesh(wallMeshData);
 
 	Freeside::MaterialDesc crateMaterial;
 	crateMaterial.baseColor = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
@@ -64,7 +67,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	crateMaterial.baseColorTexturePath = L"assets/textures/crate.png";
 	crateMaterial.normalTexturePath = L"assets/textures/crate_normals.png";
 	crateMaterial.heightTexturePath = L"assets/textures/crate_height.png";
-	Freeside::MaterialHandle crateMaterialHandle = renderer.RegisterMaterial(crateMaterial);
+	Freeside::MaterialHandle crateMaterialHandle = assets.CreateMaterial(crateMaterial);
 
 	Freeside::MaterialDesc wallMaterial;
 	wallMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
@@ -73,7 +76,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	wallMaterial.baseColorTexturePath = L"assets/textures/brick.png";
 	wallMaterial.normalTexturePath = L"assets/textures/brick_normals.png";
 	wallMaterial.heightTexturePath = L"assets/textures/brick_height.png";
-	Freeside::MaterialHandle wallMaterialHandle = renderer.RegisterMaterial(wallMaterial);
+	Freeside::MaterialHandle wallMaterialHandle = assets.CreateMaterial(wallMaterial);
 
 	Freeside::MaterialDesc floorMaterial;
 	floorMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
@@ -82,7 +85,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	floorMaterial.baseColorTexturePath = L"assets/textures/floor.png";
 	floorMaterial.normalTexturePath = L"assets/textures/floor_normals.png";
 	floorMaterial.heightTexturePath = L"assets/textures/floor_height.png";
-	Freeside::MaterialHandle floorMaterialHandle = renderer.RegisterMaterial(floorMaterial);
+	Freeside::MaterialHandle floorMaterialHandle = assets.CreateMaterial(floorMaterial);
 
 
 	Freeside::Scene::Scene testScene(L"Test Scene");

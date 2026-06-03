@@ -15,7 +15,7 @@ namespace Freeside
             uint32_t vertexCount = 16;
             uint32_t indexCount = 18;
 
-            MeshData mesh =
+            MeshDesc mesh =
             {
                 std::vector<Vertex>(vertexCount) = {
                     {Math::Vec3(0.5f, -0.5f, -0.5f) ,Math::Vec3(0.0f, 0.0f, -1.0f), Math::Vec2(1.0f, 0.0f)},

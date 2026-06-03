@@ -15,7 +15,7 @@ namespace Freeside
         Freeside::Math::Vec3 tangent;
     };
 
-    struct MeshData
+    struct MeshDesc
     {
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;

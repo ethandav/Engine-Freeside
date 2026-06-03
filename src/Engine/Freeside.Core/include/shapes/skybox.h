@@ -20,12 +20,12 @@ namespace Freeside
             uint32_t vertexCount = 8;
             uint32_t indexCount = 36;
 
-            MeshData mesh;
+            MeshDesc mesh;
 
         private:
-            static MeshData CreateMesh()
+            static MeshDesc CreateMesh()
             {
-                MeshData mesh = {};
+                MeshDesc mesh = {};
 
                 mesh.vertices =
                 {

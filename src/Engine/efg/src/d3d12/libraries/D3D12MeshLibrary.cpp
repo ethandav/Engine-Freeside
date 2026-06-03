@@ -4,7 +4,7 @@
 
 namespace efg::d3d12
 {
-    Freeside::MeshHandle D3D12MeshLibrary::RegisterMesh(const Freeside::MeshData& meshData)
+    Freeside::MeshHandle D3D12MeshLibrary::RegisterMesh(const Freeside::MeshDesc& meshData)
     {
         if (meshData.vertices.empty())
         {
