@@ -1,5 +1,5 @@
 #include "..\..\..\include\d3d12\presentation\D3D12SwapChain.h"
-#include "..\..\..\include\d3d12\core\D3D12Context.h"
+#include "..\..\..\include\d3d12\core\D3D12DeviceContext.h"
 #include "..\..\..\include\d3d12\commands\D3D12CommandContext.h"
 #include "..\..\..\include\d3d12\factories\D3D12DescriptorFactory.h"
 #include "..\..\..\include\d3d12\core\D3D12Error.h"

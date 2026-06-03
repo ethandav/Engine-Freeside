@@ -226,7 +226,6 @@
     <ClCompile Include="src\d3d12\commands\D3D12CommandContext.cpp" />
     <ClCompile Include="src\d3d12\descriptors\D3D12DescriptorContext.cpp" />
     <ClCompile Include="src\d3d12\core\D3D12DeviceContext.cpp" />
-    <ClCompile Include="src\d3d12\frame\D3D12Frame.cpp" />
     <ClCompile Include="src\d3d12\commands\D3D12QueueFence.cpp" />
     <ClCompile Include="src\d3d12\libraries\D3D12GraphicsPipelineLibrary.cpp" />
     <ClCompile Include="src\d3d12\libraries\D3D12MeshLibrary.cpp" />

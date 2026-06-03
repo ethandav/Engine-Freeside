@@ -236,9 +236,6 @@
     <ClCompile Include="src\d3d12\descriptors\D3D12DescriptorContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\d3d12\frame\D3D12Frame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\d3d12\libraries\D3D12GraphicsPipelineLibrary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
