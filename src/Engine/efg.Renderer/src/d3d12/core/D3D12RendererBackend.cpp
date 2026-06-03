@@ -21,16 +21,7 @@ namespace efg::d3d12
         m_resources.Initialize(&m_device);
         m_pipeline.Initialize(m_device.GraphicsContext().GetDevice());
         m_frame.Initialize(&m_device, &m_resources, desc.width, desc.height);
-        
-        m_shadowSystem.Initialize(&m_resources.TextureFactory());
-
-        m_renderServices.buffers = &m_resources.BufferFactory();
-        m_renderServices.descriptors = &m_device.DescriptorContext();
-        m_renderServices.pipelines = &m_pipeline.GraphicsPipelineLibrary();
-
-        m_renderResources.materials = &m_resources.Materials();
-        m_renderResources.meshes = &m_resources.Meshes();
-        m_renderResources.textures = &m_resources.MaterialTextures();
+        m_passes.Initialize(&m_device, &m_resources, &m_pipeline, &m_frame, &m_renderTargets);
     }
 
     void D3D12RendererBackend::Shutdown()
@@ -42,35 +33,7 @@ namespace efg::d3d12
     void D3D12RendererBackend::Render(const FramePacket& scene)
     {
         FrameContext frameCtx = m_frame.BeginFrame(&m_renderQueue);
-
-        D3D12PassContext passCtx = {};
-        passCtx.frameContext = &frameCtx;
-        passCtx.services = &m_renderServices;
-        passCtx.libraries = &m_renderResources;
-        passCtx.renderQueue = &m_renderQueue;
-
-        ID3D12GraphicsCommandList* commandList = frameCtx.commandContext->GetDirectCommandList();
-        PIXBeginEvent(commandList, PIX_COLOR(0, 0, 0), L"Begin Frame");
-        m_resources.ProcessUploads(&m_device.DirectCommandContext());
-        m_renderQueue.BuildForwardGeometryBatches(scene.renderObjects);
-        PIXBeginEvent(PixColors::ShadowMapPass, L"Shadow System Update");
-        ShadowMapFrameData shadowMapFrameData = m_shadowSystem.Update(scene);
-        PIXEndEvent();
-        PIXBeginEvent(commandList, PixColors::ShadowMapPass, L"Shadow Map Pass");
-        m_shadowMapRenderPass.Execute(passCtx, scene, shadowMapFrameData);
-        PIXEndEvent(commandList);
-        m_device.DirectCommandContext().FlushPendingBarrierTransitions();
-        PIXBeginEvent(commandList, PixColors::BackbufferSetup, L"BackBuffer Setup");
-        m_frame.RecordBackBufferSetup(frameCtx, m_renderTargets);
-        PIXEndEvent(commandList);
-        PIXBeginEvent(PixColors::ShadowMapPass, L"Skybox Render Pass");
-        m_skyboxRenderPass.Execute(passCtx, scene);
-        PIXEndEvent();
-        PIXBeginEvent(commandList, PixColors::ForwardLitPass, L"Forward Lit Geometry Pass");
-        m_forwarLitGeometryRenderPass.Execute(passCtx, scene, shadowMapFrameData);
-        PIXEndEvent(commandList);
-        PIXEndEvent(commandList);
-        m_device.DirectCommandContext().FlushPendingBarrierTransitions();
+        m_passes.Execute(scene, frameCtx, m_renderQueue);
         m_frame.EndFrame(frameCtx);
     }
 

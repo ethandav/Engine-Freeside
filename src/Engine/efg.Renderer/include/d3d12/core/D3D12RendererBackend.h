@@ -6,14 +6,12 @@
 #include "..\..\render\types\FramePacket.h"
 #include "..\..\render\types\RendererDesc.h"
 #include "..\frame\D3D12RenderTargets.h"
-#include "..\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h"
-#include "..\passes\Skybox\D3D12SkyboxRenderPass.h"
-#include "..\passes\ShadowMap\D3D12ShadowMapRenderPass.h"
 #include "..\systems\D3D12ShadowSystem.h"
 #include "..\systems\D3D12DeviceSystem.h"
 #include "..\systems\D3D12ResourceSystem.h"
 #include "..\systems\D3D12PipelineSystem.h"
 #include "..\systems\D3D12FrameSystem.h"
+#include "..\systems\D3D12RenderPassSystem.h"
 
 namespace efg::d3d12
 {
@@ -34,19 +32,8 @@ namespace efg::d3d12
 		D3D12ResourceSystem m_resources = {};
 		D3D12PipelineSystem m_pipeline = {};
 		D3D12FrameSystem m_frame = {};
-
-		D3D12ShadowSystem m_shadowSystem = {};
-		D3D12RenderServices m_renderServices = {};
-		D3D12RenderResourcesLibraries m_renderResources = {};
-
+		D3D12RenderPassSystem m_passes = {};
 		RenderTargets m_renderTargets = {};
-
-		D3D12ForwardLitGeometryRenderPass m_forwarLitGeometryRenderPass = {};
-		D3D12ShadowMapRenderPass m_shadowMapRenderPass = {};
-		D3D12SkyboxRenderPass m_skyboxRenderPass = {};
-
-		std::array<FrameResource, NumFramesInFlight> m_frameResources = {};
-
 		RenderQueue m_renderQueue = {};
 	};
 }

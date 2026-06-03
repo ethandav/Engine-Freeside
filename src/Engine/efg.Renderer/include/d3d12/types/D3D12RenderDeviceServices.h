@@ -6,7 +6,7 @@
 
 namespace efg::d3d12
 {
-    struct D3D12RenderServices
+    struct D3D12RenderDeviceServices
     {
         D3D12GraphicsPipelineLibrary* pipelines = nullptr;
         D3D12DescriptorContext* descriptors = nullptr;

@@ -5,6 +5,7 @@
 namespace efg::d3d12::PixColors
 {
     inline const std::uint64_t ShadowMapPass = PIX_COLOR(155, 95, 215);
+    inline const std::uint64_t SkyboxPass = PIX_COLOR(155, 95, 215);
     inline const std::uint64_t ForwardLitPass = PIX_COLOR(30, 255, 70);
     inline const std::uint64_t BackbufferSetup = PIX_COLOR(25, 95, 255);
 }

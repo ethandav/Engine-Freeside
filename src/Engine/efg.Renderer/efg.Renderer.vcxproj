@@ -144,8 +144,8 @@
     <ClInclude Include="include\d3d12\frame\D3D12PassContext.h" />
     <ClInclude Include="include\d3d12\libraries\D3D12MaterialTextureLibrary.h" />
     <ClInclude Include="include\d3d12\frame\D3D12RenderTargets.h" />
-    <ClInclude Include="include\d3d12\passes\D3D12BackBufferSetup.h" />
     <ClInclude Include="include\d3d12\passes\D3D12Pipelines.h" />
+    <ClInclude Include="include\d3d12\passes\D3D12RenderPasses.h" />
     <ClInclude Include="include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryRenderPass.h" />
     <ClInclude Include="include\d3d12\factories\D3D12TextrureFactory.h" />
     <ClInclude Include="include\d3d12\passes\ForwardLitGeometry\D3D12ForwardLitGeometryTypes.h" />
@@ -161,6 +161,7 @@
     <ClInclude Include="include\d3d12\systems\D3D12DeviceSystem.h" />
     <ClInclude Include="include\d3d12\systems\D3D12FrameSystem.h" />
     <ClInclude Include="include\d3d12\systems\D3D12PipelineSystem.h" />
+    <ClInclude Include="include\d3d12\systems\D3D12RenderPassSystem.h" />
     <ClInclude Include="include\d3d12\systems\D3D12ResourceSystem.h" />
     <ClInclude Include="include\d3d12\systems\D3D12ShadowSystem.h" />
     <ClInclude Include="include\d3d12\types\D3D12DrawTypes.h" />
@@ -202,6 +203,7 @@
     <ClInclude Include="include\d3d12\libraries\D3D12MeshLibrary.h" />
     <ClCompile Include="src\d3d12\systems\D3D12FrameSystem.cpp" />
     <ClCompile Include="src\d3d12\systems\D3D12PipelineSystem.cpp" />
+    <ClCompile Include="src\d3d12\systems\D3D12RenderPassSystem.cpp" />
     <ClCompile Include="src\d3d12\systems\D3D12ResourceSystem.cpp" />
     <ClCompile Include="src\d3d12\factories\D3D12DescriptorFactory.cpp" />
     <ClCompile Include="src\d3d12\factories\D3D12PipelineFactory.cpp" />

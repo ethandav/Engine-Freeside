@@ -6,7 +6,7 @@
 
 namespace efg::d3d12
 {
-    struct D3D12RenderResourcesLibraries
+    struct D3D12RenderResourceLibraries
     {
         D3D12MeshLibrary* meshes = nullptr;
         D3D12MaterialLibrary* materials = nullptr;

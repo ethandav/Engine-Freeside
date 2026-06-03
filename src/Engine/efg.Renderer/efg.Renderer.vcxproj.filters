@@ -87,9 +87,6 @@
     <ClInclude Include="include\d3d12\frame\D3D12FrameResouce.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\d3d12\passes\D3D12BackBufferSetup.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\render\RenderQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -222,6 +219,12 @@
     <ClInclude Include="include\d3d12\systems\D3D12FrameSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\d3d12\systems\D3D12RenderPassSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\passes\D3D12RenderPasses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\render\Renderer.cpp">
@@ -330,6 +333,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\d3d12\systems\D3D12FrameSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\systems\D3D12RenderPassSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
