@@ -173,7 +173,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::Entity ePointLight2 = testScene.CreateEntity();
 	Freeside::PointLightComponent& cPointLight2 = testScene.AddPointLight(ePointLight2);
 	Freeside::TransformComponent& cPointLightTransform2 = testScene.AddTransform(ePointLight2);
-	cPointLight2.intensity = 3.0f;
+	cPointLight2.intensity = 2.0f;
 	cPointLight2.radius = 10.0f;
 	cPointLightTransform2.position = Freeside::Math::Vec3(0.0f, 0.5f, -3.0f);
 

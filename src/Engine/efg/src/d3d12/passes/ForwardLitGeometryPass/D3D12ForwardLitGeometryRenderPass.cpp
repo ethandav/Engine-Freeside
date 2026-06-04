@@ -134,6 +134,22 @@ namespace efg::d3d12
                 ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, metalDst, metallicTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
             }
 
+            if ((material.constants.materialFlags & Freeside::MaterialFlags::MaterialFlag_HasOcclusionTexture) != 0)
+            {
+                const GpuTexture2D mocclusionTexture = ctx.libraries->textures->GetTexture2DByHandle(material.occlusionTexture);
+                D3D12_CPU_DESCRIPTOR_HANDLE occDst = textureTable.cpuStart;
+                occDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize() * 3;
+                ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, occDst, mocclusionTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            }
+
+            if ((material.constants.materialFlags & Freeside::MaterialFlags::MaterialFlag_HasEmissiveTexture) != 0)
+            {
+                const GpuTexture2D emissiveTexture = ctx.libraries->textures->GetTexture2DByHandle(material.emissiveTexture);
+                D3D12_CPU_DESCRIPTOR_HANDLE emmDst = textureTable.cpuStart;
+                emmDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize() * 4;
+                ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, emmDst, emissiveTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            }
+
             if ((material.constants.materialFlags & Freeside::MaterialFlags::MaterialFlag_HasHeightTexture) != 0)
             {
                 D3D12_CPU_DESCRIPTOR_HANDLE heightDst = textureTable.cpuStart;

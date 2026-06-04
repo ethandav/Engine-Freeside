@@ -334,13 +334,15 @@ float4 PSMain(VSOutput input) : SV_TARGET
     {
         float3 T, B, N;
         BuildTBN(input.normalWS, input.tangentWS, T, B, N);
+
         float3x3 TBN = float3x3(T, B, N);
         float3 viewDirTS = mul(viewDir, transpose(TBN));
+
         uv = ApplyParallaxOcclusionMapping(uv, viewDirTS);
     }
 
-    
     float4 baseColor = BaseColorFactor;
+
     if (MaterialFlags & MaterialFlag_HasBaseColorTexture)
     {
         baseColor *= gBaseColorTexture.Sample(gLinearSampler, uv);
@@ -350,7 +352,7 @@ float4 PSMain(VSOutput input) : SV_TARGET
     {
         clip(baseColor.a - AlphaCutoff);
     }
-    
+
     float metallic = PbrFactors.x;
     float roughness = PbrFactors.y;
 
@@ -365,13 +367,43 @@ float4 PSMain(VSOutput input) : SV_TARGET
     roughness = clamp(roughness, 0.04f, 1.0f);
     metallic = saturate(metallic);
 
-    // Important: use parallaxed uv here too.
-    float3 normal = ApplyNormalMap(input.normalWS, input.tangentWS, uv);
+    float occlusion = 1.0f;
 
-    float3 ambient = baseColor.rgb * 0.1f;
+    if (MaterialFlags & MaterialFlag_HasOcclusionTexture)
+    {
+        float aoSample = gOcclusionTexture.Sample(gLinearSampler, uv).r;
+        occlusion = lerp(1.0f, aoSample, PbrFactors.w);
+    }
+
+    float3 emissive = EmissiveAndHeight.xyz;
+
+    if (MaterialFlags & MaterialFlag_HasEmissiveTexture)
+    {
+        emissive *= gEmissiveTexture.Sample(gLinearSampler, uv).rgb;
+    }
+
+    float3 normal = input.normalWS;
+
+    if (MaterialFlags & MaterialFlag_HasNormalTexture)
+    {
+        normal = ApplyNormalMap(input.normalWS, input.tangentWS, uv);
+    }
+    else
+    {
+        normal = normalize(input.normalWS);
+    }
+
+    float3 ambient = baseColor.rgb * 0.1f * occlusion;
+
     float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, baseColor, metallic, roughness);
+
     float3 pointLighting = AccumulatePointLights(input.worldPosition, normal, viewDir, baseColor, metallic, roughness);
-    float3 finalColor = ambient + directionalLighting + pointLighting;
+
+    float3 finalColor =
+        ambient +
+        directionalLighting +
+        pointLighting +
+        emissive;
 
     return float4(finalColor, baseColor.a);
 }
