@@ -115,7 +115,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		importMat.uvScale = Freeside::Math::Vec2(1.0f, 1.0f);
 		importMat.baseColorTexture = hColorTexture;
 		importMat.normalTexture = hNormalTexture;
-		importMat.heightTexture = hFloorHeightTexture;
 		Freeside::MaterialHandle importMatHandle = assets.CreateMaterial(importMat);
 
 		cMeshRenderer.material = importMatHandle;

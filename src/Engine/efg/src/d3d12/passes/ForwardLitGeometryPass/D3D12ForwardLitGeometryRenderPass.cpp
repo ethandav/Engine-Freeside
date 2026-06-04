@@ -125,9 +125,12 @@ namespace efg::d3d12
             normalDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize();
             ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, normalDst, normalTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-            D3D12_CPU_DESCRIPTOR_HANDLE heightDst = textureTable.cpuStart;
-            heightDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize() * 2;
-            ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, heightDst, heightTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            if ((material.constants.materialFlags & Freeside::MaterialFlags::MaterialFlag_HasHeightTexture) != 0)
+            {
+                D3D12_CPU_DESCRIPTOR_HANDLE heightDst = textureTable.cpuStart;
+                heightDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize() * 2;
+                ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, heightDst, heightTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            }
 
             ctx.frameContext->commandContext->SetGraphicsRootDescriptorTable(7, textureTable.gpuStart);
 

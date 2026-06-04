@@ -321,21 +321,19 @@ void BuildTBN(
 float4 PSMain(VSOutput input) : SV_TARGET
 {
     float2 uv = input.uv * UvTransform.xy + UvTransform.zw;
-
     float3 viewDir = normalize(ViewPosition.xyz - input.worldPosition);
 
-    float3 T, B, N;
-    BuildTBN(input.normalWS, input.tangentWS, T, B, N);
+    if (MaterialFlags & MaterialFlag_HasHeightTexture)
+    {
+        float3 T, B, N;
+        BuildTBN(input.normalWS, input.tangentWS, T, B, N);
+        float3x3 TBN = float3x3(T, B, N);
+        float3 viewDirTS = mul(viewDir, transpose(TBN));
+        uv = ApplyParallaxOcclusionMapping(uv, viewDirTS);
+    }
 
-    float3x3 TBN = float3x3(T, B, N);
-
-    // World-space view direction -> tangent-space view direction.
-    float3 viewDirTS = mul(viewDir, transpose(TBN));
-
-    uv = ApplyParallaxOcclusionMapping(uv, viewDirTS);
-
+    
     float4 baseColor = BaseColorFactor;
-
     if (MaterialFlags & MaterialFlag_HasBaseColorTexture)
     {
         baseColor *= gBaseColorTexture.Sample(gLinearSampler, uv);
