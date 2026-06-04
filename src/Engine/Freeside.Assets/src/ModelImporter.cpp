@@ -219,7 +219,7 @@ namespace Freeside::Assets
             desc.height = image.height;
             desc.format = Format::R8G8B8A8_UNorm;
 
-            const int srcChannels = image.component;
+            const int srcChannels =  image.component;
             const int dstChannels = 4;
 
             desc.pixels.resize(desc.width * desc.height * dstChannels);
@@ -278,6 +278,7 @@ namespace Freeside::Assets
             outMaterial.metallicFactor = static_cast<float>(pbr.metallicFactor);
             outMaterial.roughnessFactor = static_cast<float>(pbr.roughnessFactor);
             outMaterial.alphaCutoff = static_cast<float>(material.alphaCutoff);
+            outMaterial.alphaMode = material.alphaMode;
 
             outMaterial.emissiveFactor = Freeside::Math::Vec3(
                 static_cast<float>(material.emissiveFactor[0]),

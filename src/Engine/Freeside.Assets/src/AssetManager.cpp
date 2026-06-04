@@ -42,16 +42,38 @@ namespace Freeside::Assets
         dst.roughnessFactor = src.roughnessFactor;
         dst.alphaCutoff = src.alphaCutoff;
 
-        if (src.baseColorTexture >= 0)
-            dst.baseColorTexture = CreateTexture(textures[src.baseColorTexture]);
-        if (src.normalTexture >= 0)
+		if (src.baseColorTexture >= 0)
+		{
+			TextureDesc desc = textures[src.baseColorTexture];
+			desc.format = Format::R8G8B8A8_UNorm_SRGB;
+            dst.baseColorTexture = CreateTexture(desc);
+		}
+		if (src.normalTexture >= 0)
+		{
+			TextureDesc desc = textures[src.normalTexture];
             dst.normalTexture = CreateTexture(textures[src.normalTexture]);
-        if (src.metallicRoughnessTexture >= 0)
+		}
+		if (src.metallicRoughnessTexture >= 0)
+		{
             dst.metallicRoughnessTexture = CreateTexture(textures[src.metallicRoughnessTexture]);
-        if (src.emissiveTexture >= 0)
-            dst.emissiveTexture = CreateTexture(textures[src.emissiveTexture]);
+		}
+		if (src.emissiveTexture >= 0)
+		{
+			TextureDesc desc = textures[src.emissiveTexture];
+			desc.format = Format::R8G8B8A8_UNorm_SRGB;
+            dst.emissiveTexture = CreateTexture(desc);
+		}
 		if (src.occlusionTexture >= 0)
+		{
 			dst.occlusionTexture = CreateTexture(textures[src.occlusionTexture]);
+		}
+
+		if (src.alphaMode == "MASK")
+			dst.alphaMode = Freeside::AlphaMode::Mask;
+		else if (src.alphaMode == "BLEND")
+			dst.alphaMode = Freeside::AlphaMode::Blend;
+		else
+			dst.alphaMode = Freeside::AlphaMode::Opaque;
 
         return dst;
     }

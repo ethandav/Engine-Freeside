@@ -31,6 +31,7 @@ namespace Freeside::Assets
         Freeside::Math::Vec4 baseColorFactor = { 1, 1, 1, 1 };
         Math::Vec3 emissiveFactor = Math::Vec3(0.0f, 0.0f, 0.0f);
         float alphaCutoff = 0.5f;
+        std::string alphaMode;
         bool doubleSided = false;
     };
 
