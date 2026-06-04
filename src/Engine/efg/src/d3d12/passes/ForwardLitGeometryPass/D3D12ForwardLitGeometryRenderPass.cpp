@@ -119,16 +119,25 @@ namespace efg::d3d12
             D3D12_GPU_VIRTUAL_ADDRESS materialCbAddress = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &material.constants, sizeof(MaterialConstants));
             ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
 
-            GpuDescriptorTable textureTable = ctx.services->descriptors->AllocateShaderVisibleTableFromFrameArena(ctx.frameContext->frameResource->descriptorArena, 3);
+            GpuDescriptorTable textureTable = ctx.services->descriptors->AllocateShaderVisibleTableFromFrameArena(ctx.frameContext->frameResource->descriptorArena, 6);
             ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, textureTable.cpuStart, baseColorTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
             D3D12_CPU_DESCRIPTOR_HANDLE normalDst = textureTable.cpuStart;
             normalDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize();
             ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, normalDst, normalTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
+
+            if ((material.constants.materialFlags & Freeside::MaterialFlags::MaterialFlag_HasMetallicRoughnessTexture) != 0)
+            {
+                const GpuTexture2D metallicTexture = ctx.libraries->textures->GetTexture2DByHandle(material.metallicRoughnessTexture);
+                D3D12_CPU_DESCRIPTOR_HANDLE metalDst = textureTable.cpuStart;
+                metalDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize() * 2;
+                ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, metalDst, metallicTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            }
+
             if ((material.constants.materialFlags & Freeside::MaterialFlags::MaterialFlag_HasHeightTexture) != 0)
             {
                 D3D12_CPU_DESCRIPTOR_HANDLE heightDst = textureTable.cpuStart;
-                heightDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize() * 2;
+                heightDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize() * 5;
                 ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, heightDst, heightTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
             }
 

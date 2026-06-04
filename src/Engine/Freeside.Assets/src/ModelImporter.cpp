@@ -184,6 +184,7 @@ namespace Freeside::Assets
     {
         for (const tinygltf::Mesh& mesh : model.meshes)
         {
+            ImportedMesh outMesh = {};
             for (const tinygltf::Primitive& primitive : mesh.primitives)
             {
                 if (primitive.mode != TINYGLTF_MODE_TRIANGLES)
@@ -201,9 +202,9 @@ namespace Freeside::Assets
                 {
                     Freeside::Math::GenerateTangents(outPrimitive.meshData.vertices, outPrimitive.meshData.indices);
                 }
-
-                outModel.primitives.push_back(std::move(outPrimitive));
+                outMesh.primitives.push_back(outPrimitive);
             }
+            outModel.meshes.push_back(std::move(outMesh));
         }
     }
 
@@ -276,11 +277,18 @@ namespace Freeside::Assets
 
             outMaterial.metallicFactor = static_cast<float>(pbr.metallicFactor);
             outMaterial.roughnessFactor = static_cast<float>(pbr.roughnessFactor);
+            outMaterial.alphaCutoff = static_cast<float>(material.alphaCutoff);
 
+            outMaterial.emissiveFactor = Freeside::Math::Vec3(
+                static_cast<float>(material.emissiveFactor[0]),
+                static_cast<float>(material.emissiveFactor[1]),
+                static_cast<float>(material.emissiveFactor[2])
+            );
+
+            outMaterial.doubleSided = material.doubleSided;
             outModel.materials.push_back(std::move(outMaterial));
         }
     }
-
 
     ImportedModel ModelImporter::ImportModel(const std::filesystem::path& path)
 	{

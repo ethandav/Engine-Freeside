@@ -37,12 +37,12 @@ namespace efg::d3d12::ForwardLitGeometryPipeline
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointLightsSrv)].InitAsShaderResourceView(1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
         CD3DX12_DESCRIPTOR_RANGE materialTextures = {};
-        materialTextures.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 2);
+        materialTextures.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 6, 5);
         rootParameters[static_cast<UINT>(ForwardLitRootParameter::BaseColorTexture)].InitAsDescriptorTable(1, &materialTextures, D3D12_SHADER_VISIBILITY_PIXEL);
 
-        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalLightsSrv)].InitAsShaderResourceView(5, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowDataSrv)].InitAsShaderResourceView(6, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointShadowDataSrv)].InitAsShaderResourceView(7, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalLightsSrv)].InitAsShaderResourceView(2, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::DirectionalShadowDataSrv)].InitAsShaderResourceView(3, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[static_cast<UINT>(ForwardLitRootParameter::PointShadowDataSrv)].InitAsShaderResourceView(4, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
         D3D12_STATIC_SAMPLER_DESC shadowSampler = {};
         shadowSampler.Filter = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;

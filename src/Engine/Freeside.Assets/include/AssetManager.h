@@ -18,7 +18,9 @@ namespace Freeside::Assets
 		ImportedModel ImportModel(const std::filesystem::path& path);
 		TextureHandle CreateTextureFromImagePath(const std::filesystem::path& path);
 		TextureHandle CreateTexture(const TextureDesc& desc);
+		MaterialDesc ConvertGLTFMaterial(const ImportedMaterial& src, const std::vector<TextureDesc>& textures);
 	private:
+
 		Renderer* m_renderer = nullptr;
 		ModelImporter m_modelImporter;
 		ImageLoader m_imageLoader;

@@ -74,6 +74,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MaterialDesc crateMaterial;
 	crateMaterial.baseColorFactor = Freeside::Math::Vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	crateMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
+	crateMaterial.metallicFactor = 0.0f;
+	crateMaterial.roughnessFactor = 1.0f;
 	crateMaterial.baseColorTexture = hCrateColorTexture;
 	crateMaterial.normalTexture = hCrateNormalTexture;
 	crateMaterial.heightTexture = hCrateHeightTexture;
@@ -83,6 +85,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	wallMaterial.baseColorFactor = Freeside::Math::Vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	wallMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	wallMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
+	wallMaterial.metallicFactor = 0.0f;
+	wallMaterial.roughnessFactor = 1.0f;
 	wallMaterial.baseColorTexture = hWallColorTexture;
 	wallMaterial.normalTexture = hWallNormalTexture;
 	wallMaterial.heightTexture = hWallHeightTexture;
@@ -92,6 +96,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	floorMaterial.baseColorFactor = Freeside::Math::Vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	floorMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	floorMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
+	floorMaterial.metallicFactor = 0.0f;
+	floorMaterial.roughnessFactor = 1.0f;
 	floorMaterial.baseColorTexture = hFloorColorTexture;
 	floorMaterial.normalTexture = hFloorNormalTexture;
 	floorMaterial.heightTexture = hFloorHeightTexture;
@@ -100,28 +106,23 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::Scene::Scene testScene(L"Test Scene");
 
 	Freeside::Assets::ImportedModel model = assets.ImportModel("assets\\models\\DamagedHelmet.glb");
-	for (const Freeside::Assets::ImportedPrimitive& prim : model.primitives)
+	for (const Freeside::Assets::ImportedMesh& mesh : model.meshes)
 	{
-		Freeside::MeshHandle mesh = assets.CreateMesh(prim.meshData);
-		Freeside::Entity eMesh = testScene.CreateEntity();
-		Freeside::MeshRendererComponent& cMeshRenderer = testScene.AddMeshRenderer(eMesh);
-		Freeside::TransformComponent& cMeshTransform = testScene.AddTransform(eMesh);
+		for (const Freeside::Assets::ImportedPrimitive& prim : mesh.primitives)
+		{
+			Freeside::MeshHandle mesh = assets.CreateMesh(prim.meshData);
+			Freeside::Entity eMesh = testScene.CreateEntity();
+			Freeside::MeshRendererComponent& cMeshRenderer = testScene.AddMeshRenderer(eMesh);
+			Freeside::TransformComponent& cMeshTransform = testScene.AddTransform(eMesh);
+			Freeside::MaterialDesc importMat = assets.ConvertGLTFMaterial(model.materials[prim.materialIndex], model.textures);
+			Freeside::MaterialHandle importMatHandle = assets.CreateMaterial(importMat);
 
-		Freeside::TextureHandle hColorTexture = assets.CreateTexture(model.textures[model.materials[prim.materialIndex].baseColorTexture]);
-		Freeside::TextureHandle hNormalTexture = assets.CreateTexture(model.textures[model.materials[prim.materialIndex].normalTexture]);
-		Freeside::MaterialDesc importMat;
-		importMat.baseColorFactor = model.materials[prim.materialIndex].baseColorFactor;
-		importMat.specular = Freeside::Math::Vec2(1.0f, 64.0f);
-		importMat.uvScale = Freeside::Math::Vec2(1.0f, 1.0f);
-		importMat.baseColorTexture = hColorTexture;
-		importMat.normalTexture = hNormalTexture;
-		Freeside::MaterialHandle importMatHandle = assets.CreateMaterial(importMat);
-
-		cMeshRenderer.material = importMatHandle;
-		cMeshRenderer.mesh = mesh;
-		cMeshTransform.position = Freeside::Math::Vec3(0.0f, 1.0f, -1.0f);
-		cMeshTransform.rotation = Freeside::Math::Vec3(-Freeside::Math::PI * 0.5f, Freeside::Math::PI * 1.0f, 0.0f);
-		cMeshTransform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+			cMeshRenderer.material = importMatHandle;
+			cMeshRenderer.mesh = mesh;
+			cMeshTransform.position = Freeside::Math::Vec3(0.0f, 1.0f, -1.0f);
+			cMeshTransform.rotation = Freeside::Math::Vec3(-Freeside::Math::PI * 0.5f, Freeside::Math::PI * 1.0f, 0.0f);
+			cMeshTransform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+		}
 	}
 
 	Freeside::Entity eCamera = testScene.CreateEntity();
@@ -166,13 +167,13 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::PointLightComponent& cPointLight = testScene.AddPointLight(ePointLight);
 	Freeside::TransformComponent& cPointLightTransform = testScene.AddTransform(ePointLight);
 	cPointLight.intensity = 1.0f;
-	cPointLightTransform.position = Freeside::Math::Vec3(-1.0f, 0.5f, -2.0f);
+	cPointLightTransform.position = Freeside::Math::Vec3(-1.0f, 0.5f, -3.0f);
 
 	Freeside::Entity ePointLight2 = testScene.CreateEntity();
 	Freeside::PointLightComponent& cPointLight2 = testScene.AddPointLight(ePointLight2);
 	Freeside::TransformComponent& cPointLightTransform2 = testScene.AddTransform(ePointLight2);
 	cPointLight2.intensity = 1.0f;
-	cPointLightTransform2.position = Freeside::Math::Vec3(1.0f, 0.5f, -2.0f);
+	cPointLightTransform2.position = Freeside::Math::Vec3(1.0f, 0.5f, -3.0f);
 
 	Freeside::Entity eWall1 = testScene.CreateEntity();
 	Freeside::MeshRendererComponent& cWall1Renderer = testScene.AddMeshRenderer(eWall1);

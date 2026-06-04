@@ -102,12 +102,15 @@ struct PointShadowData
 };
 
 StructuredBuffer<PointLight> gPointLights : register(t1);
-Texture2D gBaseColorTexture : register(t2);
-Texture2D gNormalTexture : register(t3);
-Texture2D gHeightTexture : register(t4);
-StructuredBuffer<DirectionalLight> gDirectionalLights : register(t5);
-StructuredBuffer<DirectionalShadowData> gDirectionalShadows : register(t6);
-StructuredBuffer<PointShadowData> gPointShadows : register(t7);
+StructuredBuffer<DirectionalLight> gDirectionalLights : register(t2);
+StructuredBuffer<DirectionalShadowData> gDirectionalShadows : register(t3);
+StructuredBuffer<PointShadowData> gPointShadows : register(t4);
+Texture2D gBaseColorTexture : register(t5);
+Texture2D gNormalTexture : register(t6);
+Texture2D gMetallicRoughnessTexture : register(t7);
+Texture2D gOcclusionTexture : register(t8);
+Texture2D gEmissiveTexture : register(t9);
+Texture2D gHeightTexture : register(t10);
 SamplerState gLinearSampler : register(s0);
 SamplerComparisonState ShadowSampler : register(s1);
 
@@ -252,7 +255,7 @@ float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int s
     return lerp(1.0f, visibility, gShadowStrength);
 }
 
-float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, float4 baseColor)
+float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, float4 baseColor, float metallic, float roughness)
 {
     float3 result = float3(0.0f, 0.0f, 0.0f);
 
@@ -270,10 +273,13 @@ float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, flo
         attenuation *= attenuation;
         float shadowFactor = ComputePointShadowFactor(worldPos, lightPos, light.shadowDataIndex, light.shadowTextureDescriptorIndex);
         float ndotl = saturate(dot(normal, lightDir));
-        float3 diffuse = baseColor.rgb * lightColor * ndotl * intensity * attenuation;
+        float3 diffuseColor = baseColor.rgb * (1.0f - metallic);
+        float3 diffuse = diffuseColor * lightColor * ndotl * intensity * attenuation;
         float3 halfVector = normalize(lightDir + viewDir);
-        float specularAmount = pow(saturate(dot(normal, halfVector)), SpecularCompat.y);
-        float3 specular = lightColor * specularAmount * SpecularCompat.x * intensity * attenuation;
+        float specularStrength = lerp(0.04f, 1.0f, metallic);
+        float shininess = lerp(256.0f, 8.0f, roughness);
+        float specularAmount = pow(saturate(dot(normal, halfVector)), shininess);
+        float3 specular = lightColor * specularAmount * specularStrength * intensity;
 
         result += shadowFactor * (diffuse + specular);
     }
@@ -281,7 +287,7 @@ float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, flo
     return result;
 }
 
-float3 AccumulateDirectionalLights(float3 worldPos, float3 normal, float3 viewDir, float4 materialColor)
+float3 AccumulateDirectionalLights(float3 worldPos, float3 normal, float3 viewDir, float4 materialColor, float metallic, float roughness)
 {
     float3 result = float3(0.0f, 0.0f, 0.0f);
 
@@ -291,7 +297,8 @@ float3 AccumulateDirectionalLights(float3 worldPos, float3 normal, float3 viewDi
         float shadowFactor = ComputeDirectionalShadowFactor(worldPos, light.shadowDataIndex, light.shadowTextureDescriptorIndex);
         float3 lightDir = normalize(-light.lightDirectionAndIntensity.xyz);
         float ndotl = saturate(dot(normal, lightDir));
-        float3 diffuse = materialColor.rgb * light.lightColor.rgb * ndotl * light.lightDirectionAndIntensity.w;
+        float3 diffuseColor = materialColor.rgb * (1.0f - metallic);
+        float3 diffuse = diffuseColor * light.lightColor.rgb * ndotl * light.lightDirectionAndIntensity.w;
         float3 halfVector = normalize(lightDir + viewDir);
         float specularAmount = pow(saturate(dot(normal, halfVector)), SpecularCompat.y);
         float3 specular = light.lightColor.rgb * specularAmount * SpecularCompat.x * light.lightDirectionAndIntensity.w;
@@ -343,14 +350,27 @@ float4 PSMain(VSOutput input) : SV_TARGET
     {
         clip(baseColor.a - AlphaCutoff);
     }
+    
+    float metallic = PbrFactors.x;
+    float roughness = PbrFactors.y;
+
+    if (MaterialFlags & MaterialFlag_HasMetallicRoughnessTexture)
+    {
+        float4 mrSample = gMetallicRoughnessTexture.Sample(gLinearSampler, uv);
+
+        roughness *= mrSample.g;
+        metallic *= mrSample.b;
+    }
+
+    roughness = clamp(roughness, 0.04f, 1.0f);
+    metallic = saturate(metallic);
 
     // Important: use parallaxed uv here too.
     float3 normal = ApplyNormalMap(input.normalWS, input.tangentWS, uv);
 
     float3 ambient = baseColor.rgb * 0.1f;
-    float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, baseColor);
-    float3 pointLighting = AccumulatePointLights(input.worldPosition, normal, viewDir, baseColor);
-
+    float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, baseColor, metallic, roughness);
+    float3 pointLighting = AccumulatePointLights(input.worldPosition, normal, viewDir, baseColor, metallic, roughness);
     float3 finalColor = ambient + directionalLighting + pointLighting;
 
     return float4(finalColor, baseColor.a);

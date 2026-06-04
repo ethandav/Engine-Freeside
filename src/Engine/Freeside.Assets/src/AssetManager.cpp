@@ -32,4 +32,27 @@ namespace Freeside::Assets
 	{
 		return m_renderer->CreateMaterialTexture2d(desc);
 	}
+
+    MaterialDesc AssetManager::ConvertGLTFMaterial(const ImportedMaterial& src, const std::vector<TextureDesc>& textures)
+    {
+        MaterialDesc dst = {};
+
+        dst.baseColorFactor = src.baseColorFactor;
+        dst.metallicFactor = src.metallicFactor;
+        dst.roughnessFactor = src.roughnessFactor;
+        dst.alphaCutoff = src.alphaCutoff;
+
+        if (src.baseColorTexture >= 0)
+            dst.baseColorTexture = CreateTexture(textures[src.baseColorTexture]);
+        if (src.normalTexture >= 0)
+            dst.normalTexture = CreateTexture(textures[src.normalTexture]);
+        if (src.metallicRoughnessTexture >= 0)
+            dst.metallicRoughnessTexture = CreateTexture(textures[src.metallicRoughnessTexture]);
+        if (src.emissiveTexture >= 0)
+            dst.emissiveTexture = CreateTexture(textures[src.emissiveTexture]);
+		if (src.occlusionTexture >= 0)
+			dst.occlusionTexture = CreateTexture(textures[src.occlusionTexture]);
+
+        return dst;
+    }
 }
