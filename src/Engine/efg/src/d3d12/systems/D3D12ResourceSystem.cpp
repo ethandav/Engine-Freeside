@@ -93,21 +93,65 @@ namespace efg::d3d12
         */
     }
 
-    Freeside::MaterialHandle D3D12ResourceSystem::RegisterMaterial(const Freeside::MaterialDesc& matDesc)
+    Freeside::MaterialHandle D3D12ResourceSystem::RegisterMaterial(const Freeside::MaterialDesc& desc)
     {
         Material material = {};
-        material.baseColorTexture = matDesc.baseColorTexture;
-        material.normalTexture = matDesc.normalTexture;
-        material.heightTexture = matDesc.heightTexture;
-        MaterialConstants materialConstants{
-            Freeside::Math::Vec4(matDesc.baseColor.x, matDesc.baseColor.y, matDesc.baseColor.z, 1.0f),
-            Freeside::Math::Vec4(matDesc.specular.x, matDesc.specular.y, 0.0f, 0.0f),
-            Freeside::Math::Vec4(matDesc.uvScale.x, matDesc.uvScale.y, 0.0f, 0.0f)
-        };
-        material.constants = materialConstants;
 
-        Freeside::MaterialHandle handle = m_materialLibrary.RegisterMaterial(material);
-        return handle;
+        material.baseColorTexture = desc.baseColorTexture;
+        material.normalTexture = desc.normalTexture;
+        material.metallicRoughnessTexture = desc.metallicRoughnessTexture;
+        material.occlusionTexture = desc.occlusionTexture;
+        material.emissiveTexture = desc.emissiveTexture;
+        material.heightTexture = desc.heightTexture;
+
+        uint32_t flags = 0;
+
+        if (desc.baseColorTexture.IsValid()) flags |= Freeside::MaterialFlag_HasBaseColorTexture;
+        if (desc.normalTexture.IsValid()) flags |= Freeside::MaterialFlag_HasNormalTexture;
+        if (desc.metallicRoughnessTexture.IsValid()) flags |= Freeside::MaterialFlag_HasMetallicRoughnessTexture;
+        if (desc.occlusionTexture.IsValid()) flags |= Freeside::MaterialFlag_HasOcclusionTexture;
+        if (desc.emissiveTexture.IsValid()) flags |= Freeside::MaterialFlag_HasEmissiveTexture;
+        if (desc.heightTexture.IsValid()) flags |= Freeside::MaterialFlag_HasHeightTexture;
+        if (desc.alphaMode == Freeside::AlphaMode::Mask) flags |= Freeside::MaterialFlag_AlphaMask;
+        if (desc.doubleSided) flags |= Freeside::MaterialFlag_DoubleSided;
+
+        MaterialConstants constants = {};
+        constants.baseColorFactor = desc.baseColorFactor;
+
+        constants.pbrFactors = Freeside::Math::Vec4(
+            desc.metallicFactor,
+            desc.roughnessFactor,
+            desc.normalScale,
+            desc.occlusionStrength
+        );
+
+        constants.emissiveAndHeight = Freeside::Math::Vec4(
+            desc.emissiveFactor.x,
+            desc.emissiveFactor.y,
+            desc.emissiveFactor.z,
+            desc.heightScale
+        );
+
+        constants.uvTransform = Freeside::Math::Vec4(
+            desc.uvScale.x,
+            desc.uvScale.y,
+            desc.uvOffset.x,
+            desc.uvOffset.y
+        );
+
+        constants.specularCompat = Freeside::Math::Vec4(
+            desc.specular.x,
+            desc.specular.y,
+            0.0f,
+            0.0f
+        );
+
+        constants.materialFlags = flags;
+        constants.alphaCutoff = desc.alphaCutoff;
+
+        material.constants = constants;
+
+        return m_materialLibrary.RegisterMaterial(material);
     }
 
     Freeside::MeshHandle D3D12ResourceSystem::CreateMesh(const Freeside::MeshDesc& mesh)

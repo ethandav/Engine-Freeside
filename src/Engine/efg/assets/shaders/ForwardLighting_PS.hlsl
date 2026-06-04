@@ -13,11 +13,42 @@ cbuffer CameraCB : register(b0)
     float4x4 ViewProjection;
 };
 
+static const uint MaterialFlag_HasBaseColorTexture = 1 << 0;
+static const uint MaterialFlag_HasNormalTexture = 1 << 1;
+static const uint MaterialFlag_HasMetallicRoughnessTexture = 1 << 2;
+static const uint MaterialFlag_HasOcclusionTexture = 1 << 3;
+static const uint MaterialFlag_HasEmissiveTexture = 1 << 4;
+static const uint MaterialFlag_HasHeightTexture = 1 << 5;
+static const uint MaterialFlag_AlphaMask = 1 << 6;
+static const uint MaterialFlag_DoubleSided = 1 << 7;
+
 cbuffer MaterialCB : register(b3)
 {
-    float4 BaseColor;
-    float4 Specular;
-    float2 uvScale;
+    float4 BaseColorFactor; // rgba
+
+    float4 PbrFactors;
+    // x = metallicFactor
+    // y = roughnessFactor
+    // z = normalScale
+    // w = occlusionStrength
+
+    float4 EmissiveAndHeight;
+    // xyz = emissiveFactor
+    // w   = heightScale
+
+    float4 UvTransform;
+    // xy = uvScale
+    // zw = uvOffset
+
+    float4 SpecularCompat;
+    // x = specularStrength
+    // y = shininess
+    // z/w unused
+
+    uint MaterialFlags;
+    float AlphaCutoff;
+    float _pad0;
+    float _pad1;
 };
 
 cbuffer PointLightMetadata : register(b4)
@@ -241,8 +272,8 @@ float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, flo
         float ndotl = saturate(dot(normal, lightDir));
         float3 diffuse = baseColor.rgb * lightColor * ndotl * intensity * attenuation;
         float3 halfVector = normalize(lightDir + viewDir);
-        float specularAmount = pow(saturate(dot(normal, halfVector)), Specular.y);
-        float3 specular = lightColor * specularAmount * Specular.x * intensity * attenuation;
+        float specularAmount = pow(saturate(dot(normal, halfVector)), SpecularCompat.y);
+        float3 specular = lightColor * specularAmount * SpecularCompat.x * intensity * attenuation;
 
         result += shadowFactor * (diffuse + specular);
     }
@@ -262,8 +293,8 @@ float3 AccumulateDirectionalLights(float3 worldPos, float3 normal, float3 viewDi
         float ndotl = saturate(dot(normal, lightDir));
         float3 diffuse = materialColor.rgb * light.lightColor.rgb * ndotl * light.lightDirectionAndIntensity.w;
         float3 halfVector = normalize(lightDir + viewDir);
-        float specularAmount = pow(saturate(dot(normal, halfVector)), Specular.y);
-        float3 specular = light.lightColor.rgb * specularAmount * Specular.x * light.lightDirectionAndIntensity.w;
+        float specularAmount = pow(saturate(dot(normal, halfVector)), SpecularCompat.y);
+        float3 specular = light.lightColor.rgb * specularAmount * SpecularCompat.x * light.lightDirectionAndIntensity.w;
 
         result += shadowFactor * (diffuse + specular);
     }
@@ -289,7 +320,7 @@ void BuildTBN(
 
 float4 PSMain(VSOutput input) : SV_TARGET
 {
-    float2 uv = input.uv * uvScale;
+    float2 uv = input.uv * UvTransform.xy + UvTransform.zw;
 
     float3 viewDir = normalize(ViewPosition.xyz - input.worldPosition);
 
@@ -303,16 +334,26 @@ float4 PSMain(VSOutput input) : SV_TARGET
 
     uv = ApplyParallaxOcclusionMapping(uv, viewDirTS);
 
-    float4 sampledBaseColor = gBaseColorTexture.Sample(gLinearSampler, uv);
+    float4 baseColor = BaseColorFactor;
+
+    if (MaterialFlags & MaterialFlag_HasBaseColorTexture)
+    {
+        baseColor *= gBaseColorTexture.Sample(gLinearSampler, uv);
+    }
+
+    if (MaterialFlags & MaterialFlag_AlphaMask)
+    {
+        clip(baseColor.a - AlphaCutoff);
+    }
 
     // Important: use parallaxed uv here too.
     float3 normal = ApplyNormalMap(input.normalWS, input.tangentWS, uv);
 
-    float3 ambient = sampledBaseColor.rgb * 0.1f;
-    float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, sampledBaseColor);
-    float3 pointLighting = AccumulatePointLights(input.worldPosition, normal, viewDir, sampledBaseColor);
+    float3 ambient = baseColor.rgb * 0.1f;
+    float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, baseColor);
+    float3 pointLighting = AccumulatePointLights(input.worldPosition, normal, viewDir, baseColor);
 
     float3 finalColor = ambient + directionalLighting + pointLighting;
 
-    return float4(finalColor, BaseColor.a);
+    return float4(finalColor, baseColor.a);
 }

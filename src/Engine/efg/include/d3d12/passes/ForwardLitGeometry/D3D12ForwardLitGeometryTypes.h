@@ -11,17 +11,40 @@ namespace efg::d3d12
 {
 	struct MaterialConstants
 	{
-		Freeside::Math::Vec4 baseColor;
-		Freeside::Math::Vec4 specular;
-		Freeside::Math::Vec4 uvScale;
+		Freeside::Math::Vec4 baseColorFactor;
+
+		Freeside::Math::Vec4 pbrFactors;
+		// x metallicFactor
+		// y roughnessFactor
+		// z normalScale
+		// w occlusionStrength
+
+		Freeside::Math::Vec4 emissiveAndHeight;
+		// xyz emissiveFactor
+		// w heightScale
+
+		Freeside::Math::Vec4 uvTransform;
+		// xy uvScale
+		// zw uvOffset
+
+		Freeside::Math::Vec4 specularCompat;
+
+		uint32_t materialFlags = 0;
+		float alphaCutoff = 0.5f;
+		float pad0 = 0.0f;
+		float pad1 = 0.0f;
 	};
 
 	struct Material
 	{
-		MaterialConstants constants = {};
 		Freeside::TextureHandle baseColorTexture = {};
 		Freeside::TextureHandle normalTexture = {};
+		Freeside::TextureHandle metallicRoughnessTexture = {};
+		Freeside::TextureHandle occlusionTexture = {};
+		Freeside::TextureHandle emissiveTexture = {};
 		Freeside::TextureHandle heightTexture = {};
+
+		MaterialConstants constants = {};
 	};
 
 	struct CameraConstants

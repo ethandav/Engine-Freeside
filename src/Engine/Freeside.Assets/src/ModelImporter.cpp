@@ -281,6 +281,7 @@ namespace Freeside::Assets
         }
     }
 
+
     ImportedModel ModelImporter::ImportModel(const std::filesystem::path& path)
 	{
         tinygltf::TinyGLTF loader;

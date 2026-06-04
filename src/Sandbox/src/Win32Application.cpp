@@ -72,7 +72,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::TextureHandle hFloorHeightTexture = assets.CreateTextureFromImagePath(L"assets/textures/floor_height.png");
 
 	Freeside::MaterialDesc crateMaterial;
-	crateMaterial.baseColor = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
+	crateMaterial.baseColorFactor = Freeside::Math::Vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	crateMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	crateMaterial.baseColorTexture = hCrateColorTexture;
 	crateMaterial.normalTexture = hCrateNormalTexture;
@@ -80,7 +80,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MaterialHandle crateMaterialHandle = assets.CreateMaterial(crateMaterial);
 
 	Freeside::MaterialDesc wallMaterial;
-	wallMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
+	wallMaterial.baseColorFactor = Freeside::Math::Vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	wallMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	wallMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
 	wallMaterial.baseColorTexture = hWallColorTexture;
@@ -89,7 +89,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MaterialHandle wallMaterialHandle = assets.CreateMaterial(wallMaterial);
 
 	Freeside::MaterialDesc floorMaterial;
-	floorMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
+	floorMaterial.baseColorFactor = Freeside::Math::Vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	floorMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	floorMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
 	floorMaterial.baseColorTexture = hFloorColorTexture;
@@ -110,7 +110,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		Freeside::TextureHandle hColorTexture = assets.CreateTexture(model.textures[model.materials[prim.materialIndex].baseColorTexture]);
 		Freeside::TextureHandle hNormalTexture = assets.CreateTexture(model.textures[model.materials[prim.materialIndex].normalTexture]);
 		Freeside::MaterialDesc importMat;
-		importMat.baseColor = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+		importMat.baseColorFactor = model.materials[prim.materialIndex].baseColorFactor;
 		importMat.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 		importMat.uvScale = Freeside::Math::Vec2(1.0f, 1.0f);
 		importMat.baseColorTexture = hColorTexture;
