@@ -1,10 +1,11 @@
 #pragma once
 
-#include "types/RendererDesc.h"
-#include "types/FramePacket.h"
-#include "types/MeshTypes.h"
-#include "types/MaterialTypes.h"
-#include "types/Handles.h"
+#include "types\RendererDesc.h"
+#include "types\FramePacket.h"
+#include "types\MeshTypes.h"
+#include "types\Handles.h"
+
+#include "..\..\..\Freeside.Assets\include\MaterialTypes.h"
 
 namespace efg::d3d12
 {
@@ -17,6 +18,6 @@ namespace efg::d3d12
         virtual void Render(const FramePacket& sceneRenderData) = 0;
         virtual Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh) = 0;
         virtual Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) = 0;
-
+        virtual Freeside::TextureHandle CreateMaterialTexture2d(const Freeside::TextureDesc& texture) = 0;
     };
 }

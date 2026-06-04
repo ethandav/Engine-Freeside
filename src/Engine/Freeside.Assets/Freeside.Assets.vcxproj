@@ -140,11 +140,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\AssetManager.h" />
+    <ClInclude Include="include\Format.h" />
+    <ClInclude Include="include\FormatUtils.h" />
+    <ClInclude Include="include\ImageLoader.h" />
     <ClInclude Include="include\ImportedAssetTypes.h" />
+    <ClInclude Include="include\MaterialTypes.h" />
     <ClInclude Include="include\ModelImporter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AssetManager.cpp" />
+    <ClCompile Include="src\FormatUtils.cpp" />
+    <ClCompile Include="src\ImageLoader.cpp" />
     <ClCompile Include="src\ModelImporter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

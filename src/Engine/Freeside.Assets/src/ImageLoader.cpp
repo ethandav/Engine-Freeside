@@ -1,18 +1,19 @@
-#include "..\..\include\render\ImageLoader.h"
-#include "..\..\include\render\types\FormatUtils.h"
+#include "..\include\ImageLoader.h"
+#include "..\include\MaterialTypes.h"
+#include "..\include\FormatUtils.h"
 #pragma comment(lib, "windowscodecs.lib")
 
 #include <wincodec.h>
 #include <wrl.h>
 
-namespace efg
+namespace Freeside
 {
     ImageLoader::ImageLoader()
     {
         HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     }
 
-    DecodedImage ImageLoader::LoadImageWithWIC(const wchar_t* filePath)
+    TextureDesc ImageLoader::LoadImageWithWIC(const wchar_t* filePath)
     {
         using Microsoft::WRL::ComPtr;
 
@@ -30,7 +31,7 @@ namespace efg
         factory->CreateFormatConverter(converter.GetAddressOf());
         converter->Initialize(frame.Get(), GUID_WICPixelFormat32bppRGBA, WICBitmapDitherTypeNone, nullptr, 0.0, WICBitmapPaletteTypeCustom);
 
-        DecodedImage image = {};
+        TextureDesc image = {};
         image.width = width;
         image.height = height;
         image.format = Format::R8G8B8A8_UNorm;
@@ -42,11 +43,11 @@ namespace efg
         return image;
     }
 
-    DecodedImage ImageLoader::LoadHeightMapWithWIC(const wchar_t* filePath)
+    TextureDesc ImageLoader::LoadHeightMapWithWIC(const wchar_t* filePath)
     {
-        DecodedImage rgba = LoadImageWithWIC(filePath);
+        TextureDesc rgba = LoadImageWithWIC(filePath);
 
-        DecodedImage height = {};
+        TextureDesc height = {};
         height.width = rgba.width;
         height.height = rgba.height;
         height.format = Format::R8_UNorm;
@@ -75,9 +76,9 @@ namespace efg
         return height;
     }
 
-    DecodedImage ImageLoader::CreateSolidColorImage(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+    TextureDesc ImageLoader::CreateSolidColorImage(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     {
-        DecodedImage image = {};
+        TextureDesc image = {};
         image.width = 1;
         image.height = 1;
         image.format = Format::R8G8B8A8_UNorm;

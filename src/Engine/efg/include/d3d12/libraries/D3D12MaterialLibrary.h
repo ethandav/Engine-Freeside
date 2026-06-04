@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\..\render\types\MaterialTypes.h"
+#include "..\..\..\..\Freeside.Assets\include\MaterialTypes.h"
 #include "..\..\render\types\Handles.h"
 #include "..\passes\ForwardLitGeometry\D3D12ForwardLitGeometryTypes.h"
 

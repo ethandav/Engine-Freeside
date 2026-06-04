@@ -185,7 +185,6 @@
     <ClInclude Include="include\d3d12\commands\D3D12UploadContext.h" />
     <ClInclude Include="include\render\types\FramePacket.h" />
     <ClInclude Include="include\render\types\Handles.h" />
-    <ClInclude Include="include\render\ImageLoader.h" />
     <ClInclude Include="include\render\IRendererBackend.h" />
     <ClInclude Include="include\render\Lights.h" />
     <ClInclude Include="include\render\types\MeshTypes.h" />
@@ -194,9 +193,6 @@
     <ClInclude Include="include\render\RenderQueue.h" />
     <ClInclude Include="include\render\RenderThread.h" />
     <ClInclude Include="include\render\types\RendererDesc.h" />
-    <ClInclude Include="include\render\types\Format.h" />
-    <ClInclude Include="include\render\types\FormatUtils.h" />
-    <ClInclude Include="include\render\types\MaterialTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\d3d12\factories\D3D12BufferFactory.h" />
@@ -221,8 +217,6 @@
     <ClCompile Include="src\d3d12\passes\Skybox\D3D12SkyboxRenderPass.cpp" />
     <ClCompile Include="src\d3d12\systems\D3D12DeviceSystem.cpp" />
     <ClCompile Include="src\d3d12\systems\D3D12ShadowSystem.cpp" />
-    <ClCompile Include="src\render\types\FormatUtils.cpp" />
-    <ClCompile Include="src\render\ImageLoader.cpp" />
     <ClCompile Include="src\render\RenderQueue.cpp" />
     <ClCompile Include="src\render\RenderThread.cpp" />
     <ClCompile Include="src\render\Camera.cpp" />

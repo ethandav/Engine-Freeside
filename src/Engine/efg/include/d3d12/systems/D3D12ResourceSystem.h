@@ -7,10 +7,10 @@
 #include "..\commands\D3D12UploadContext.h"
 #include "..\libraries\D3D12MeshLibrary.h"
 
-#include "..\..\render\ImageLoader.h"
-
 #include "D3D12DeviceSystem.h"
 #include "..\commands\D3D12CommandContext.h"
+
+#include "..\..\..\..\Freeside.Assets\include\MaterialTypes.h"
 
 namespace efg::d3d12
 {
@@ -27,6 +27,7 @@ namespace efg::d3d12
 		void CreateBuiltIns();
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& materialDesc);
 		Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh);
+		Freeside::TextureHandle CreateMaterialTexture2d(const Freeside::TextureDesc& textureDesc);
 		void ProcessUploads(D3D12DirectCommandContext* commandContext);
 
 	private:
@@ -37,6 +38,5 @@ namespace efg::d3d12
 		D3D12MaterialLibrary m_materialLibrary = {};
 		D3D12MeshLibrary m_meshLibrary;
 		D3D12MaterialTextureLibrary m_textureLibrary = {};
-		ImageLoader m_imageLoader = {};
 	};
 }

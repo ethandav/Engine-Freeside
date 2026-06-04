@@ -61,32 +61,41 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::MeshHandle planeMeshHandle = assets.CreateMesh(planeMeshData);
 	Freeside::MeshHandle wallMeshHandle = assets.CreateMesh(wallMeshData);
 
+	Freeside::TextureHandle hCrateColorTexture = assets.CreateTextureFromImagePath(L"assets/textures/crate.png");
+	Freeside::TextureHandle hCrateNormalTexture = assets.CreateTextureFromImagePath(L"assets/textures/crate_normals.png");
+	Freeside::TextureHandle hCrateHeightTexture = assets.CreateTextureFromImagePath(L"assets/textures/crate_height.png");
+	Freeside::TextureHandle hWallColorTexture = assets.CreateTextureFromImagePath(L"assets/textures/brick.png");
+	Freeside::TextureHandle hWallNormalTexture = assets.CreateTextureFromImagePath(L"assets/textures/brick_normals.png");
+	Freeside::TextureHandle hWallHeightTexture = assets.CreateTextureFromImagePath(L"assets/textures/brick_height.png");
+	Freeside::TextureHandle hFloorColorTexture = assets.CreateTextureFromImagePath(L"assets/textures/floor.png");
+	Freeside::TextureHandle hFloorNormalTexture = assets.CreateTextureFromImagePath(L"assets/textures/floor_normals.png");
+	Freeside::TextureHandle hFloorHeightTexture = assets.CreateTextureFromImagePath(L"assets/textures/floor_height.png");
+
 	Freeside::MaterialDesc crateMaterial;
 	crateMaterial.baseColor = Freeside::Math::Vec3(1.0f, 0.0f, 0.0f);
 	crateMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
-	crateMaterial.baseColorTexturePath = L"assets/textures/crate.png";
-	crateMaterial.normalTexturePath = L"assets/textures/crate_normals.png";
-	crateMaterial.heightTexturePath = L"assets/textures/crate_height.png";
+	crateMaterial.baseColorTexture = hCrateColorTexture;
+	crateMaterial.normalTexture = hCrateNormalTexture;
+	crateMaterial.heightTexture = hCrateHeightTexture;
 	Freeside::MaterialHandle crateMaterialHandle = assets.CreateMaterial(crateMaterial);
 
 	Freeside::MaterialDesc wallMaterial;
 	wallMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 	wallMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	wallMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
-	wallMaterial.baseColorTexturePath = L"assets/textures/brick.png";
-	wallMaterial.normalTexturePath = L"assets/textures/brick_normals.png";
-	wallMaterial.heightTexturePath = L"assets/textures/brick_height.png";
+	wallMaterial.baseColorTexture = hWallColorTexture;
+	wallMaterial.normalTexture = hWallNormalTexture;
+	wallMaterial.heightTexture = hWallHeightTexture;
 	Freeside::MaterialHandle wallMaterialHandle = assets.CreateMaterial(wallMaterial);
 
 	Freeside::MaterialDesc floorMaterial;
 	floorMaterial.baseColor = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 	floorMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);
 	floorMaterial.uvScale = Freeside::Math::Vec2(2.0f, 2.0f);
-	floorMaterial.baseColorTexturePath = L"assets/textures/floor.png";
-	floorMaterial.normalTexturePath = L"assets/textures/floor_normals.png";
-	floorMaterial.heightTexturePath = L"assets/textures/floor_height.png";
+	floorMaterial.baseColorTexture = hFloorColorTexture;
+	floorMaterial.normalTexture = hFloorNormalTexture;
+	floorMaterial.heightTexture = hFloorHeightTexture;
 	Freeside::MaterialHandle floorMaterialHandle = assets.CreateMaterial(floorMaterial);
-
 
 	Freeside::Scene::Scene testScene(L"Test Scene");
 

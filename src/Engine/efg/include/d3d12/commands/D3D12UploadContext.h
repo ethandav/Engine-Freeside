@@ -2,10 +2,11 @@
 #include "D3D12UploadTypes.h"
 #include "D3D12QueueFence.h"
 
+#include "..\..\..\..\Freeside.Assets\include\MaterialTypes.h"
+
 #include <d3d12.h>
 #include <vector>
 #include <wrl.h>
-#include "../../render/ImageLoader.h"
 
 namespace efg::d3d12
 {
@@ -23,7 +24,7 @@ namespace efg::d3d12
 
 		void QueueBufferUpload(ID3D12Resource* dest, const void* data, UINT64 sizeInBytes, D3D12_RESOURCE_STATES finalState);
 		void QueueTexture2DUpload(ID3D12Resource* destination, const void* sourceData, const D3D12_RESOURCE_DESC& destinationDesc, uint32_t sourceRowPitch, D3D12_RESOURCE_STATES finalState);
-		void QueueTextureCubeUpload(ID3D12Resource* destination, const std::array<DecodedImage, 6>& faces, const D3D12_RESOURCE_DESC& textureDesc, D3D12_RESOURCE_STATES finalState);
+		void QueueTextureCubeUpload(ID3D12Resource* destination, const std::array<Freeside::TextureDesc, 6>& faces, const D3D12_RESOURCE_DESC& textureDesc, D3D12_RESOURCE_STATES finalState);
 		UploadTicket FlushUploads();
 		void RetireCompletedUploads();
 

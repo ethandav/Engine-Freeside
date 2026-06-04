@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace efg
+namespace Freeside
 {
     enum class Format
     {

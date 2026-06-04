@@ -44,6 +44,7 @@ namespace efg::d3d12
 
     void D3D12ResourceSystem::CreateBuiltIns()
     {
+        /*
         {
             DecodedImage image = m_imageLoader.CreateSolidColorImage(100, 100, 100, 255);
             GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::CpuOnlyAndShaderVisible);
@@ -75,7 +76,7 @@ namespace efg::d3d12
                 m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/front.jpg"),
                 m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/back.jpg"),
             };
-            /*
+            
             std::array<DecodedImage, 6> faces =
             {
                 m_imageLoader.CreateSolidColorImage(255, 0, 0, 255),
@@ -85,40 +86,19 @@ namespace efg::d3d12
                 m_imageLoader.CreateSolidColorImage(0, 0, 255, 255),
                 m_imageLoader.CreateSolidColorImage(0, 0, 255, 255),
             };
-            */
             GpuTextureCube texture = m_textureFactory.CreateTextureCube(faces[0].width, faces[0].height, DescriptorVisibility::CpuOnlyAndShaderVisible, DXGI_FORMAT_R8G8B8A8_UNORM);
             m_textureLibrary.RegisterDefaultSkyboxTexture(texture);
             m_uploadContext.QueueTextureCubeUpload(texture.resource.Get(), faces, texture.resource.Get()->GetDesc(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         }
+        */
     }
 
     Freeside::MaterialHandle D3D12ResourceSystem::RegisterMaterial(const Freeside::MaterialDesc& matDesc)
     {
         Material material = {};
-        if (!matDesc.baseColorTexturePath.empty())
-        {
-            DecodedImage image = m_imageLoader.LoadImageWithWIC(matDesc.baseColorTexturePath.c_str());
-            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, ToDxgiFormat(image.format), DescriptorVisibility::CpuOnlyAndShaderVisible);
-            m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-            material.baseColorTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
-        }
-
-        if (!matDesc.normalTexturePath.empty())
-        {
-            DecodedImage image = m_imageLoader.LoadImageWithWIC(matDesc.normalTexturePath.c_str());
-            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, DXGI_FORMAT_R8G8B8A8_UNORM, DescriptorVisibility::CpuOnlyAndShaderVisible);
-            m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-            material.normalTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
-        }
-
-        if (!matDesc.heightTexturePath.empty())
-        {
-            DecodedImage image = m_imageLoader.LoadHeightMapWithWIC(matDesc.heightTexturePath.c_str());
-            GpuTexture2D texture = m_textureFactory.CreateTexture2D(image.width, image.height, DXGI_FORMAT_R8_UNORM, DescriptorVisibility::CpuOnlyAndShaderVisible);
-            m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), image.pixels.data(), texture.resource.Get()->GetDesc(), image.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-            material.heightTexture = m_textureLibrary.RegisterMaterialTexture2D(texture);
-        }
-
+        material.baseColorTexture = matDesc.baseColorTexture;
+        material.normalTexture = matDesc.normalTexture;
+        material.heightTexture = matDesc.heightTexture;
         MaterialConstants materialConstants{
             Freeside::Math::Vec4(matDesc.baseColor.x, matDesc.baseColor.y, matDesc.baseColor.z, 1.0f),
             Freeside::Math::Vec4(matDesc.specular.x, matDesc.specular.y, 0.0f, 0.0f),
@@ -140,6 +120,13 @@ namespace efg::d3d12
         m_uploadContext.QueueBufferUpload(vertexBuffer.resource.Get(), mesh.vertices.data(), vertexBuffer.sizeInBytes, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
         m_uploadContext.QueueBufferUpload(indexBuffer.resource.Get(), mesh.indices.data(), indexBuffer.sizeInBytes, D3D12_RESOURCE_STATE_INDEX_BUFFER);
         return handle;
+    }
+
+    Freeside::TextureHandle D3D12ResourceSystem::CreateMaterialTexture2d(const Freeside::TextureDesc& textureDesc)
+    {
+        GpuTexture2D texture = m_textureFactory.CreateTexture2D(textureDesc.width, textureDesc.height, ToDxgiFormat(textureDesc.format), DescriptorVisibility::CpuOnlyAndShaderVisible);
+        m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), textureDesc.pixels.data(), texture.resource.Get()->GetDesc(), textureDesc.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        return m_textureLibrary.RegisterMaterialTexture2D(texture);
     }
 
     void D3D12ResourceSystem::ProcessUploads(D3D12DirectCommandContext* commandContext)

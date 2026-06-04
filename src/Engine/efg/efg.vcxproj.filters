@@ -90,19 +90,10 @@
     <ClInclude Include="include\d3d12\libraries\D3D12MaterialTextureLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\render\ImageLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\render\types\Format.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\d3d12\core\D3D12Format.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\d3d12\factories\D3D12TextrureFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\render\types\FormatUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\d3d12\frame\D3D12FrameContext.h">
@@ -151,9 +142,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\render\types\RendererDesc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\render\types\MaterialTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPass.h">
@@ -281,13 +269,7 @@
     <ClCompile Include="src\d3d12\libraries\D3D12MaterialTextureLibrary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\render\ImageLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\d3d12\core\D3D12Format.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\render\types\FormatUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\d3d12\factories\D3D12TextrureFactory.cpp">

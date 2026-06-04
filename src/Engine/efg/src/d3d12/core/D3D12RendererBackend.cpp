@@ -45,4 +45,9 @@ namespace efg::d3d12
     {
         return m_resources.RegisterMaterial(mat);
     }
+
+    Freeside::TextureHandle D3D12RendererBackend::CreateMaterialTexture2d(const Freeside::TextureDesc& texture)
+    {
+        return m_resources.CreateMaterialTexture2d(texture);
+    }
 }

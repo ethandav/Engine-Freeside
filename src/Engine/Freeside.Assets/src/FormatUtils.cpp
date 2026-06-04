@@ -1,8 +1,8 @@
-#include "..\..\..\include\render\types\FormatUtils.h"
+#include "..\include\FormatUtils.h"
 
-namespace efg
+namespace Freeside
 {
-    uint32_t BytesPerPixelOrBlock(Format format)
+    uint32_t BytesPerPixelOrBlock(Freeside::Format format)
     {
         switch (format)
         {

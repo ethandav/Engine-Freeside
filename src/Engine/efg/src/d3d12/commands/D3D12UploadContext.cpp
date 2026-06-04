@@ -130,7 +130,7 @@ namespace efg::d3d12
 
 	}
 
-	void D3D12UploadContext::QueueTextureCubeUpload(ID3D12Resource* destination, const std::array<DecodedImage, 6>& faces, const D3D12_RESOURCE_DESC& textureDesc, D3D12_RESOURCE_STATES finalState)
+	void D3D12UploadContext::QueueTextureCubeUpload(ID3D12Resource* destination, const std::array<Freeside::TextureDesc, 6>& faces, const D3D12_RESOURCE_DESC& textureDesc, D3D12_RESOURCE_STATES finalState)
 	{
 		std::array<D3D12_PLACED_SUBRESOURCE_FOOTPRINT, 6> footprints = {};
 		std::array<UINT, 6> numRows = {};

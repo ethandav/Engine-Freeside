@@ -1,9 +1,10 @@
 #pragma once
 
 #include "types/RendererDesc.h"
-#include "types/MaterialTypes.h"
 #include "types/MeshTypes.h"
 #include "types/FramePacket.h"
+
+#include "..\..\..\Freeside.Assets\include\MaterialTypes.h"
 
 #include <memory>
 #include <string>
@@ -30,6 +31,7 @@ namespace Freeside
 		void SubmitFrame(efg::FramePacket sceneRenderData);
 		MeshHandle CreateMesh(const MeshDesc& mesh);
 		MaterialHandle RegisterMaterial(const MaterialDesc& mat);
+		TextureHandle CreateMaterialTexture2d(const TextureDesc& texture);
 	private:
 		std::unique_ptr<efg::d3d12::IRendererBackend> m_backend;
 		std::unique_ptr<efg::RenderThread> m_renderThread;

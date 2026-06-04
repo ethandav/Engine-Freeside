@@ -23,6 +23,7 @@ namespace efg::d3d12
 		void Render(const FramePacket& scene) override;
 		Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh) override;
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) override;
+		Freeside::TextureHandle CreateMaterialTexture2d(const Freeside::TextureDesc& texture) override;
 
 	private:
 		void CreateRenderTargets(uint32_t width, uint32_t height);
