@@ -2,6 +2,7 @@
 
 #include "..\..\efg\include\render\types\MeshTypes.h"
 #include "..\..\Freeside.Core\include\math\Vec4.h"
+#include "..\include\MaterialTypes.h"
 
 #include <vector>
 #include <string>
@@ -12,15 +13,6 @@ namespace Freeside::Assets
     {
         MeshDesc meshData;
         int materialIndex = -1;
-    };
-
-    struct ImportedTexture
-    {
-        std::string name;
-        int width = 0;
-        int height = 0;
-        int channels = 0;
-        std::vector<uint8_t> pixels;
     };
 
     struct ImportedMaterial
@@ -39,7 +31,7 @@ namespace Freeside::Assets
     struct ImportedModel
     {
         std::vector<ImportedPrimitive> primitives;
-        std::vector<ImportedTexture> textures;
+        std::vector<TextureDesc> textures;
         std::vector<ImportedMaterial> materials;
     };
 }

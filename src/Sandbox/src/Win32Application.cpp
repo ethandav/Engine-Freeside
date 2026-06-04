@@ -106,10 +106,22 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		Freeside::Entity eMesh = testScene.CreateEntity();
 		Freeside::MeshRendererComponent& cMeshRenderer = testScene.AddMeshRenderer(eMesh);
 		Freeside::TransformComponent& cMeshTransform = testScene.AddTransform(eMesh);
-		cMeshRenderer.material = floorMaterialHandle;
+
+		Freeside::TextureHandle hColorTexture = assets.CreateTexture(model.textures[model.materials[prim.materialIndex].baseColorTexture]);
+		Freeside::TextureHandle hNormalTexture = assets.CreateTexture(model.textures[model.materials[prim.materialIndex].normalTexture]);
+		Freeside::MaterialDesc importMat;
+		importMat.baseColor = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+		importMat.specular = Freeside::Math::Vec2(1.0f, 64.0f);
+		importMat.uvScale = Freeside::Math::Vec2(1.0f, 1.0f);
+		importMat.baseColorTexture = hColorTexture;
+		importMat.normalTexture = hNormalTexture;
+		importMat.heightTexture = hFloorHeightTexture;
+		Freeside::MaterialHandle importMatHandle = assets.CreateMaterial(importMat);
+
+		cMeshRenderer.material = importMatHandle;
 		cMeshRenderer.mesh = mesh;
 		cMeshTransform.position = Freeside::Math::Vec3(0.0f, 1.0f, -1.0f);
-		cMeshTransform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+		cMeshTransform.rotation = Freeside::Math::Vec3(-Freeside::Math::PI * 0.5f, Freeside::Math::PI * 1.0f, 0.0f);
 		cMeshTransform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
 	}
 
@@ -208,35 +220,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	{
 		frameId++;
 		const float deltaTime = timer.Tick();
-		angle += 1.0f * deltaTime;
 		totalTime += deltaTime;
-
-		float hue = fmodf(totalTime * speed, 1.0f);
-
-		Freeside::Math::Mat4 rotation = Freeside::Math::RotationY(angle);
-
-		float t = fmodf(totalTime * daySpeed, 1.0f); // 0..1
-		float angle = t * Freeside::Math::PI;                        // sunrise to sunset
-
-		Freeside::Math::Vec3 sunPosition =
-		{
-			cosf(angle) * 50.0f,  // east-west
-			sinf(angle) * 50.0f,  // height
-			-20.0f                // slight south/north offset
-		};
-
-		//pDirLight->direction = Freeside::Math::Normalize(Freeside::Math::Vec3{ 0,0,0 } - sunPosition);
-
-		//pPointLight1->color = HSVtoRGB(hue, 1.0f, 1.0f);
-
-		/*
-		Freeside::Math::Mat4 translation1 = box1.initialTransform;
-		pObject1->world = translation1 * rotation;
-        Freeside::Math::Mat4 translation2 = object2.initialTransform;
-        pObject2->world = translation2 * rotation;
-        Freeside::Math::Mat4 translation3 = object3.initialTransform;
-        pObject3->world = translation3 * rotation;
-		*/
 
 		Freeside::InputState input = window.PollInput();
 

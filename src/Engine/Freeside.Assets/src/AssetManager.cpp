@@ -25,6 +25,11 @@ namespace Freeside::Assets
 	TextureHandle AssetManager::CreateTextureFromImagePath(const std::filesystem::path& path)
 	{
 		TextureDesc image = m_imageLoader.LoadImageWithWIC(path.c_str());
-		return m_renderer->CreateMaterialTexture2d(image);
+		return CreateTexture(image);
+	}
+
+	TextureHandle AssetManager::CreateTexture(const TextureDesc& desc)
+	{
+		return m_renderer->CreateMaterialTexture2d(desc);
 	}
 }

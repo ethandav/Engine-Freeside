@@ -10,7 +10,9 @@
 
 #include <stdio.h>
 #include <stdexcept>
-#include "../../Freeside.Core/include/math/Meshes.h"
+#include "..\..\Freeside.Core\include\math\Meshes.h"
+#include "..\include\MaterialTypes.h"
+#include "..\include\Format.h"
 
 namespace Freeside::Assets
 {
@@ -211,15 +213,30 @@ namespace Freeside::Assets
 
         for (const tinygltf::Image& image : model.images)
         {
-            ImportedTexture texture = {};
+            Freeside::TextureDesc desc = {};
+            desc.width = image.width;
+            desc.height = image.height;
+            desc.format = Format::R8G8B8A8_UNorm;
 
-            texture.name = image.name;
-            texture.width = image.width;
-            texture.height = image.height;
-            texture.channels = image.component;
-            texture.pixels = image.image;
+            const int srcChannels = image.component;
+            const int dstChannels = 4;
 
-            outModel.textures.push_back(std::move(texture));
+            desc.pixels.resize(desc.width * desc.height * dstChannels);
+
+            for (uint32_t i = 0; i < desc.width* desc.height; ++i)
+            {
+                const uint8_t* src = &image.image[i * srcChannels];
+                uint8_t* dst = &desc.pixels[i * dstChannels];
+
+                dst[0] = srcChannels > 0 ? src[0] : 255;
+                dst[1] = srcChannels > 1 ? src[1] : dst[0];
+                dst[2] = srcChannels > 2 ? src[2] : dst[0];
+                dst[3] = srcChannels > 3 ? src[3] : 255;
+            }
+
+            desc.rowPitch = desc.width * dstChannels;
+
+            outModel.textures.push_back(std::move(desc));
         }
     }
 

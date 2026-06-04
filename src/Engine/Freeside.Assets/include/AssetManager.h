@@ -17,6 +17,7 @@ namespace Freeside::Assets
 		MaterialHandle CreateMaterial(MaterialDesc desc);
 		ImportedModel ImportModel(const std::filesystem::path& path);
 		TextureHandle CreateTextureFromImagePath(const std::filesystem::path& path);
+		TextureHandle CreateTexture(const TextureDesc& desc);
 	private:
 		Renderer* m_renderer = nullptr;
 		ModelImporter m_modelImporter;

@@ -27,5 +27,6 @@ namespace Freeside
 		uint32_t height = 0;
 		uint32_t rowPitch = 0;
 		Format format = Format::Unknown;
+		std::string name;
 	};
 }
