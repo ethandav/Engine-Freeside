@@ -34,7 +34,7 @@ namespace Freeside
         TextureDesc image = {};
         image.width = width;
         image.height = height;
-        image.format = Format::R8G8B8A8_UNorm;
+        image.format = Format::R8G8B8A8_UNorm_SRGB;
         image.rowPitch = image.width * BytesPerPixelOrBlock(image.format);
         image.pixels.resize(static_cast<size_t>(image.rowPitch) * height);
 
