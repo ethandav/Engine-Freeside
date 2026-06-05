@@ -123,10 +123,11 @@ namespace Freeside::Assets
             {
                 const float* t = reinterpret_cast<const float*>(tangentData + i * tangentStride);
 
-                outVertices[i].tangent = Freeside::Math::Vec3(
+                outVertices[i].tangent = Freeside::Math::Vec4(
                     t[0],
                     t[1],
-                    t[2]
+                    t[2],
+                    t[3]
                 );
 
                 // t[3] is handedness. You may want this later for normal mapping.
