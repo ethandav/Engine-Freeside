@@ -33,9 +33,9 @@ namespace efg::d3d12
             ctx.frameContext->commandContext->SetRenderTarget(0, nullptr, &dirShadowMap.shadowMap->dsv);
             ctx.frameContext->commandContext->ClearDepthStencil(dirShadowMap.shadowMap->dsv, 1.0f, 0);
 
-            LightViewConstants viewConstants = {};
-            viewConstants.viewProjection = dirShadowMap.lightViewProjection;
-            resources.lightViewCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &viewConstants, sizeof(LightViewConstants));
+            LightViewConstants constants = {};
+            constants.viewProjection = dirShadowMap.lightViewProjection;
+            resources.lightViewCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &constants, sizeof(LightViewConstants));
             BindPassResources(ctx, resources);
             DrawAllRenderObjects(ctx, scene);
             PIXEndEvent(ctx.frameContext->commandContext->GetDirectCommandList());
@@ -43,8 +43,7 @@ namespace efg::d3d12
 
         for (const auto& pointShadow : shadowMapFrameData.pointShadows)
         {
-            GpuTextureCube* shadowCubeDepthTest = &pointShadow.shadowCube->depthTest;
-            GpuTextureCube* shadowCubeLinearDepthColor = &pointShadow.shadowCube->linearDepthColor;
+            GpuTextureCube* shadowCube = &pointShadow.shadowCube->depthTest;
 
             PIXBeginEvent(ctx.frameContext->commandContext->GetDirectCommandList(), PixColors::ShadowMapPass, L"Write Point Light Depth Buffer %u", pointShadow.lightIndex + 1);
             for (uint32_t face = 0; face < 6; ++face)
@@ -61,19 +60,13 @@ namespace efg::d3d12
                 m_scissorRect.right = static_cast<LONG>(2048);
                 m_scissorRect.bottom = static_cast<LONG>(2048);
 
-                float clearLinearDepth[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
                 PIXBeginEvent(ctx.frameContext->commandContext->GetDirectCommandList(), PixColors::ShadowMapPass, L"Write Point Light %u Face %u", pointShadow.lightIndex + 1, face + 1);
                 ctx.frameContext->commandContext->SetViewportAndScissor(m_viewport, m_scissorRect);
-                ctx.frameContext->commandContext->SetRenderTarget(1, &shadowCubeLinearDepthColor->rtv[face], &shadowCubeDepthTest->dsv[face]);
-                ctx.frameContext->commandContext->ClearDepthStencil(shadowCubeDepthTest->dsv[face], 1.0f, 0);
-                ctx.frameContext->commandContext->ClearRenderTarget(shadowCubeLinearDepthColor->rtv[face], clearLinearDepth);
-                LightViewConstants viewConstants = {};
-                PointShadowConstants pointShadowConstants = {};
-                viewConstants.viewProjection = pointShadow.faceViewProjection[face];
-                pointShadowConstants.positionAndFarPlane = Freeside::Math::Vec4(pointShadow.position.x, pointShadow.position.y, pointShadow.position.z, pointShadow.farPlane);
-                resources.lightViewCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &viewConstants, sizeof(LightViewConstants));
-                resources.pointShadowCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &pointShadowConstants, sizeof(PointShadowConstants));
+                ctx.frameContext->commandContext->SetRenderTarget(0, nullptr, &shadowCube->dsv[face]);
+                ctx.frameContext->commandContext->ClearDepthStencil(shadowCube->dsv[face], 1.0f, 0);
+                LightViewConstants constants = {};
+                constants.viewProjection = pointShadow.faceViewProjection[face];
+                resources.lightViewCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &constants, sizeof(LightViewConstants));
                 BindPassResources(ctx, resources);
                 DrawAllRenderObjects(ctx, scene);
                 PIXEndEvent(ctx.frameContext->commandContext->GetDirectCommandList());
@@ -86,7 +79,6 @@ namespace efg::d3d12
     {
         ctx.frameContext->commandContext->BindPipeline(ctx.services->pipelines->GetPipelineById(PipelineId::ShadowMap));
         ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(0, resources.lightViewCB);
-        ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(2, resources.pointShadowCB);
     }
 
     void D3D12ShadowMapRenderPass::DrawAllRenderObjects(D3D12PassContext& ctx, const FramePacket& scene)

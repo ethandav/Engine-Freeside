@@ -10,9 +10,4 @@ namespace efg::d3d12
 		Freeside::Math::Vec4 viewPosition;
 		Freeside::Math::Mat4 viewProjection;
 	};
-
-	struct PointShadowConstants
-	{
-		Freeside::Math::Vec4 positionAndFarPlane;
-	};
 }

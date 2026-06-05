@@ -22,7 +22,6 @@ namespace efg::d3d12
         uint32_t lightIndex = 0;
         GpuPointShadowCube* shadowCube = nullptr;
         Freeside::Math::Mat4 faceViewProjection[6] = {};
-        Freeside::Math::Vec3 position;
         float farPlane = 0.0f;
     };
 

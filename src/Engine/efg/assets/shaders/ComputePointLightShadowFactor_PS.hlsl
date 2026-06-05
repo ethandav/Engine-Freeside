@@ -7,87 +7,53 @@ struct PointShadowData
 
 StructuredBuffer<PointShadowData> gPointShadows : register(t4);
 
-float SamplePointShadowPCF(
-    TextureCube<float> shadowCube,
-    float3 sampleDir,
-    float currentDepth,
-    float bias,
-    float diskRadius)
+uint GetCubeFaceIndex(float3 dir)
 {
-    float3 offsets[6] =
+    float3 absDir = abs(dir);
+
+    if (absDir.x >= absDir.y && absDir.x >= absDir.z)
     {
-        float3(1.0f, 0.0f, 0.0f),
-        float3(-1.0f, 0.0f, 0.0f),
-        float3(0.0f, 1.0f, 0.0f),
-        float3(0.0f, -1.0f, 0.0f),
-        float3(0.0f, 0.0f, 1.0f),
-        float3(0.0f, 0.0f, -1.0f)
-    };
-
-    float visibility = 0.0f;
-
-    // Center sample.
-    float sampledDepth = shadowCube.SampleLevel(gLinearSampler, sampleDir, 0).r;
-    visibility += currentDepth - bias <= sampledDepth ? 1.0f : 0.0f;
-
-    [unroll]
-    for (int i = 0; i < 6; ++i)
-    {
-        float3 dir = normalize(sampleDir + offsets[i] * diskRadius);
-        sampledDepth = shadowCube.SampleLevel(gLinearSampler, dir, 0).r;
-
-        visibility += currentDepth - bias <= sampledDepth ? 1.0f : 0.0f;
+        return dir.x >= 0.0f ? 0 : 1;
     }
 
-    return visibility / 7.0f;
+    if (absDir.y >= absDir.x && absDir.y >= absDir.z)
+    {
+        return dir.y >= 0.0f ? 2 : 3;
+    }
+
+    return dir.z >= 0.0f ? 4 : 5;
 }
 
-float ComputePointShadowFactor(
-    float3 worldPosition,
-    float3 lightPosition,
-    int shadowDataIndex,
-    int shadowTextureDescriptorIndex)
+float ComputePointShadowFactor(float3 worldPosition, float3 lightPosition, int shadowDataIndex, int shadowTextureDescriptorIndex)
 {
     if (shadowDataIndex < 0 || shadowDataIndex >= (int) gPointShadowCount)
     {
         return 1.0f;
     }
 
-    if (shadowTextureDescriptorIndex < 0)
-    {
-        return 1.0f;
-    }
-
+    float3 lightToPixel = worldPosition - lightPosition;
+    float3 sampleDir = normalize(lightToPixel);
+    uint faceIndex = GetCubeFaceIndex(sampleDir);
+    
     PointShadowData shadowData = gPointShadows[shadowDataIndex];
 
-    float3 lightToPixel = worldPosition - lightPosition;
-    float distanceToLight = length(lightToPixel);
+    float4 lightClip = mul(
+        shadowData.faceViewProjection[faceIndex],
+        float4(worldPosition, 1.0f)
+    );
 
-    if (distanceToLight <= 0.0001f)
+    float3 lightNdc = lightClip.xyz / lightClip.w;
+    float currentDepth = lightNdc.z;
+
+    if (currentDepth < 0.0f || currentDepth > 1.0f)
     {
         return 1.0f;
     }
 
-    if (distanceToLight > shadowData.farPlane)
-    {
-        return 1.0f;
-    }
+    TextureCube<float> shadowCube = ResourceDescriptorHeap[NonUniformResourceIndex(shadowTextureDescriptorIndex)];
 
-    float3 sampleDir = lightToPixel / distanceToLight;
-
-    TextureCube<float> shadowCube =
-        ResourceDescriptorHeap[NonUniformResourceIndex(shadowTextureDescriptorIndex)];
-
-    float currentDepth = distanceToLight / shadowData.farPlane;
-
-    float diskRadius = 0.0025f;
-
-    float visibility = SamplePointShadowPCF(
-        shadowCube,
-        sampleDir,
-        currentDepth,
-        gShadowBias,
-        diskRadius);
+    float sampledDepth = shadowCube.Sample(gLinearSampler, sampleDir);
+    float visibility = currentDepth - gShadowBias <= sampledDepth ? 1.0f : 0.0f;
 
     return lerp(1.0f, visibility, gShadowStrength);
 }

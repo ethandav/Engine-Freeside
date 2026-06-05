@@ -7,13 +7,19 @@ struct VSOutput
     float4 tangentWS : TEXCOORD3;
 };
 
-cbuffer PointShadowCB : register(b0)
+cbuffer CameraCB : register(b0)
 {
-    float4 PositionAndFarPlane; // xyz = position, w = farPlane
+    float4 ViewPosition;
+    float4x4 ViewProjection;
+};
+
+cbuffer FarPlaneCB : register(b1)
+{
+    float FarPlane;
 };
 
 float4 PSMain(VSOutput input) : SV_TARGET
 {
-    float distanceToLight = length(input.worldPosition - PositionAndFarPlane.xyz);
-    return saturate(distanceToLight / PositionAndFarPlane.w);
+    float distanceToLight = length(input.worldPosition - ViewPosition.xyz);
+    return saturate(distanceToLight / FarPlane);
 }
