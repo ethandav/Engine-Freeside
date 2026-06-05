@@ -24,7 +24,7 @@ namespace efg::d3d12
         return texture;
     }
 
-    GpuTextureCube D3D12TextureFactory::CreateTextureCube(uint32_t width, uint32_t height, DescriptorVisibility visibility, DXGI_FORMAT format, bool renderTarget)
+    GpuTextureCube D3D12TextureFactory::CreateTextureCube(uint32_t width, uint32_t height, DescriptorVisibility visibility, DXGI_FORMAT format)
     {
         GpuTextureCube texture = {};
         texture.width = width;

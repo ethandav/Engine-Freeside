@@ -22,7 +22,6 @@ namespace efg::d3d12
 		void CreateStructuredBufferSRV(GpuStructuredBuffer* resource, uint32_t elementCount, uint32_t elementStride, DescriptorVisibility visibility);
 		void CreateTexture2DSRV(GpuTexture2D* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility);
 		void CreateTextureCubeSRV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility);
-		void CreateTextureCubeFaceRTV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex);
 		void CreateTextureCubeFaceDSV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex);
 	private:
 		uint32_t CreateSRVWithVisibility(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, DescriptorVisibility visibility, D3D12_CPU_DESCRIPTOR_HANDLE* outCpuOnly, D3D12_GPU_DESCRIPTOR_HANDLE* outShaderVisible);
