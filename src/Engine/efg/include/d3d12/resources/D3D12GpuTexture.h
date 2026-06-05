@@ -39,10 +39,4 @@ namespace efg::d3d12
 
         int32_t bindlessSrvIndex = -1;
     };
-
-    struct GpuPointShadowCube
-    {
-        GpuTextureCube linearDepthColor;
-        GpuTextureCube depthTest;
-    };
 }

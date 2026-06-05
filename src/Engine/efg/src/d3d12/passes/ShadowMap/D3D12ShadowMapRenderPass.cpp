@@ -43,7 +43,7 @@ namespace efg::d3d12
 
         for (const auto& pointShadow : shadowMapFrameData.pointShadows)
         {
-            GpuTextureCube* shadowCube = &pointShadow.shadowCube->depthTest;
+            GpuTextureCube* shadowCube = pointShadow.shadowCube;
 
             PIXBeginEvent(ctx.frameContext->commandContext->GetDirectCommandList(), PixColors::ShadowMapPass, L"Write Point Light Depth Buffer %u", pointShadow.lightIndex + 1);
             for (uint32_t face = 0; face < 6; ++face)

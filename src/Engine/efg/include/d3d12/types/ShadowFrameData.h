@@ -20,7 +20,7 @@ namespace efg::d3d12
     struct PointShadowEntry
     {
         uint32_t lightIndex = 0;
-        GpuPointShadowCube* shadowCube = nullptr;
+        GpuTextureCube* shadowCube = nullptr;
         Freeside::Math::Mat4 faceViewProjection[6] = {};
         float farPlane = 0.0f;
     };

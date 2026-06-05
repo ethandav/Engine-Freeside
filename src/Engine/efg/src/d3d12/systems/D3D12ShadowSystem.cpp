@@ -54,10 +54,8 @@ namespace efg::d3d12
 		{
 			for (uint32_t i = static_cast<uint32_t>(m_pointShadowCubes.size()); i < scene.pointLights.size(); i++)
 			{
-				GpuPointShadowCube cube = {};
-				cube.depthTest = m_textureFactory->CreateDepthTextureCube(2048, 2048, DescriptorVisibility::CpuOnlyAndShaderVisible);
-				cube.linearDepthColor = m_textureFactory->CreateTextureCube(2048, 2048, DescriptorVisibility::CpuOnlyAndShaderVisible, DXGI_FORMAT_R32_FLOAT, true);
-				m_pointShadowCubes.push_back(std::move(cube));
+				GpuTextureCube texture = m_textureFactory->CreateDepthTextureCube(2048, 2048, DescriptorVisibility::CpuOnlyAndShaderVisible);
+				m_pointShadowCubes.push_back(std::move(texture));
 			}
 		}
 	}

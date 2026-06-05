@@ -30,16 +30,8 @@ namespace efg::d3d12
         texture.width = width;
         texture.height = height;
         texture.format = format;
-        m_resourceFactory->CreateCommittedTextureCubeResource(&texture, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON, nullptr);
+        m_resourceFactory->CreateCommittedTextureCubeResource(&texture, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
         m_descriptorFactory->CreateTextureCubeSRV(&texture, format, 1, visibility);
-
-        if (renderTarget)
-        {
-            for (uint32_t face = 0; face < 6; ++face)
-            {
-                m_descriptorFactory->CreateTextureCubeFaceRTV(&texture, DXGI_FORMAT_R32_FLOAT, face);
-            }
-        }
 
         return texture;
     }
