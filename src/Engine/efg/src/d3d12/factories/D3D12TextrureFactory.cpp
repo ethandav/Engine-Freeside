@@ -11,12 +11,24 @@ namespace efg::d3d12
         m_device = device;
     }
 
-    GpuTexture2D D3D12TextureFactory::CreateTexture2D(GpuTexture2D& texture, DescriptorVisibility visibility)
+    void D3D12TextureFactory::CreateTexture2D(GpuTexture2D& texture, DescriptorVisibility visibility)
     {
         m_resourceFactory->CreateCommittedTexture2DResource(&texture, texture.flags, texture.initialState, nullptr);
-        m_descriptorFactory->CreateTexture2DSRV(&texture, texture.resourceFormat, texture.mipLevels, visibility);
-        
-        return texture;
+
+        if (visibility == DescriptorVisibility::ShaderVisible || visibility == DescriptorVisibility::CpuOnlyAndShaderVisible)
+        {
+            m_descriptorFactory->CreateTexture2DSRV(&texture, texture.resourceFormat, texture.mipLevels, visibility);
+        }
+
+        if ((texture.flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0)
+        {
+            D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+            rtvDesc.Format = texture.rtvFormat;
+            rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
+            rtvDesc.Texture2D.MipSlice = 0;
+            rtvDesc.Texture2D.PlaneSlice = 0;
+            m_descriptorFactory->CreateRTV(texture.resource.Get(), &rtvDesc);
+        }
     }
 
     GpuTextureCube D3D12TextureFactory::CreateTextureCube(uint32_t width, uint32_t height, DescriptorVisibility visibility, DXGI_FORMAT format)
