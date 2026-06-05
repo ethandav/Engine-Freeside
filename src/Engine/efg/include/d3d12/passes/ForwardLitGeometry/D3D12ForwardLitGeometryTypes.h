@@ -105,7 +105,7 @@ namespace efg::d3d12
 	{
 		uint32_t directionalShadowCount = 0;
 		uint32_t pointShadowCount = 0;
-		float shadowBias = 0.0005f;
+		float shadowBias = 0.001f;
 		float shadowStrength = 1.0f;
 	};
 }

@@ -44,7 +44,13 @@ namespace efg::d3d12
         for (uint32_t i = 0; i < FrameCount; ++i)
         {
             D3D12_THROW_IF_FAILED(m_swapChain->GetBuffer(i, IID_PPV_ARGS(m_backBuffers[i].GetAddressOf())));
-            m_backBufferHandles[i] = m_descriptorFactory->CreateRTV(m_backBuffers[i].Get(), nullptr);
+
+            D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+            rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+            rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+            rtvDesc.Texture2D.MipSlice = 0;
+            rtvDesc.Texture2D.PlaneSlice = 0;
+            m_backBufferHandles[i] = m_descriptorFactory->CreateRTV(m_backBuffers[i].Get(), &rtvDesc);
         }
     }
 

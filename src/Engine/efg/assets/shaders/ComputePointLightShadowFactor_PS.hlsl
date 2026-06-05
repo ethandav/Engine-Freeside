@@ -7,6 +7,41 @@ struct PointShadowData
 
 StructuredBuffer<PointShadowData> gPointShadows : register(t4);
 
+float SamplePointShadowPCF(
+    TextureCube<float> shadowCube,
+    float3 sampleDir,
+    float currentDepth,
+    float bias,
+    float diskRadius)
+{
+    float3 offsets[6] =
+    {
+        float3(1.0f, 0.0f, 0.0f),
+        float3(-1.0f, 0.0f, 0.0f),
+        float3(0.0f, 1.0f, 0.0f),
+        float3(0.0f, -1.0f, 0.0f),
+        float3(0.0f, 0.0f, 1.0f),
+        float3(0.0f, 0.0f, -1.0f)
+    };
+
+    float visibility = 0.0f;
+
+    // Center sample.
+    float sampledDepth = shadowCube.SampleLevel(gLinearSampler, sampleDir, 0).r;
+    visibility += currentDepth - bias <= sampledDepth ? 1.0f : 0.0f;
+
+    [unroll]
+    for (int i = 0; i < 6; ++i)
+    {
+        float3 dir = normalize(sampleDir + offsets[i] * diskRadius);
+        sampledDepth = shadowCube.SampleLevel(gLinearSampler, dir, 0).r;
+
+        visibility += currentDepth - bias <= sampledDepth ? 1.0f : 0.0f;
+    }
+
+    return visibility / 7.0f;
+}
+
 float ComputePointShadowFactor(
     float3 worldPosition,
     float3 lightPosition,
@@ -44,12 +79,15 @@ float ComputePointShadowFactor(
         ResourceDescriptorHeap[NonUniformResourceIndex(shadowTextureDescriptorIndex)];
 
     float currentDepth = distanceToLight / shadowData.farPlane;
-    float sampledDepth = shadowCube.SampleLevel(gLinearSampler, sampleDir, 0).r;
 
-    float visibility =
-        currentDepth - gShadowBias <= sampledDepth
-        ? 1.0f
-        : 0.0f;
+    float diskRadius = 0.0025f;
+
+    float visibility = SamplePointShadowPCF(
+        shadowCube,
+        sampleDir,
+        currentDepth,
+        gShadowBias,
+        diskRadius);
 
     return lerp(1.0f, visibility, gShadowStrength);
 }
