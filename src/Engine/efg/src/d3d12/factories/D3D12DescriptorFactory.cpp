@@ -77,6 +77,18 @@ namespace efg::d3d12
         texture->bindlessSrvIndex = CreateSRVWithVisibility(texture->resource.Get(), desc, visibility, &texture->cpuSrv, &texture->gpuSrv);
     }
 
+    void D3D12DescriptorFactory::CreateTextureCubeFaceRTV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex)
+    {
+        D3D12_RENDER_TARGET_VIEW_DESC desc = {};
+        desc.Format = format;
+        desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
+        desc.Texture2DArray.MipSlice = 0;
+        desc.Texture2DArray.FirstArraySlice = faceIndex;
+        desc.Texture2DArray.ArraySize = 1;
+        CpuDescriptorAllocation allocation = CreateRTV(texture->resource.Get(), &desc);
+        texture->rtv[faceIndex] = allocation.cpu;
+    }
+
     void D3D12DescriptorFactory::CreateTextureCubeFaceDSV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex)
     {
         D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};

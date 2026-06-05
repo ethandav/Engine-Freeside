@@ -106,7 +106,7 @@ float4 PSMain(VSOutput input) : SV_TARGET
         normal = normalize(input.normalWS);
     }
 
-    float3 ambient = 0.0f;
+    float3 ambient = baseColor.rgb * 0.01f * occlusion;
     float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, baseColor, metallic, roughness);
     float3 pointLighting = AccumulatePointLights(input.worldPosition, normal, viewDir, baseColor, metallic, roughness);
 

@@ -83,6 +83,13 @@ namespace efg::d3d12
             L"VSMain",
             L"vs_6_6"
         );
+
+        AddShader(
+            ShaderId::PointLightShadowMapPS,
+            L"..\\Engine\\efg\\assets\\shaders\\PointLightShadowMap_PS.hlsl",
+            L"PSMain",
+            L"ps_6_6"
+        );
     }
 
     Microsoft::WRL::ComPtr<IDxcBlob> D3D12ShaderLibrary::CompileShaderFromFile(
