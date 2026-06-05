@@ -14,12 +14,13 @@ namespace efg::d3d12::ShadowMapPipeline
         GraphicsPipelineState pipeline = {};
 
         CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-        CD3DX12_ROOT_PARAMETER rootParameters[2] = {};
+        CD3DX12_ROOT_PARAMETER rootParameters[3] = {};
         Microsoft::WRL::ComPtr<ID3DBlob> signature;
         Microsoft::WRL::ComPtr<ID3DBlob> error;
 
         rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
         rootParameters[1].InitAsShaderResourceView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+        rootParameters[2].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
         rootSignatureDesc.Init(
             _countof(rootParameters),
@@ -36,15 +37,17 @@ namespace efg::d3d12::ShadowMapPipeline
             { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
             { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
             { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+            { "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,    0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
         };
 
         const ShaderBytecode& vertexShader = shaderLibrary.Get(ShaderId::GeometryVS);
+        const ShaderBytecode& pixelShader = shaderLibrary.Get(ShaderId::PointLightShadowMapPS);
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
         psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
         psoDesc.pRootSignature = pipeline.rootSignature.Get();
         psoDesc.VS = vertexShader.GetBytecode();
+        psoDesc.PS = pixelShader.GetBytecode();
         psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
         psoDesc.DepthStencilState.DepthEnable = TRUE;
@@ -53,8 +56,8 @@ namespace efg::d3d12::ShadowMapPipeline
         psoDesc.DepthStencilState.StencilEnable = FALSE;
         psoDesc.SampleMask = UINT_MAX;
         psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-        psoDesc.NumRenderTargets = 0;
-        psoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
+        psoDesc.NumRenderTargets = 1;
+        psoDesc.RTVFormats[0] = DXGI_FORMAT_R32_FLOAT;
         psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
         psoDesc.SampleDesc.Count = 1;
 

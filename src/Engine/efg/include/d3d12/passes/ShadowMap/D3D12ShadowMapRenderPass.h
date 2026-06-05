@@ -22,6 +22,7 @@ namespace efg::d3d12
 		struct ShadowMapPassResources
 		{
 			D3D12_GPU_VIRTUAL_ADDRESS lightViewCB = 0;
+			D3D12_GPU_VIRTUAL_ADDRESS pointShadowCB = 0;
 		};
 		void BindPassResources(D3D12PassContext& ctx, ShadowMapPassResources& resources);
 		void DrawAllRenderObjects(D3D12PassContext& ctx, const FramePacket& scene);

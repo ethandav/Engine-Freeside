@@ -44,7 +44,7 @@ namespace efg::d3d12
                 return ShadowBinding
                 {
                     i,
-                    entry.shadowCube->depthTest.bindlessSrvIndex
+                    entry.shadowCube->linearDepthColor.bindlessSrvIndex
                 };
             }
         }

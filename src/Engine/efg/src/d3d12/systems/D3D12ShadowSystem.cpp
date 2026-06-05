@@ -32,6 +32,7 @@ namespace efg::d3d12
 			entry.lightIndex = i;
 			entry.shadowCube = &m_pointShadowCubes[i];
 			entry.farPlane = scene.pointLights[i].radius;
+			entry.position = scene.pointLights[i].position;
 			CalculatePointLightViewProjectionMatrices(scene.pointLights[i], entry.faceViewProjection, entry.farPlane);
 			output.pointShadows.push_back(std::move(entry));
 		}
