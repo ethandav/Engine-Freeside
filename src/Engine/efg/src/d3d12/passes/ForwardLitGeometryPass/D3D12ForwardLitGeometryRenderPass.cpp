@@ -262,7 +262,7 @@ namespace efg::d3d12
 
         resources.shadowMetadata.directionalShadowCount = directionalShadowCount;
         resources.shadowMetadata.pointShadowCount = pointShadowCount;
-        resources.shadowMetadata.shadowBias = 0.001f;
+        resources.shadowMetadata.shadowBias = 0.0005f;
         resources.shadowMetadata.shadowStrength = 1.0f;
         resources.shadowMetadataCB = ctx.services->buffers->CopyToConstantBufferArena(ctx.frameContext->frameResource->constantBufferArena, &resources.shadowMetadata, sizeof(ShadowMetadataConstants));
 
