@@ -20,13 +20,16 @@ namespace efg::d3d12
 		GpuDescriptorAllocation CreateUAV(ID3D12Resource* resource, uint32_t elementCount, uint32_t elementStride, ID3D12Resource* counterResource);
 		GpuDescriptorAllocation CreateSampler(const D3D12_SAMPLER_DESC& samplerDesc);
 		void CreateStructuredBufferSRV(GpuStructuredBuffer* resource, uint32_t elementCount, uint32_t elementStride, DescriptorVisibility visibility);
-		void CreateTexture2DSRV(GpuTexture2D* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility);
-		void CreateTextureCubeSRV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility);
-		void CreateTextureCubeFaceDSV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex);
+		void CreateTexture2DSRV(GpuTexture2D* texture, DescriptorVisibility visibility);
+		void CreateTexture2DRTV(GpuTexture2D* texture, DescriptorVisibility visibility);
+		void CreateTextureCubeSRV(GpuTextureCube* texture, DescriptorVisibility visibility);
+		void CreateTextureCubeFaceDSV(GpuTextureCube* texture, uint32_t faceIndex);
+		void CreateTextureCubeFaceRTV(GpuTextureCube* texture, uint32_t faceIndex);
 	private:
 		uint32_t CreateSRVWithVisibility(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC& desc, DescriptorVisibility visibility, D3D12_CPU_DESCRIPTOR_HANDLE* outCpuOnly, D3D12_GPU_DESCRIPTOR_HANDLE* outShaderVisible);
 		D3D12_SHADER_RESOURCE_VIEW_DESC BuildStructuredBufferSRVDesc(uint32_t elementCount, uint32_t elementStride);
 		D3D12_SHADER_RESOURCE_VIEW_DESC BuildTexture2DSRVDesc(DXGI_FORMAT format, uint32_t mipLevels);
+		D3D12_RENDER_TARGET_VIEW_DESC BuildTexture2DRTVDesc(DXGI_FORMAT format);
 		D3D12_SHADER_RESOURCE_VIEW_DESC BuildTextureCubeSRVDesc(DXGI_FORMAT format, uint32_t mipLevels);
 
 		ID3D12Device* m_device = nullptr;

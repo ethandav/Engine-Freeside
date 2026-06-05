@@ -65,28 +65,47 @@ namespace efg::d3d12
         CreateSRVWithVisibility(buffer->resource.Get(), desc, visibility, &buffer->cpuSrv, &buffer->gpuSrv);
     }
 
-    void efg::d3d12::D3D12DescriptorFactory::CreateTexture2DSRV(GpuTexture2D* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility)
+    void efg::d3d12::D3D12DescriptorFactory::CreateTexture2DSRV(GpuTexture2D* texture, DescriptorVisibility visibility)
     {
-        D3D12_SHADER_RESOURCE_VIEW_DESC desc = BuildTexture2DSRVDesc(format, mipLevels);
+        D3D12_SHADER_RESOURCE_VIEW_DESC desc = BuildTexture2DSRVDesc(texture->srvFormat, texture->mipLevels);
         texture->bindlessSrvIndex = CreateSRVWithVisibility(texture->resource.Get(), desc, visibility, &texture->cpuSrv, &texture->gpuSrv);
     }
 
-    void efg::d3d12::D3D12DescriptorFactory::CreateTextureCubeSRV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t mipLevels, DescriptorVisibility visibility)
+    void D3D12DescriptorFactory::CreateTexture2DRTV(GpuTexture2D* texture, DescriptorVisibility visibility)
     {
-        D3D12_SHADER_RESOURCE_VIEW_DESC desc = BuildTextureCubeSRVDesc(format, mipLevels);
+        D3D12_RENDER_TARGET_VIEW_DESC desc = BuildTexture2DRTVDesc(texture->rtvFormat);
+        CpuDescriptorAllocation allocation = CreateRTV(texture->resource.Get(), &desc);
+        texture->rtv = allocation.cpu;
+    }
+
+    void efg::d3d12::D3D12DescriptorFactory::CreateTextureCubeSRV(GpuTextureCube* texture, DescriptorVisibility visibility)
+    {
+        D3D12_SHADER_RESOURCE_VIEW_DESC desc = BuildTextureCubeSRVDesc(texture->srvFormat, texture->mipLevels);
         texture->bindlessSrvIndex = CreateSRVWithVisibility(texture->resource.Get(), desc, visibility, &texture->cpuSrv, &texture->gpuSrv);
     }
 
-    void D3D12DescriptorFactory::CreateTextureCubeFaceDSV(GpuTextureCube* texture, DXGI_FORMAT format, uint32_t faceIndex)
+    void D3D12DescriptorFactory::CreateTextureCubeFaceDSV(GpuTextureCube* texture, uint32_t faceIndex)
     {
         D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
-        desc.Format = format;
+        desc.Format = texture->dsvFormat;
         desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
         desc.Flags = D3D12_DSV_FLAG_NONE;
         desc.Texture2DArray.MipSlice = 0;
         desc.Texture2DArray.FirstArraySlice = faceIndex;
         desc.Texture2DArray.ArraySize = 1;
         CpuDescriptorAllocation allocation = CreateDSV(texture->resource.Get(), &desc);
+        texture->dsv[faceIndex] = allocation.cpu;
+    }
+
+    void D3D12DescriptorFactory::CreateTextureCubeFaceRTV(GpuTextureCube* texture, uint32_t faceIndex)
+    {
+        D3D12_RENDER_TARGET_VIEW_DESC desc = {};
+        desc.Format = texture->rtvFormat;
+        desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
+        desc.Texture2DArray.MipSlice = 0;
+        desc.Texture2DArray.FirstArraySlice = faceIndex;
+        desc.Texture2DArray.ArraySize = 1;
+        CpuDescriptorAllocation allocation = CreateRTV(texture->resource.Get(), &desc);
         texture->dsv[faceIndex] = allocation.cpu;
     }
 
@@ -160,6 +179,17 @@ namespace efg::d3d12
         desc.Texture2D.MostDetailedMip = 0;
         desc.Texture2D.PlaneSlice = 0;
         desc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+        return desc;
+    }
+
+    D3D12_RENDER_TARGET_VIEW_DESC D3D12DescriptorFactory::BuildTexture2DRTVDesc(DXGI_FORMAT format)
+    {
+        D3D12_RENDER_TARGET_VIEW_DESC desc = {};
+        desc.Format = format;
+        desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+        desc.Texture2D.MipSlice = 0;
+        desc.Texture2D.PlaneSlice = 0;
 
         return desc;
     }

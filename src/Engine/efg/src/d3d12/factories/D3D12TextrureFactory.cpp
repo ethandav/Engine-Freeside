@@ -17,30 +17,31 @@ namespace efg::d3d12
 
         if (visibility == DescriptorVisibility::ShaderVisible || visibility == DescriptorVisibility::CpuOnlyAndShaderVisible)
         {
-            m_descriptorFactory->CreateTexture2DSRV(&texture, texture.resourceFormat, texture.mipLevels, visibility);
+            m_descriptorFactory->CreateTexture2DSRV(&texture, visibility);
         }
 
         if ((texture.flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0)
         {
-            D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-            rtvDesc.Format = texture.rtvFormat;
-            rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
-            rtvDesc.Texture2D.MipSlice = 0;
-            rtvDesc.Texture2D.PlaneSlice = 0;
-            m_descriptorFactory->CreateRTV(texture.resource.Get(), &rtvDesc);
+            m_descriptorFactory->CreateTexture2DRTV(&texture, visibility);
         }
     }
 
-    GpuTextureCube D3D12TextureFactory::CreateTextureCube(uint32_t width, uint32_t height, DescriptorVisibility visibility, DXGI_FORMAT format)
+    void D3D12TextureFactory::CreateTextureCube(GpuTextureCube& texture, DescriptorVisibility visibility)
     {
-        GpuTextureCube texture = {};
-        texture.width = width;
-        texture.height = height;
-        texture.resourceFormat = format;
-        m_resourceFactory->CreateCommittedTextureCubeResource(&texture, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
-        m_descriptorFactory->CreateTextureCubeSRV(&texture, format, 1, visibility);
+        m_resourceFactory->CreateCommittedTextureCubeResource(&texture, texture.flags, texture.initialState, nullptr);
 
-        return texture;
+        if (visibility == DescriptorVisibility::ShaderVisible || visibility == DescriptorVisibility::CpuOnlyAndShaderVisible)
+        {
+            m_descriptorFactory->CreateTextureCubeSRV(&texture, visibility);
+        }
+
+        if ((texture.flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET) != 0)
+        {
+            for (uint32_t face = 0; face < 6; ++face)
+            {
+                m_descriptorFactory->CreateTextureCubeFaceRTV(&texture, face);
+            }
+        }
     }
 
     GpuTextureCube D3D12TextureFactory::CreateDepthTextureCube(uint32_t width, uint32_t height, DescriptorVisibility visibility, DXGI_FORMAT format)
@@ -49,12 +50,14 @@ namespace efg::d3d12
         texture.width = width;
         texture.height = height;
         texture.resourceFormat = format;
+        texture.srvFormat = DXGI_FORMAT_R32_FLOAT;
+        texture.dsvFormat = DXGI_FORMAT_D32_FLOAT;
         m_resourceFactory->CreateCommittedDepthTextureCubeResource(&texture);
-        m_descriptorFactory->CreateTextureCubeSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1, visibility);
+        m_descriptorFactory->CreateTextureCubeSRV(&texture, visibility);
 
         for (uint32_t face = 0; face < 6; ++face)
         {
-            m_descriptorFactory->CreateTextureCubeFaceDSV(&texture, DXGI_FORMAT_D32_FLOAT, face);
+            m_descriptorFactory->CreateTextureCubeFaceDSV(&texture, face);
         }
 
         return texture;
@@ -74,7 +77,7 @@ namespace efg::d3d12
 
         if (visibility == DescriptorVisibility::ShaderVisible || visibility == DescriptorVisibility::CpuOnlyAndShaderVisible)
         {
-            m_descriptorFactory->CreateTexture2DSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1, visibility);
+            m_descriptorFactory->CreateTexture2DSRV(&texture, visibility);
         }
 
         return texture;

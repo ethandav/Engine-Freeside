@@ -16,6 +16,7 @@ namespace efg::d3d12
         DXGI_FORMAT resourceFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
         DXGI_FORMAT dsvFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
         DXGI_FORMAT rtvFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+        DXGI_FORMAT srvFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
         D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
         D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
@@ -34,9 +35,11 @@ namespace efg::d3d12
 
         uint32_t width = 0;
         uint32_t height = 0;
+        uint32_t mipLevels = 1;
         DXGI_FORMAT resourceFormat = DXGI_FORMAT_UNKNOWN;
         DXGI_FORMAT dsvFormat = DXGI_FORMAT_UNKNOWN;
         DXGI_FORMAT rtvFormat = DXGI_FORMAT_UNKNOWN;
+        DXGI_FORMAT srvFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
         D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
         D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};

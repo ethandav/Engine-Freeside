@@ -171,7 +171,8 @@ namespace efg::d3d12
         GpuTexture2D texture = {};
         texture.width = textureDesc.width;
         texture.height = textureDesc.height;
-        texture.resourceFormat = ToDxgiFormat(textureDesc.format);
+        texture.resourceFormat = DXGI_FORMAT_R8G8B8A8_TYPELESS;
+        texture.srvFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
         m_textureFactory.CreateTexture2D(texture, DescriptorVisibility::CpuOnlyAndShaderVisible);
         m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), textureDesc.pixels.data(), texture.resource.Get()->GetDesc(), textureDesc.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         return m_textureLibrary.RegisterMaterialTexture2D(texture);
