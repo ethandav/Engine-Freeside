@@ -42,7 +42,7 @@ namespace efg::d3d12
         desc.Height = texture->height;
         desc.DepthOrArraySize = 1;
         desc.MipLevels = 1;
-        desc.Format = texture->format;
+        desc.Format = texture->resourceFormat;
         desc.SampleDesc.Count = 1;
         desc.SampleDesc.Quality = 0;
         desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
@@ -61,7 +61,7 @@ namespace efg::d3d12
         desc.Height = texture->height;
         desc.DepthOrArraySize = 6;
         desc.MipLevels = 1;
-        desc.Format = texture->format;
+        desc.Format = texture->resourceFormat;
         desc.SampleDesc.Count = 1;
         desc.SampleDesc.Quality = 0;
         desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;

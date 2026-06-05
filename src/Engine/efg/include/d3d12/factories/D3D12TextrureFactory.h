@@ -16,7 +16,7 @@ namespace efg::d3d12
 	{
 	public:
 		void Initialize(ID3D12Device* device, D3D12ResourceFactory* resourceFactory, D3D12DescriptorFactory* descriptorFactory);
-		GpuTexture2D CreateTexture2D(uint32_t width, uint32_t height, DXGI_FORMAT format, DescriptorVisibility visibility);
+		GpuTexture2D CreateTexture2D(GpuTexture2D& texture, DescriptorVisibility visibility);
 		GpuTextureCube CreateTextureCube(uint32_t width, uint32_t height, DescriptorVisibility visibility, DXGI_FORMAT format);
 		GpuTextureCube CreateDepthTextureCube(uint32_t width, uint32_t height, DescriptorVisibility visibility, DXGI_FORMAT format = DXGI_FORMAT_R32_TYPELESS);
 		GpuTexture2D CreateDepthBuffer(uint32_t width, uint32_t height, DescriptorVisibility visibility);

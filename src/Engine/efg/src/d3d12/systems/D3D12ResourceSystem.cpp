@@ -168,7 +168,11 @@ namespace efg::d3d12
 
     Freeside::TextureHandle D3D12ResourceSystem::CreateMaterialTexture2d(const Freeside::TextureDesc& textureDesc)
     {
-        GpuTexture2D texture = m_textureFactory.CreateTexture2D(textureDesc.width, textureDesc.height, ToDxgiFormat(textureDesc.format), DescriptorVisibility::CpuOnlyAndShaderVisible);
+        GpuTexture2D texture = {};
+        texture.width = textureDesc.width;
+        texture.height = textureDesc.height;
+        texture.resourceFormat = ToDxgiFormat(textureDesc.format);
+        m_textureFactory.CreateTexture2D(texture, DescriptorVisibility::CpuOnlyAndShaderVisible);
         m_uploadContext.QueueTexture2DUpload(texture.resource.Get(), textureDesc.pixels.data(), texture.resource.Get()->GetDesc(), textureDesc.rowPitch, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         return m_textureLibrary.RegisterMaterialTexture2D(texture);
     }

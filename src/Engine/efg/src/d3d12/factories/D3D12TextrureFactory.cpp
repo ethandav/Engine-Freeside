@@ -11,16 +11,11 @@ namespace efg::d3d12
         m_device = device;
     }
 
-    GpuTexture2D D3D12TextureFactory::CreateTexture2D(uint32_t width, uint32_t height, DXGI_FORMAT format, DescriptorVisibility visibility)
+    GpuTexture2D D3D12TextureFactory::CreateTexture2D(GpuTexture2D& texture, DescriptorVisibility visibility)
     {
-        GpuTexture2D texture = {};
-        texture.width = width;
-        texture.height = height;
-        texture.mipLevels = 1;
-        texture.format = format;
-        m_resourceFactory->CreateCommittedTexture2DResource(&texture, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
-        m_descriptorFactory->CreateTexture2DSRV(&texture, texture.format, texture.mipLevels, visibility);
-
+        m_resourceFactory->CreateCommittedTexture2DResource(&texture, texture.flags, texture.initialState, nullptr);
+        m_descriptorFactory->CreateTexture2DSRV(&texture, texture.resourceFormat, texture.mipLevels, visibility);
+        
         return texture;
     }
 
@@ -29,7 +24,7 @@ namespace efg::d3d12
         GpuTextureCube texture = {};
         texture.width = width;
         texture.height = height;
-        texture.format = format;
+        texture.resourceFormat = format;
         m_resourceFactory->CreateCommittedTextureCubeResource(&texture, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COMMON, nullptr);
         m_descriptorFactory->CreateTextureCubeSRV(&texture, format, 1, visibility);
 
@@ -41,7 +36,7 @@ namespace efg::d3d12
         GpuTextureCube texture = {};
         texture.width = width;
         texture.height = height;
-        texture.format = format;
+        texture.resourceFormat = format;
         m_resourceFactory->CreateCommittedDepthTextureCubeResource(&texture);
         m_descriptorFactory->CreateTextureCubeSRV(&texture, DXGI_FORMAT_R32_FLOAT, 1, visibility);
 
@@ -59,7 +54,7 @@ namespace efg::d3d12
         texture.width = width;
         texture.height = height;
         texture.mipLevels = 1;
-        texture.format = DXGI_FORMAT_D32_FLOAT;
+        texture.resourceFormat = DXGI_FORMAT_D32_FLOAT;
          
         m_resourceFactory->CreateCommittedDepthTexture2DResource(&texture);
 
