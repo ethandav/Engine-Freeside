@@ -9,7 +9,6 @@ cbuffer ShadowMetadataCB : register(b5)
     float gShadowStrength;
 };
 
-#include "PBR.hlsli"
 #include "Materials.hlsli"
 #include "AccumulateDirectionalLights_PS.hlsl"
 #include "AccumulatePointLights_PS.hlsl"
@@ -22,7 +21,7 @@ struct VSOutput
     float3 worldPosition : TEXCOORD0;
     float3 normalWS : TEXCOORD1;
     float2 uv : TEXCOORD2;
-    float4 tangentWS : TEXCOORD3;
+    float3 tangentWS : TEXCOORD3;
 };
 
 cbuffer CameraCB : register(b0)
@@ -31,25 +30,29 @@ cbuffer CameraCB : register(b0)
     float4x4 ViewProjection;
 };
 
-void BuildTBN(float3 normalWS, float4 tangentWS, out float3 T, out float3 B, out float3 N)
+void BuildTBN(float3 normalWS, float3 tangentWS, out float3 T, out float3 B, out float3 N)
 {
     N = normalize(normalWS);
-    T = normalize(tangentWS.xyz - N * dot(tangentWS.xyz, N));
-    B = normalize(cross(N, T) * tangentWS.w);
+
+    // Re-orthogonalize tangent against normal.
+    T = normalize(tangentWS - N * dot(tangentWS, N));
+
+    // Depending on your handedness, this may need to be cross(T, N) instead.
+    B = normalize(cross(N, T));
 }
 
 float4 PSMain(VSOutput input) : SV_TARGET
 {
     float2 uv = input.uv * UvTransform.xy + UvTransform.zw;
     float3 viewDir = normalize(ViewPosition.xyz - input.worldPosition);
-    
-    float3 T, B, N;
-    BuildTBN(input.normalWS, input.tangentWS, T, B, N);
-    float3x3 TBN = float3x3(T, B, N);
-    float3 viewDirTS = mul(viewDir, transpose(TBN));
 
     if (MaterialFlags & MaterialFlag_HasHeightTexture)
     {
+        float3 T, B, N;
+        BuildTBN(input.normalWS, input.tangentWS, T, B, N);
+
+        float3x3 TBN = float3x3(T, B, N);
+        float3 viewDirTS = mul(viewDir, transpose(TBN));
 
         uv = ApplyParallaxOcclusionMapping(uv, viewDirTS);
     }
@@ -99,14 +102,14 @@ float4 PSMain(VSOutput input) : SV_TARGET
 
     if (MaterialFlags & MaterialFlag_HasNormalTexture)
     {
-        normal = ApplyNormalMap(TBN, uv);
+        normal = ApplyNormalMap(input.normalWS, input.tangentWS, uv);
     }
     else
     {
         normal = normalize(input.normalWS);
     }
 
-    float3 ambient = 0.0f;
+    float3 ambient = baseColor.rgb * 0.1f * occlusion;
     float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, baseColor, metallic, roughness);
     float3 pointLighting = AccumulatePointLights(input.worldPosition, normal, viewDir, baseColor, metallic, roughness);
 

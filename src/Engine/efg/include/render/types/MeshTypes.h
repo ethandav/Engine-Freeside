@@ -1,6 +1,5 @@
 #pragma once
 
-#include "..\..\..\..\Freeside.Core\include\math\Vec4.h"
 #include "..\..\..\..\Freeside.Core\include\math\Vec3.h"
 #include "..\..\..\..\Freeside.Core\include\math\Vec2.h"
 
@@ -13,7 +12,7 @@ namespace Freeside
         Freeside::Math::Vec3 position;
         Freeside::Math::Vec3 normal;
         Freeside::Math::Vec2 uv;
-        Freeside::Math::Vec4 tangent;
+        Freeside::Math::Vec3 tangent;
     };
 
     struct MeshDesc
