@@ -44,7 +44,7 @@ namespace efg::d3d12
                 return ShadowBinding
                 {
                     i,
-                    entry.shadowCube->bindlessSrvIndex
+                    entry.shadowCube->depthTest.bindlessSrvIndex
                 };
             }
         }

@@ -21,6 +21,6 @@ namespace efg::d3d12
 
 		D3D12TextureFactory* m_textureFactory = nullptr;
 		std::vector<GpuTexture2D> m_directionalShadowMaps;
-		std::vector<GpuTextureCube> m_pointShadowCubes;
+		std::vector<GpuPointShadowCube> m_pointShadowCubes;
 	};
 }
