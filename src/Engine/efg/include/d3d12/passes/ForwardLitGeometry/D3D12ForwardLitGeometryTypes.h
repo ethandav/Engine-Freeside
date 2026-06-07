@@ -77,7 +77,7 @@ namespace efg::d3d12
 		Freeside::Math::Vec4 colorAndPadding;
 		int32_t shadowDataIndex = -1;
 		int32_t shadowTextureDescriptorIndex = -1;
-		float padding[3] = {};
+		float padding[2] = {};
 	};
 
 	struct GpuPointLight
@@ -86,7 +86,7 @@ namespace efg::d3d12
 		Freeside::Math::Vec4 colorAndIntensity;
 		int32_t shadowDataIndex = -1;
 		int32_t shadowTextureDescriptorIndex = -1;
-		float padding[3] = {};
+		float padding[2] = {};
 	};
 
 	struct GpuDirectionalShadowData

@@ -12,7 +12,7 @@ struct PointLight
     float4 colorAndIntensity;
     int shadowDataIndex;
     int shadowTextureDescriptorIndex;
-    float3 _padding;
+    float2 _padding;
 };
 
 StructuredBuffer<PointLight> gPointLights : register(t1);

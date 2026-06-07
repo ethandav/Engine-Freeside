@@ -12,7 +12,7 @@ struct DirectionalLight
     float4 lightColor;
     int shadowDataIndex;
     int shadowTextureDescriptorIndex;
-    float3 _padding;
+    float2 _padding;
 };
 
 StructuredBuffer<DirectionalLight> gDirectionalLights : register(t2);
