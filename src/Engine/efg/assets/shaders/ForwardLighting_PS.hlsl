@@ -11,7 +11,8 @@ cbuffer ShadowMetadataCB : register(b5)
 
 #include "Materials.hlsli"
 #include "AccumulateDirectionalLights_PS.hlsl"
-#include "AccumulatePointLights_PS.hlsl"
+//#include "AccumulatePointLights_PS.hlsl"
+#include "PBRAccumulatePointLights_PS.hlsl"
 #include "ApplyParallaxOcclusionMapping_PS.hlsl"
 #include "ApplyNormalMap_PS.hlsl"
 
@@ -34,7 +35,8 @@ void BuildTBN(float3 normalWS, float4 tangentWS, out float3 T, out float3 B, out
 {
     N = normalize(normalWS);
     T = normalize(tangentWS.xyz - N * dot(tangentWS.xyz, N));
-    B = normalize(cross(N, T)) * tangentWS.w;
+    float sign = tangentWS.w < 0.0f ? -1.0f : 1.0f;
+    B = normalize(cross(N, T)) * sign;
 }
 
 float4 PSMain(VSOutput input) : SV_TARGET
@@ -105,7 +107,7 @@ float4 PSMain(VSOutput input) : SV_TARGET
         normal = normalize(input.normalWS);
     }
 
-    float3 ambient = baseColor.rgb * 0.1f * occlusion;
+    float3 ambient = baseColor.rgb * 0.015f * occlusion;
     float3 directionalLighting = AccumulateDirectionalLights(input.worldPosition, normal, viewDir, baseColor, metallic, roughness);
     float3 pointLighting = AccumulatePointLights(input.worldPosition, normal, viewDir, baseColor, metallic, roughness);
 

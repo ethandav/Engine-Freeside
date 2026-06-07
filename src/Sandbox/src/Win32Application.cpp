@@ -102,8 +102,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	Freeside::Entity eCamera = testScene.CreateEntity();
 	Freeside::CameraComponent& cCamera = testScene.AddCamera(eCamera);
-	cCamera.camera.SetPosition(Freeside::Math::Vec3(0.0f, 1.0f, -1.0f));
-	cCamera.camera.SetTarget(Freeside::Math::Vec3(-1.0f, 0.0f, 0.0f));
+	cCamera.camera.SetPosition(Freeside::Math::Vec3(0.0f, 1.0f, -5.0f));
+	cCamera.camera.SetTarget(Freeside::Math::Vec3(0.0f, 0.5f, 0.0f));
 	cCamera.isMainCamera = true;
 
 	Freeside::FirstPersonCameraController cameraController;
@@ -148,7 +148,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::Entity ePointLight2 = testScene.CreateEntity();
 	Freeside::PointLightComponent& cPointLight2 = testScene.AddPointLight(ePointLight2);
 	Freeside::TransformComponent& cPointLightTransform2 = testScene.AddTransform(ePointLight2);
-	cPointLight2.intensity = 2.0f;
+	cPointLight2.intensity = 5.0f;
 	cPointLight2.radius = 10.0f;
 	cPointLightTransform2.position = Freeside::Math::Vec3(2.0f, 3.0f, -2.0f);
 
