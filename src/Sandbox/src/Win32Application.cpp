@@ -102,8 +102,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	Freeside::Entity eCamera = testScene.CreateEntity();
 	Freeside::CameraComponent& cCamera = testScene.AddCamera(eCamera);
-	cCamera.camera.SetPosition(Freeside::Math::Vec3(0.0f, 1.0f, -3.0f));
-	cCamera.camera.SetTarget(Freeside::Math::Vec3(-1.0f, -1.0f, -1.0f));
+	cCamera.camera.SetPosition(Freeside::Math::Vec3(0.0f, 1.0f, -1.0f));
+	cCamera.camera.SetTarget(Freeside::Math::Vec3(-1.0f, 0.0f, 0.0f));
 	cCamera.isMainCamera = true;
 
 	Freeside::FirstPersonCameraController cameraController;
@@ -111,7 +111,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cameraController.SetMoveSpeed(5.0f);
 	cameraController.SetMouseSensitivity(0.002f);
 
-	/*
 	Freeside::Entity eCrate = testScene.CreateEntity();
 	Freeside::MeshRendererComponent& cCrateRenderer = testScene.AddMeshRenderer(eCrate);
 	Freeside::TransformComponent& cCrateTransform = testScene.AddTransform(eCrate);
@@ -138,7 +137,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cCrate3Transform.position = Freeside::Math::Vec3(1.0f, 1.0f, 0.0f);
 	cCrate3Transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
 	cCrate3Transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	*/
 
 	Freeside::Entity ePointLight = testScene.CreateEntity();
 	Freeside::PointLightComponent& cPointLight = testScene.AddPointLight(ePointLight);
