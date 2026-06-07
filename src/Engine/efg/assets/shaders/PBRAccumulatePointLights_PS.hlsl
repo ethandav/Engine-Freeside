@@ -1,5 +1,4 @@
 #include "ComputePointLightShadowFactor_PS.hlsl"
-#include "PBR.hlsli"
 
 cbuffer PointLightMetadata : register(b4)
 {
@@ -55,6 +54,7 @@ float3 AccumulatePointLights(float3 worldPos, float3 normal, float3 viewDir, flo
         float3 radiance = lightColor * intensity * attenuation;
 
         float shadowFactor = ComputePointShadowFactor(worldPos, lightPos, light.shadowDataIndex, light.shadowTextureDescriptorIndex);
+        shadowFactor = lerp(1.0f, shadowFactor, gShadowStrength);
 
         float3 H = normalize(V + L);
 

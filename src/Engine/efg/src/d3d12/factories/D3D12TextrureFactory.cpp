@@ -69,11 +69,19 @@ namespace efg::d3d12
         texture.width = width;
         texture.height = height;
         texture.mipLevels = 1;
-        texture.resourceFormat = DXGI_FORMAT_D32_FLOAT;
+        texture.resourceFormat = DXGI_FORMAT_R32_TYPELESS;
+        texture.dsvFormat = DXGI_FORMAT_D32_FLOAT;
+        texture.srvFormat = DXGI_FORMAT_R32_FLOAT;
          
         m_resourceFactory->CreateCommittedDepthTexture2DResource(&texture);
 
-        texture.dsv = m_descriptorFactory->CreateDSV(texture.resource.Get(), nullptr).cpu;
+        D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
+        desc.Format = texture.dsvFormat;
+        desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+        desc.Flags = D3D12_DSV_FLAG_NONE;
+        desc.Texture2D.MipSlice = 0;
+
+        texture.dsv = m_descriptorFactory->CreateDSV(texture.resource.Get(), &desc).cpu;
 
         if (visibility == DescriptorVisibility::ShaderVisible || visibility == DescriptorVisibility::CpuOnlyAndShaderVisible)
         {

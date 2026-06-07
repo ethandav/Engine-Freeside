@@ -9,8 +9,10 @@ cbuffer ShadowMetadataCB : register(b5)
     float gShadowStrength;
 };
 
+#include "PBR.hlsli"
 #include "Materials.hlsli"
-#include "AccumulateDirectionalLights_PS.hlsl"
+//#include "AccumulateDirectionalLights_PS.hlsl"
+#include "PBRAccumulateDirectionalLights_PS.hlsl"
 //#include "AccumulatePointLights_PS.hlsl"
 #include "PBRAccumulatePointLights_PS.hlsl"
 #include "ApplyParallaxOcclusionMapping_PS.hlsl"

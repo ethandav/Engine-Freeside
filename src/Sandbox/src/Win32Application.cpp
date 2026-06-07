@@ -152,6 +152,12 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cPointLight2.radius = 10.0f;
 	cPointLightTransform2.position = Freeside::Math::Vec3(2.0f, 3.0f, -2.0f);
 
+	Freeside::Entity eDirLight = testScene.CreateEntity();
+	Freeside::DirectionalLightComponent& cDirLight = testScene.AddDirectionalLight(eDirLight);
+	cDirLight.intensity = 1.0f;
+	cDirLight.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	cDirLight.direction = Freeside::Math::Vec3(-0.2f, -1.0f, 0.3f);
+
 	Freeside::Entity eWall1 = testScene.CreateEntity();
 	Freeside::MeshRendererComponent& cWall1Renderer = testScene.AddMeshRenderer(eWall1);
 	Freeside::TransformComponent& cWall1Transform = testScene.AddTransform(eWall1);
