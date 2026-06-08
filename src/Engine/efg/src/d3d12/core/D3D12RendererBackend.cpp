@@ -32,7 +32,8 @@ namespace efg::d3d12
         m_resources.TextureFactory().CreateTexture2D(sceneColor, DescriptorVisibility::CpuOnlyAndShaderVisible, &clearValue);
         m_renderTargets.sceneColor = sceneColor;
 
-        sceneColor.resource.Get()->SetName(L"test");
+        sceneColor.resource.Get()->SetName(L"HDR Scene Color Render Target");
+        m_renderTargets.sceneDepth.resource.Get()->SetName(L"Scene Depth Buffer");
     }
 
     void D3D12RendererBackend::InitializeD3D12Systems(const Freeside::RendererDesc& desc)

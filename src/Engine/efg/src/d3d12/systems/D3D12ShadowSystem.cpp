@@ -46,6 +46,9 @@ namespace efg::d3d12
 			for (uint32_t i = static_cast<uint32_t>(m_directionalShadowMaps.size()); i < scene.directionalLights.size(); i++)
 			{
 				GpuTexture2D texture = m_textureFactory->CreateDepthBuffer(2048, 2048, DescriptorVisibility::CpuOnlyAndShaderVisible);
+				std::wstring name = L"Point Shadow Depth Buffer Cube ";
+				name += std::to_wstring(i);
+				texture.SetName(name);
 				m_directionalShadowMaps.push_back(std::move(texture));
 			}
 		}
@@ -55,6 +58,9 @@ namespace efg::d3d12
 			for (uint32_t i = static_cast<uint32_t>(m_pointShadowCubes.size()); i < scene.pointLights.size(); i++)
 			{
 				GpuTextureCube texture = m_textureFactory->CreateDepthTextureCube(2048, 2048, DescriptorVisibility::CpuOnlyAndShaderVisible);
+				std::wstring name = L"Point Shadow Depth Buffer Cube ";
+				name += std::to_wstring(i);
+				texture.SetName(name);
 				m_pointShadowCubes.push_back(std::move(texture));
 			}
 		}

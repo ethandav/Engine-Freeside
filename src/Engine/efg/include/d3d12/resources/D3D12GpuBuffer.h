@@ -10,6 +10,8 @@ namespace efg::d3d12
     {
         uint64_t sizeInBytes = 0;
         Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+
+        void SetName(std::wstring name) { resource.Get()->SetName(name.c_str()); }
     };
 
     struct GpuConstantBuffer
@@ -19,6 +21,8 @@ namespace efg::d3d12
 
         uint64_t sizeInBytes = 0;
         uint64_t alignedSizeInBytes = 0;
+
+        void SetName(std::wstring name) { resource.Get()->SetName(name.c_str()); }
     };
 
     struct GpuStructuredBuffer
@@ -32,5 +36,7 @@ namespace efg::d3d12
 
         D3D12_CPU_DESCRIPTOR_HANDLE cpuSrv = {};
         D3D12_GPU_DESCRIPTOR_HANDLE gpuSrv = {};
+
+        void SetName(std::wstring name) { resource.Get()->SetName(name.c_str()); }
     };
 }

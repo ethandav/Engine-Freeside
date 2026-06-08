@@ -50,6 +50,7 @@ namespace efg::d3d12
         m_directCommandAllocator = CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
         CreateCommandQueue(m_directQueue.GetAddressOf(), D3D12_COMMAND_LIST_TYPE_DIRECT);
         CreateCommandList(m_directCommandList.GetAddressOf(), m_directCommandAllocator.Get(), D3D12_COMMAND_LIST_TYPE_DIRECT);
+        m_directCommandList.Get()->SetName(L"Direct Command List");
         m_directCommandAllocator.Reset();
     }
 

@@ -3,6 +3,7 @@
 #include <wrl.h>
 #include <d3d12.h>
 #include <cstdint>
+#include <string>
 
 namespace efg::d3d12
 {
@@ -27,6 +28,8 @@ namespace efg::d3d12
 
         D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
         D3D12_RESOURCE_STATES initialState = D3D12_RESOURCE_STATE_COMMON;
+
+        void SetName(std::wstring name) { resource.Get()->SetName(name.c_str()); }
     };
 
     struct GpuTextureCube
@@ -50,5 +53,7 @@ namespace efg::d3d12
 
         D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE;
         D3D12_RESOURCE_STATES initialState = D3D12_RESOURCE_STATE_COMMON;
+
+        void SetName(std::wstring name) { resource.Get()->SetName(name.c_str()); }
     };
 }
