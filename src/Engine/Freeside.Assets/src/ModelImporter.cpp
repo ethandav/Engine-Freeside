@@ -49,6 +49,75 @@ namespace Freeside::Assets
         return static_cast<size_t>(stride);
     }
 
+    static Freeside::Math::Mat4 Mat4FromGltfMatrix(const std::vector<double>& m)
+    {
+        Freeside::Math::Mat4 result = Freeside::Math::Mat4::Identity();
+
+        // glTF stores matrices column-major.
+        result.m[0][0] = static_cast<float>(m[0]);
+        result.m[1][0] = static_cast<float>(m[1]);
+        result.m[2][0] = static_cast<float>(m[2]);
+        result.m[3][0] = static_cast<float>(m[3]);
+
+        result.m[0][1] = static_cast<float>(m[4]);
+        result.m[1][1] = static_cast<float>(m[5]);
+        result.m[2][1] = static_cast<float>(m[6]);
+        result.m[3][1] = static_cast<float>(m[7]);
+
+        result.m[0][2] = static_cast<float>(m[8]);
+        result.m[1][2] = static_cast<float>(m[9]);
+        result.m[2][2] = static_cast<float>(m[10]);
+        result.m[3][2] = static_cast<float>(m[11]);
+
+        result.m[0][3] = static_cast<float>(m[12]);
+        result.m[1][3] = static_cast<float>(m[13]);
+        result.m[2][3] = static_cast<float>(m[14]);
+        result.m[3][3] = static_cast<float>(m[15]);
+
+        return result;
+    }
+
+    static Freeside::Math::Mat4 GetNodeLocalTransform(const tinygltf::Node& node)
+    {
+        if (node.matrix.size() == 16)
+        {
+            return Mat4FromGltfMatrix(node.matrix);
+        }
+
+        Freeside::Math::Vec3 translation;
+        Freeside::Math::Vec3 rotation;
+        Freeside::Math::Vec3 scale;
+
+        if (node.translation.size() == 3)
+        {
+            Freeside::Math::Vec3 translation = {
+                static_cast<float>(node.translation[0]),
+                static_cast<float>(node.translation[1]),
+                static_cast<float>(node.translation[2]),
+            };
+        }
+
+        if (node.scale.size() == 3)
+        {
+            Freeside::Math::Vec3 rotation = {
+                static_cast<float>(node.rotation[0]),
+                static_cast<float>(node.rotation[1]),
+                static_cast<float>(node.rotation[2]),
+            };
+        }
+
+        if (node.rotation.size() == 4)
+        {
+            scale = {
+                static_cast<float>(node.scale[0]),
+                static_cast<float>(node.scale[1]),
+                static_cast<float>(node.scale[2]),
+            };
+        }
+
+        return Freeside::Math::TransformMatrix(translation, rotation, scale);
+    }
+
     static void ReadVertices(const tinygltf::Model& model, const tinygltf::Primitive& primitive, std::vector<Freeside::Vertex>& outVertices)
     {
         const tinygltf::Accessor& positionAccessor = GetAttributeAccessor(model, primitive, "POSITION");
@@ -292,6 +361,73 @@ namespace Freeside::Assets
         }
     }
 
+    static void ImportNode(
+        const tinygltf::Model& model,
+        int nodeIndex,
+        const Freeside::Math::Mat4& parentTransform,
+        ImportedModel& outModel)
+    {
+        const tinygltf::Node& node = model.nodes[nodeIndex];
+
+        Freeside::Math::Mat4 local = GetNodeLocalTransform(node);
+        Freeside::Math::Mat4 world = parentTransform * local;
+
+        if (node.mesh >= 0)
+        {
+            const tinygltf::Mesh& mesh = model.meshes[node.mesh];
+
+            ImportedMesh outMesh = {};
+
+            for (const tinygltf::Primitive& primitive : mesh.primitives)
+            {
+                if (primitive.mode != TINYGLTF_MODE_TRIANGLES)
+                    continue;
+
+                ImportedPrimitive outPrimitive = {};
+                outPrimitive.materialIndex = primitive.material;
+                outPrimitive.transform = world; // Add this field.
+
+                ReadVertices(model, primitive, outPrimitive.meshData.vertices);
+                ReadIndices(model, primitive, outPrimitive.meshData.indices);
+
+                bool hasTangents = primitive.attributes.find("TANGENT") != primitive.attributes.end();
+
+                if (!hasTangents)
+                {
+                    Freeside::Math::GenerateTangents(
+                        outPrimitive.meshData.vertices,
+                        outPrimitive.meshData.indices);
+                }
+
+                outMesh.primitives.push_back(std::move(outPrimitive));
+            }
+
+            outModel.meshes.push_back(std::move(outMesh));
+        }
+
+        for (int child : node.children)
+        {
+            ImportNode(model, child, world, outModel);
+        }
+    }
+
+    static void ImportSceneNodes(const tinygltf::Model& model, ImportedModel& outModel)
+    {
+        int sceneIndex = model.defaultScene >= 0 ? model.defaultScene : 0;
+
+        if (sceneIndex < 0 || sceneIndex >= model.scenes.size())
+            return;
+
+        const tinygltf::Scene& scene = model.scenes[sceneIndex];
+
+        Freeside::Math::Mat4 identity = Freeside::Math::Mat4::Identity();
+
+        for (int nodeIndex : scene.nodes)
+        {
+            ImportNode(model, nodeIndex, identity, outModel);
+        }
+    }
+
     ImportedModel ModelImporter::ImportModel(const std::filesystem::path& path)
 	{
         tinygltf::TinyGLTF loader;
@@ -335,7 +471,7 @@ namespace Freeside::Assets
 
         ImportTextures(model, imported);
         ImportMaterials(model, imported);
-        ImportMeshes(model, imported);
+        ImportSceneNodes(model, imported);
 
         return imported;
 	}

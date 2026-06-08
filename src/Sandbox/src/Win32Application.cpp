@@ -91,7 +91,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	Freeside::Scene::Scene testScene(L"Test Scene");
 
-	Freeside::Assets::ImportedModel model = assets.ImportModel("assets\\models\\DamagedHelmet.glb");
+	Freeside::Assets::ImportedModel model = assets.ImportModel("assets\\models\\snowy_mountains.glb");
 	for (const Freeside::Assets::ImportedMesh& mesh : model.meshes)
 	{
 		for (const Freeside::Assets::ImportedPrimitive& prim : mesh.primitives)
@@ -105,9 +105,10 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 			cMeshRenderer.material = importMatHandle;
 			cMeshRenderer.mesh = mesh;
-			cMeshTransform.position = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
-			cMeshTransform.rotation = Freeside::Math::Vec3(-Freeside::Math::PI * 0.5f, Freeside::Math::PI * 1.0f, 0.0f);
-			cMeshTransform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+			cMeshTransform.position = Freeside::Math::Vec3(0.0f, -20.0f, -20.0f);
+			//cMeshTransform.rotation = Freeside::Math::Vec3(-Freeside::Math::PI * 0.5f, Freeside::Math::PI * 1.0f, 0.0f);
+			cMeshTransform.rotation = Freeside::Math::Vec3(-Freeside::Math::PI * 1.0f, Freeside::Math::PI * 1.0f, 0.0f);
+			cMeshTransform.scale = Freeside::Math::Vec3(200.0f, 200.0f, 200.0f);
 		}
 	}
 

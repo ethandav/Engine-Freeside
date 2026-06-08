@@ -121,10 +121,13 @@ namespace efg::d3d12
 
             GpuDescriptorTable textureTable = ctx.services->descriptors->AllocateShaderVisibleTableFromFrameArena(ctx.frameContext->frameResource->descriptorArena, 6);
             ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, textureTable.cpuStart, baseColorTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-            D3D12_CPU_DESCRIPTOR_HANDLE normalDst = textureTable.cpuStart;
-            normalDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize();
-            ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, normalDst, normalTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
+            if ((material.constants.materialFlags & Freeside::MaterialFlags::MaterialFlag_HasNormalTexture) != 0)
+            {
+                D3D12_CPU_DESCRIPTOR_HANDLE normalDst = textureTable.cpuStart;
+                normalDst.ptr += ctx.services->descriptors->GetCBVSRVUAVDescriptorSize();
+                ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, normalDst, normalTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            }
 
             if ((material.constants.materialFlags & Freeside::MaterialFlags::MaterialFlag_HasMetallicRoughnessTexture) != 0)
             {

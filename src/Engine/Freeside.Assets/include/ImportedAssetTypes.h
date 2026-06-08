@@ -14,6 +14,7 @@ namespace Freeside::Assets
     {
         MeshDesc meshData;
         int materialIndex = -1;
+        Freeside::Math::Mat4 transform;
     };
 
     struct ImportedMaterial
