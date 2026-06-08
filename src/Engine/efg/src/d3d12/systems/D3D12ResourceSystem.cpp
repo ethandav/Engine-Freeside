@@ -178,6 +178,20 @@ namespace efg::d3d12
         return m_textureLibrary.RegisterMaterialTexture2D(texture);
     }
 
+    Freeside::TextureHandle D3D12ResourceSystem::CreateTextureCube(const std::array<Freeside::TextureDesc, 6> faces)
+    {
+        GpuTextureCube texture = {};
+        texture.width = faces[0].width;
+        texture.height = faces[0].height;
+        texture.resourceFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+        texture.srvFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+        m_textureFactory.CreateTextureCube(texture, DescriptorVisibility::CpuOnlyAndShaderVisible);
+        m_textureLibrary.RegisterDefaultSkyboxTexture(texture);
+        m_uploadContext.QueueTextureCubeUpload(texture.resource.Get(), faces, texture.resource.Get()->GetDesc(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+        return m_textureLibrary.RegisterTextureCube(texture);
+    }
+
     void D3D12ResourceSystem::ProcessUploads(D3D12DirectCommandContext* commandContext)
     {
         if (m_uploadContext.queueSize > 0)

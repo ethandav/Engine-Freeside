@@ -72,4 +72,9 @@ namespace efg::d3d12
     {
         return m_resources.CreateMaterialTexture2d(texture);
     }
+
+    Freeside::TextureHandle D3D12RendererBackend::CreateTextureCube(const std::array<Freeside::TextureDesc, 6> faces)
+    {
+        return m_resources.CreateTextureCube(faces);
+    }
 }

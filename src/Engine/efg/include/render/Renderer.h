@@ -32,6 +32,7 @@ namespace Freeside
 		MeshHandle CreateMesh(const MeshDesc& mesh);
 		MaterialHandle RegisterMaterial(const MaterialDesc& mat);
 		TextureHandle CreateMaterialTexture2d(const TextureDesc& texture);
+		TextureHandle CreateTextureCube(const std::array<TextureDesc, 6> faces);
 	private:
 		std::unique_ptr<efg::d3d12::IRendererBackend> m_backend;
 		std::unique_ptr<efg::RenderThread> m_renderThread;

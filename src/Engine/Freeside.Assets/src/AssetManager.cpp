@@ -28,9 +28,29 @@ namespace Freeside::Assets
 		return CreateTexture(image);
 	}
 
+	TextureHandle AssetManager::CreateSkyboxFromImagePaths(const std::array<std::wstring, 6>& paths)
+	{
+		std::array<TextureDesc, 6> faces =
+		{
+			m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/right.jpg"),
+			m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/left.jpg"),
+			m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/top.jpg"),
+			m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/bottom.jpg"),
+			m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/front.jpg"),
+			m_imageLoader.LoadImageWithWIC(L"assets/textures/skybox/back.jpg"),
+		};
+
+		return CreateTextureCube(faces);
+	}
+
 	TextureHandle AssetManager::CreateTexture(const TextureDesc& desc)
 	{
 		return m_renderer->CreateMaterialTexture2d(desc);
+	}
+
+	TextureHandle AssetManager::CreateTextureCube(const std::array<TextureDesc, 6> faces)
+	{
+		return m_renderer->CreateTextureCube(faces);
 	}
 
     MaterialDesc AssetManager::ConvertGLTFMaterial(const ImportedMaterial& src, const std::vector<TextureDesc>& textures)

@@ -28,6 +28,7 @@ namespace efg::d3d12
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& materialDesc);
 		Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh);
 		Freeside::TextureHandle CreateMaterialTexture2d(const Freeside::TextureDesc& textureDesc);
+		Freeside::TextureHandle CreateTextureCube(const std::array<Freeside::TextureDesc, 6> faces);
 		void ProcessUploads(D3D12DirectCommandContext* commandContext);
 
 	private:

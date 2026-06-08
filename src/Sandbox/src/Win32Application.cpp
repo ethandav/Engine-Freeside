@@ -46,6 +46,17 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::TextureHandle hFloorNormalTexture = assets.CreateTextureFromImagePath(L"assets/textures/floor_normals.png");
 	Freeside::TextureHandle hFloorHeightTexture = assets.CreateTextureFromImagePath(L"assets/textures/floor_height.png");
 
+	std::array<std::wstring, 6> skyboxImages = {
+		L"assets/textures/skybox/right.jpg",
+		L"assets/textures/skybox/left.jpg",
+		L"assets/textures/skybox/top.jpg",
+		L"assets/textures/skybox/bottom.jpg",
+		L"assets/textures/skybox/front.jpg",
+		L"assets/textures/skybox/back.jpg",
+	};
+
+	Freeside::TextureHandle hSkyBoxTexture = assets.CreateSkyboxFromImagePaths(skyboxImages);
+
 	Freeside::MaterialDesc crateMaterial;
 	crateMaterial.baseColorFactor = Freeside::Math::Vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	crateMaterial.specular = Freeside::Math::Vec2(1.0f, 64.0f);

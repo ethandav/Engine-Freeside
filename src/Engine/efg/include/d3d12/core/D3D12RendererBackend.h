@@ -24,6 +24,7 @@ namespace efg::d3d12
 		Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh) override;
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) override;
 		Freeside::TextureHandle CreateMaterialTexture2d(const Freeside::TextureDesc& texture) override;
+		Freeside::TextureHandle CreateTextureCube(const std::array<Freeside::TextureDesc, 6> faces) override;
 
 	private:
 		void CreateRenderTargets(uint32_t width, uint32_t height);

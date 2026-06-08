@@ -63,4 +63,9 @@ namespace Freeside
     {
         return m_backend->CreateMaterialTexture2d(texture);
     }
+
+    TextureHandle Renderer::CreateTextureCube(const std::array<TextureDesc, 6> faces)
+    {
+        return m_backend->CreateTextureCube(faces);
+    }
 }

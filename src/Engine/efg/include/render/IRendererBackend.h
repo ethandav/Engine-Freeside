@@ -19,5 +19,6 @@ namespace efg::d3d12
         virtual Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh) = 0;
         virtual Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) = 0;
         virtual Freeside::TextureHandle CreateMaterialTexture2d(const Freeside::TextureDesc& texture) = 0;
+        virtual Freeside::TextureHandle CreateTextureCube(const std::array<Freeside::TextureDesc, 6> faces) = 0;
     };
 }

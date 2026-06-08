@@ -7,6 +7,8 @@
 #include "ImageLoader.h"
 #include "MaterialTypes.h"
 
+#include <array>
+
 namespace Freeside::Assets
 {
 	class AssetManager
@@ -17,7 +19,9 @@ namespace Freeside::Assets
 		MaterialHandle CreateMaterial(MaterialDesc desc);
 		ImportedModel ImportModel(const std::filesystem::path& path);
 		TextureHandle CreateTextureFromImagePath(const std::filesystem::path& path);
+		TextureHandle CreateSkyboxFromImagePaths(const std::array<std::wstring, 6>& paths);
 		TextureHandle CreateTexture(const TextureDesc& desc);
+		TextureHandle CreateTextureCube(const std::array<TextureDesc, 6> faces);
 		MaterialDesc ConvertGLTFMaterial(const ImportedMaterial& src, const std::vector<TextureDesc>& textures);
 	private:
 
