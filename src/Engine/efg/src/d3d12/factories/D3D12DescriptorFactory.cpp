@@ -74,6 +74,7 @@ namespace efg::d3d12
     void D3D12DescriptorFactory::CreateTexture2DRTV(GpuTexture2D* texture, DescriptorVisibility visibility)
     {
         D3D12_RENDER_TARGET_VIEW_DESC desc = BuildTexture2DRTVDesc(texture->rtvFormat);
+
         CpuDescriptorAllocation allocation = CreateRTV(texture->resource.Get(), &desc);
         texture->rtv = allocation.cpu;
     }

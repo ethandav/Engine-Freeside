@@ -19,8 +19,9 @@ namespace efg::d3d12
         void Initialize(D3D12DeviceSystem* device, D3D12ResourceSystem* resources, uint32_t width, uint32_t height);
         void Shutdown();
         FrameContext BeginFrame(RenderQueue* renderQueue);
-        void EndFrame(const FrameContext& ctx);
+        void EndFrame(const FrameContext& ctx, const RenderTargets& renderTargets);
         void RecordBackBufferSetup(const FrameContext& ctx, const RenderTargets& renderTargets);
+        void RecordSceneColorBufferSetup(const FrameContext& ctx, const RenderTargets& renderTargets);
     private:
         void CreateViewportAndScissor(uint32_t width, uint32_t height);
         void CreateFrameResources();

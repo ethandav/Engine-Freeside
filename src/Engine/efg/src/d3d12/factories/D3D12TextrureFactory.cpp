@@ -11,9 +11,9 @@ namespace efg::d3d12
         m_device = device;
     }
 
-    void D3D12TextureFactory::CreateTexture2D(GpuTexture2D& texture, DescriptorVisibility visibility)
+    void D3D12TextureFactory::CreateTexture2D(GpuTexture2D& texture, DescriptorVisibility visibility, D3D12_CLEAR_VALUE* clearValue)
     {
-        m_resourceFactory->CreateCommittedTexture2DResource(&texture, texture.flags, texture.initialState, nullptr);
+        m_resourceFactory->CreateCommittedTexture2DResource(&texture, texture.flags, texture.initialState, clearValue);
 
         if (visibility == DescriptorVisibility::ShaderVisible || visibility == DescriptorVisibility::CpuOnlyAndShaderVisible)
         {

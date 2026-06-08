@@ -210,6 +210,12 @@
     <ClInclude Include="include\d3d12\passes\D3D12RenderPasses.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\d3d12\passes\Tonemap\D3D12TonemapRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\d3d12\passes\Tonemap\D3D12TonemapTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\render\Renderer.cpp">
@@ -315,6 +321,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\d3d12\systems\D3D12RenderPassSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\passes\Tonemap\D3D12TonemapRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\d3d12\passes\Tonemap\D3D12TonemapPipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

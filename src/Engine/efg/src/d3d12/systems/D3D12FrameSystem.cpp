@@ -41,14 +41,15 @@ namespace efg::d3d12
 		return ctx;
 	}
 
-	void D3D12FrameSystem::EndFrame(const FrameContext& ctx)
+	void D3D12FrameSystem::EndFrame(const FrameContext& ctx, const RenderTargets& renderTargets)
 	{
 		D3D12DirectCommandContext& commandContext = m_device->DirectCommandContext();
 		D3D12SwapChain& swapChain = m_device->SwapChain();
 		D3D12QueueFence& fence = m_device->DirectFence();
 
 		ID3D12CommandQueue* queue = commandContext.GetDirectCommandQueue();
-		commandContext.ResourceBarrierTransition(swapChain.GetCurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+		commandContext.ResourceBarrierTransition(renderTargets.sceneColor.resource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON);
+		commandContext.ResourceBarrierTransition(ctx.backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 		commandContext.EndRecording();
 		commandContext.ExecuteDirect();
 
@@ -62,8 +63,17 @@ namespace efg::d3d12
 		const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		m_device->DirectCommandContext().SetViewportAndScissor(m_viewport, m_scissorRect);
 		m_device->DirectCommandContext().ResourceBarrierTransition(ctx.backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		m_device->DirectCommandContext().SetRenderTarget(1, &ctx.backBufferHandle, &renderTargets.sceneDepth.dsv);
+		m_device->DirectCommandContext().SetRenderTarget(1, &ctx.backBufferHandle, nullptr);
 		m_device->DirectCommandContext().ClearRenderTarget(ctx.backBufferHandle, clearColor);
+	}
+
+	void D3D12FrameSystem::RecordSceneColorBufferSetup(const FrameContext& ctx, const RenderTargets& renderTargets)
+	{
+		const float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		m_device->DirectCommandContext().SetViewportAndScissor(m_viewport, m_scissorRect);
+		m_device->DirectCommandContext().ResourceBarrierTransition(renderTargets.sceneColor.resource.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		m_device->DirectCommandContext().SetRenderTarget(1, &renderTargets.sceneColor.rtv, &renderTargets.sceneDepth.dsv);
+		m_device->DirectCommandContext().ClearRenderTarget(renderTargets.sceneColor.rtv, clearColor);
 		m_device->DirectCommandContext().ClearDepthStencil(renderTargets.sceneDepth.dsv, 1.0f, 0);
 	}
 

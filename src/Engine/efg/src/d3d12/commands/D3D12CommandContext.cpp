@@ -139,6 +139,11 @@ namespace efg::d3d12
         }
     }
 
+    void D3D12DirectCommandContext::DrawInstanced(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertexLocation, uint32_t startIndexLocation)
+    {
+        m_directCommandList->DrawInstanced(vertexCount, instanceCount, startVertexLocation, startIndexLocation);
+    }
+
     void D3D12DirectCommandContext::QueueBarrierTransition(ID3D12Resource* pResource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after)
     {
         PendingBarrierTransition request = {};

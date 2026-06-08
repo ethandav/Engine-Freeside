@@ -17,6 +17,8 @@ namespace efg::d3d12
         SkyboxPS,
         GeometryVS,
         ForwardLightingPS,
+        TonemapVS,
+        TonemapPS,
 
         Count
     };

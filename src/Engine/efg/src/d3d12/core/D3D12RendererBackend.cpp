@@ -12,6 +12,27 @@ namespace efg::d3d12
     void D3D12RendererBackend::CreateRenderTargets(uint32_t width, uint32_t height)
     {
         m_renderTargets.sceneDepth = m_resources.TextureFactory().CreateDepthBuffer(width, height, DescriptorVisibility::CpuOnly);
+
+        GpuTexture2D sceneColor = {};
+        sceneColor.resourceFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        sceneColor.rtvFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        sceneColor.flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+        sceneColor.srvFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        sceneColor.initialState = D3D12_RESOURCE_STATE_PRESENT;
+        sceneColor.width = width;
+        sceneColor.height = height;
+
+        D3D12_CLEAR_VALUE clearValue = {};
+        clearValue.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        clearValue.Color[0] = 0.0f;
+        clearValue.Color[1] = 0.0f;
+        clearValue.Color[2] = 0.0f;
+        clearValue.Color[3] = 1.0f;
+
+        m_resources.TextureFactory().CreateTexture2D(sceneColor, DescriptorVisibility::CpuOnlyAndShaderVisible, &clearValue);
+        m_renderTargets.sceneColor = sceneColor;
+
+        sceneColor.resource.Get()->SetName(L"test");
     }
 
     void D3D12RendererBackend::InitializeD3D12Systems(const Freeside::RendererDesc& desc)
@@ -33,7 +54,7 @@ namespace efg::d3d12
     {
         FrameContext frameCtx = m_frame.BeginFrame(&m_renderQueue);
         m_passes.Execute(scene, frameCtx, m_renderQueue);
-        m_frame.EndFrame(frameCtx);
+        m_frame.EndFrame(frameCtx, m_renderTargets);
     }
 
     Freeside::MeshHandle D3D12RendererBackend::CreateMesh(const Freeside::MeshDesc& mesh)

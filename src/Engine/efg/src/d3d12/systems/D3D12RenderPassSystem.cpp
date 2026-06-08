@@ -50,8 +50,8 @@ namespace efg::d3d12
 
 		m_device->DirectCommandContext().FlushPendingBarrierTransitions();
 
-		PIXBeginEvent(commandList, PixColors::BackbufferSetup, L"BackBuffer Setup");
-		m_frame->RecordBackBufferSetup(frameCtx, *m_renderTargets);
+		PIXBeginEvent(commandList, PixColors::BackbufferSetup, L"Scene Color Buffer Setup");
+		m_frame->RecordSceneColorBufferSetup(frameCtx, *m_renderTargets);
 		PIXEndEvent(commandList);
 
 		PIXBeginEvent(commandList, PixColors::SkyboxPass, L"Skybox Render Pass");
@@ -63,6 +63,14 @@ namespace efg::d3d12
 		PIXEndEvent(commandList);
 
 		m_device->DirectCommandContext().FlushPendingBarrierTransitions();
+
+		PIXBeginEvent(commandList, PixColors::BackbufferSetup, L"BackBuffer Setup");
+		m_frame->RecordBackBufferSetup(frameCtx, *m_renderTargets);
+		PIXEndEvent(commandList);
+
+		PIXBeginEvent(commandList, PixColors::BackbufferSetup, L"Tonemap Pass");
+		m_tonemapRenderPass.Execute(passCtx, m_renderTargets->sceneColor);
+		PIXEndEvent(commandList);
 
 		PIXEndEvent(commandList);
 	}

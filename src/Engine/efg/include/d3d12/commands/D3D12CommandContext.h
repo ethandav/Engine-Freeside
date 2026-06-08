@@ -34,6 +34,7 @@ namespace efg::d3d12
 		void ClearDepthStencil(const D3D12_CPU_DESCRIPTOR_HANDLE& handle, float depth, uint8_t stencil);
 		void BindPipeline(const GraphicsPipelineState& pipeline);
 		void DrawMeshInstanced(const GpuMesh& mesh, uint32_t instanceCount);
+		void DrawInstanced(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertexLocation, uint32_t startIndexLocation);
 		void QueueBarrierTransition(ID3D12Resource* pResource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 		void FlushPendingBarrierTransitions();
 	private:

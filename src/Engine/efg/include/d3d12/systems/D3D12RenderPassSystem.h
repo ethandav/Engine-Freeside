@@ -38,5 +38,6 @@ namespace efg::d3d12
         D3D12ShadowMapRenderPass m_shadowMapRenderPass;
         D3D12SkyboxRenderPass m_skyboxRenderPass;
         D3D12ForwardLitGeometryRenderPass m_forwardLitGeometryRenderPass;
+        D3D12TonemapRenderPass m_tonemapRenderPass;
     };
 }

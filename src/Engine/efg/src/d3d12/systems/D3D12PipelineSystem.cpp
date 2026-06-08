@@ -11,6 +11,7 @@ namespace efg::d3d12
 		m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::ForwardLitGeometry, ForwardLitGeometryPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
 		m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::ShadowMap, ShadowMapPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
 		m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::Skybox, SkyboxPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
+		m_graphicsPipelineLibrary.AddGraphicsPipeline(PipelineId::Tonemap, TonemapPipeline::CreatePipeline(m_pipelineFactory, m_rootSignatureFactory, m_shaderLibrary));
 	}
 
 	D3D12GraphicsPipelineLibrary& D3D12PipelineSystem::GraphicsPipelineLibrary()

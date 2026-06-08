@@ -153,6 +153,8 @@
     <ClInclude Include="include\d3d12\passes\ShadowMap\D3D12ShadowMapRenderPassTypes.h" />
     <ClInclude Include="include\d3d12\passes\Skybox\D3D12SkyboxRenderPass.h" />
     <ClInclude Include="include\d3d12\passes\Skybox\D3D12SkyboxRenderPassTypes.h" />
+    <ClInclude Include="include\d3d12\passes\Tonemap\D3D12TonemapRenderPass.h" />
+    <ClInclude Include="include\d3d12\passes\Tonemap\D3D12TonemapTypes.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuAlignment.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuArena.h" />
     <ClInclude Include="include\d3d12\resources\D3D12GpuMesh.h" />
@@ -197,6 +199,8 @@
   <ItemGroup>
     <ClInclude Include="include\d3d12\factories\D3D12BufferFactory.h" />
     <ClInclude Include="include\d3d12\libraries\D3D12MeshLibrary.h" />
+    <ClCompile Include="src\d3d12\passes\Tonemap\D3D12TonemapPipeline.cpp" />
+    <ClCompile Include="src\d3d12\passes\Tonemap\D3D12TonemapRenderPass.cpp" />
     <ClCompile Include="src\d3d12\systems\D3D12FrameSystem.cpp" />
     <ClCompile Include="src\d3d12\systems\D3D12PipelineSystem.cpp" />
     <ClCompile Include="src\d3d12\systems\D3D12RenderPassSystem.cpp" />
