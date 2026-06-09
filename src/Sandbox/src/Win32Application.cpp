@@ -156,9 +156,9 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	Freeside::Entity eDirLight = testScene.CreateEntity();
 	Freeside::DirectionalLightComponent& cDirLight = testScene.AddDirectionalLight(eDirLight);
-	cDirLight.intensity = 1.0f;
+	cDirLight.intensity = 5.0f;
 	cDirLight.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	cDirLight.direction = Freeside::Math::Vec3(0.2f, 1.0f, -0.3f);
+	cDirLight.direction = Freeside::Math::Vec3(0.2f, -1.0f, -0.3f);
 
 	Freeside::Entity eWall1 = testScene.CreateEntity();
 	Freeside::MeshRendererComponent& cWall1Renderer = testScene.AddMeshRenderer(eWall1);
