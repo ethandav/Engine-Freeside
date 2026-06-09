@@ -17,6 +17,24 @@ namespace Freeside::Assets
         Freeside::Math::Mat4 transform;
     };
 
+    struct ImportedMesh
+    {
+        std::vector<ImportedPrimitive> primitives;
+    };
+
+    struct ImportedNode
+    {
+        std::string name;
+        int parentIndex = -1;
+        int meshIndex = -1;
+        Math::Vec3 position = {};
+        Math::Quat rotation = Math::Quat::Identity();
+        Math::Vec3 scale = { 1.0f, 1.0f, 1.0f };
+        bool useMatrixOverride = false;
+        Math::Mat4 matrixOverride = Math::Mat4::Identity();
+        std::vector<int> children;
+    };
+
     struct ImportedMaterial
     {
         std::string name;
@@ -34,19 +52,6 @@ namespace Freeside::Assets
         float alphaCutoff = 0.5f;
         std::string alphaMode;
         bool doubleSided = false;
-    };
-
-    struct ImportedNode
-    {
-        std::string name;
-        Math::Mat4 localTransform;
-        std::vector<uint32_t> children;
-        int meshIndex = -1;
-    };
-
-    struct ImportedMesh
-    {
-        std::vector<ImportedPrimitive> primitives;
     };
 
     struct ImportedModel

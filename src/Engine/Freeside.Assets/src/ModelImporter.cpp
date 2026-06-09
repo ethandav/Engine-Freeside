@@ -77,48 +77,48 @@ namespace Freeside::Assets
         return result;
     }
 
-    static Freeside::Math::Mat4 GetNodeLocalTransform(const tinygltf::Node& node)
+    static ImportedNode GetImportedNodeTransform(const tinygltf::Node& node)
     {
+        ImportedNode outNode = {};
+        outNode.name = node.name;
+        outNode.meshIndex = node.mesh;
+
         if (node.matrix.size() == 16)
         {
-            return Mat4FromGltfMatrix(node.matrix);
+            outNode.useMatrixOverride = true;
+            outNode.matrixOverride = Mat4FromGltfMatrix(node.matrix);
+            return outNode;
         }
-
-        Freeside::Math::Vec3 translation(0.0f, 0.0f, 0.0f);
-        Freeside::Math::Quat rotation = Freeside::Math::Quat::Identity();
-        Freeside::Math::Vec3 scale(1.0f, 1.0f, 1.0f);
 
         if (node.translation.size() == 3)
         {
-            translation = {
+            outNode.position = {
                 static_cast<float>(node.translation[0]),
                 static_cast<float>(node.translation[1]),
-                static_cast<float>(node.translation[2]),
+                static_cast<float>(node.translation[2])
             };
-        }
-
-        if (node.scale.size() == 3)
-        {
-            rotation = {
-                static_cast<float>(node.rotation[0]),
-                static_cast<float>(node.rotation[1]),
-                static_cast<float>(node.rotation[2]),
-                static_cast<float>(node.rotation[3])
-            };
-
-            rotation = Freeside::Math::Normalize(rotation);
         }
 
         if (node.rotation.size() == 4)
         {
-            scale = {
+            outNode.rotation = Freeside::Math::Normalize(Freeside::Math::Quat(
                 static_cast<float>(node.rotation[0]),
                 static_cast<float>(node.rotation[1]),
                 static_cast<float>(node.rotation[2]),
+                static_cast<float>(node.rotation[3])
+            ));
+        }
+
+        if (node.scale.size() == 3)
+        {
+            outNode.scale = {
+                static_cast<float>(node.scale[0]),
+                static_cast<float>(node.scale[1]),
+                static_cast<float>(node.scale[2])
             };
         }
 
-        return Freeside::Math::TransformMatrix(translation, rotation, scale);
+        return outNode;
     }
 
     static void ReadVertices(const tinygltf::Model& model, const tinygltf::Primitive& primitive, std::vector<Freeside::Vertex>& outVertices)
@@ -364,64 +364,44 @@ namespace Freeside::Assets
         }
     }
 
-    static void ImportNode(const tinygltf::Model& model, int nodeIndex, const Freeside::Math::Mat4& parentTransform, ImportedModel& outModel)
+    static int ImportNodeHierarchy(const tinygltf::Model& model, int nodeIndex, int parentIndex, ImportedModel& outModel)
     {
         const tinygltf::Node& node = model.nodes[nodeIndex];
 
-        Freeside::Math::Mat4 local = GetNodeLocalTransform(node);
-        Freeside::Math::Mat4 world = parentTransform * local;
+        ImportedNode importedNode = GetImportedNodeTransform(node);
+        importedNode.parentIndex = parentIndex;
 
-        if (node.mesh >= 0)
+        const int importedNodeIndex = static_cast<int>(outModel.nodes.size());
+        outModel.nodes.push_back(std::move(importedNode));
+
+        for (int childNodeIndex : node.children)
         {
-            const tinygltf::Mesh& mesh = model.meshes[node.mesh];
-
-            ImportedMesh outMesh = {};
-
-            for (const tinygltf::Primitive& primitive : mesh.primitives)
-            {
-                if (primitive.mode != TINYGLTF_MODE_TRIANGLES)
-                    continue;
-
-                ImportedPrimitive outPrimitive = {};
-                outPrimitive.materialIndex = primitive.material;
-                outPrimitive.transform = world; // Add this field.
-
-                ReadVertices(model, primitive, outPrimitive.meshData.vertices);
-                ReadIndices(model, primitive, outPrimitive.meshData.indices);
-
-                bool hasTangents = primitive.attributes.find("TANGENT") != primitive.attributes.end();
-
-                if (!hasTangents)
-                {
-                    Freeside::Math::GenerateTangents(outPrimitive.meshData.vertices, outPrimitive.meshData.indices);
-                }
-
-                outMesh.primitives.push_back(std::move(outPrimitive));
-            }
-
-            outModel.meshes.push_back(std::move(outMesh));
+            int importedChildIndex = ImportNodeHierarchy(model, childNodeIndex, importedNodeIndex, outModel);
+            outModel.nodes[importedNodeIndex].children.push_back(importedChildIndex);
         }
 
-        for (int child : node.children)
-        {
-            ImportNode(model, child, world, outModel);
-        }
+        return importedNodeIndex;
     }
 
     static void ImportSceneNodes(const tinygltf::Model& model, ImportedModel& outModel)
     {
         int sceneIndex = model.defaultScene >= 0 ? model.defaultScene : 0;
 
-        if (sceneIndex < 0 || sceneIndex >= model.scenes.size())
+        if (sceneIndex < 0 || sceneIndex >= static_cast<int>(model.scenes.size()))
             return;
 
         const tinygltf::Scene& scene = model.scenes[sceneIndex];
 
-        Freeside::Math::Mat4 identity = Freeside::Math::Mat4::Identity();
-
         for (int nodeIndex : scene.nodes)
         {
-            ImportNode(model, nodeIndex, identity, outModel);
+            int rootImportedNodeIndex = ImportNodeHierarchy(
+                model,
+                nodeIndex,
+                -1,
+                outModel
+            );
+
+            outModel.rootNodes.push_back(rootImportedNodeIndex);
         }
     }
 
@@ -458,6 +438,7 @@ namespace Freeside::Assets
 
         ImportTextures(model, imported);
         ImportMaterials(model, imported);
+        ImportMeshes(model, imported);
         ImportSceneNodes(model, imported);
 
         return imported;

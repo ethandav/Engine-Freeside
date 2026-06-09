@@ -1,6 +1,9 @@
 #include "..\include\Scene.h"
+#include "..\..\Freeside.Assets\include\AssetManager.h"
 
 #include <stdexcept>
+#include <algorithm>
+#include <vector>
 
 namespace Freeside
 {
@@ -96,16 +99,18 @@ namespace Freeside
 
 			for (const auto& [entityId, meshRenderer] : m_meshRenderers)
 			{
-				auto transformIt = m_transforms.find(entityId);
-				if (transformIt == m_transforms.end())
-					continue;
+				Entity entity{ entityId };
 
-				const TransformComponent& transform = transformIt->second;
+				const TransformComponent* transform = GetTransform(entity);
+				if (!transform)
+				{
+					continue;
+				}
 
 				Freeside::RenderObject object = {};
 				object.mesh = meshRenderer.mesh;
 				object.material = meshRenderer.material;
-				object.world = transform.GetWorldMatrix();
+				object.world = GetWorldMatrix(entity);
 
 				packet.renderObjects.push_back(object);
 			}
@@ -151,6 +156,169 @@ namespace Freeside
 		void Scene::BuildEnvironment(efg::FramePacket& packet) const
 		{
 			packet.skyboxTexture = m_environment.skyboxTexture;
+		}
+
+		Entity Scene::CreateEntityFromImportedNode(Assets::AssetManager* assets, const Assets::ImportedModel& model, int nodeIndex, Entity parent)
+		{
+			const Assets::ImportedNode& importedNode = model.nodes[nodeIndex];
+
+			Entity entity = CreateEntity();
+
+			TransformComponent& transform = AddTransform(entity);
+			transform.position = importedNode.position;
+			transform.rotation = importedNode.rotation;
+			transform.scale = importedNode.scale;
+			transform.useMatrixOverride = importedNode.useMatrixOverride;
+			transform.matrixOverride = importedNode.matrixOverride;
+
+			if (parent.IsValid())
+			{
+				SetParent(entity, parent);
+			}
+
+			if (importedNode.meshIndex >= 0)
+			{
+				const Assets::ImportedMesh& importedMesh = model.meshes[importedNode.meshIndex];
+
+				for (const Assets::ImportedPrimitive& prim : importedMesh.primitives)
+				{
+					MeshHandle meshHandle = assets->CreateMesh(prim.meshData);
+					MaterialDesc importMat = assets->ConvertGLTFMaterial(model.materials[prim.materialIndex], model.textures);
+					Freeside::MaterialHandle materialHandle = assets->CreateMaterial(importMat);
+					Freeside::Entity primitiveEntity = CreateEntity();
+					SetParent(primitiveEntity, entity);
+
+					TransformComponent& primitiveTransform = AddTransform(primitiveEntity);
+					primitiveTransform.position = {};
+					primitiveTransform.rotation = Freeside::Math::Quat::Identity();
+					primitiveTransform.scale = { 1.0f, 1.0f, 1.0f };
+
+					Freeside::MeshRendererComponent& renderer = AddMeshRenderer(primitiveEntity);
+					renderer.mesh = meshHandle;
+					renderer.material = materialHandle;
+				}
+			}
+
+			for (int childNodeIndex : importedNode.children)
+			{
+				CreateEntityFromImportedNode(assets, model, childNodeIndex, entity);
+			}
+
+			return entity;
+		}
+
+		HierarchyComponent& Scene::AddHierarchy(Entity entity)
+		{
+			return m_hierarchyComponents[entity.id];
+		}
+
+		HierarchyComponent* Scene::GetHierarchy(Entity entity)
+		{
+			auto it = m_hierarchyComponents.find(entity.id);
+
+			if (it == m_hierarchyComponents.end())
+			{
+				return nullptr;
+			}
+
+			return &it->second;
+		}
+
+		TransformComponent* Scene::GetTransform(Entity entity)
+		{
+			auto it = m_transforms.find(entity.id);
+
+			if (it == m_transforms.end())
+			{
+				return nullptr;
+			}
+
+			return &it->second;
+		}
+
+		const TransformComponent* Scene::GetTransform(Entity entity) const
+		{
+			auto it = m_transforms.find(entity.id);
+
+			if (it == m_transforms.end())
+			{
+				return nullptr;
+			}
+
+			return &it->second;
+		}
+
+		void Scene::SetParent(Entity child, Entity newParent)
+		{
+			if (!child.IsValid())
+			{
+				return;
+			}
+
+			if (child == newParent)
+			{
+				return;
+			}
+
+			HierarchyComponent& childHierarchy = m_hierarchyComponents[child.id];
+
+			Entity oldParent = childHierarchy.parent;
+
+			if (oldParent.IsValid())
+			{
+				HierarchyComponent* oldParentHierarchy = GetHierarchy(oldParent);
+
+				if (oldParentHierarchy)
+				{
+					std::vector<Entity>& siblings = oldParentHierarchy->children;
+
+					siblings.erase(
+						std::remove(siblings.begin(), siblings.end(), child),
+						siblings.end()
+					);
+				}
+			}
+
+			childHierarchy.parent = newParent;
+
+			if (newParent.IsValid())
+			{
+				HierarchyComponent& newParentHierarchy = m_hierarchyComponents[newParent.id];
+
+				auto it = std::find(
+					newParentHierarchy.children.begin(),
+					newParentHierarchy.children.end(),
+					child
+				);
+
+				if (it == newParentHierarchy.children.end())
+				{
+					newParentHierarchy.children.push_back(child);
+				}
+			}
+		}
+
+		Math::Mat4 Scene::GetWorldMatrix(Entity entity) const
+		{
+			const TransformComponent* transform = GetTransform(entity);
+
+			Math::Mat4 local = transform->GetWorldMatrix();
+
+			auto hierarchyIt = m_hierarchyComponents.find(entity.id);
+
+			if (hierarchyIt == m_hierarchyComponents.end())
+			{
+				return local;
+			}
+
+			Entity parent = hierarchyIt->second.parent;
+
+			if (!parent.IsValid())
+			{
+				return local;
+			}
+
+			return GetWorldMatrix(parent) * local;
 		}
 	}
 }

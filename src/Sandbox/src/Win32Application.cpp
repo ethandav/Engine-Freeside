@@ -92,23 +92,19 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::Scene::Scene testScene(L"Test Scene");
 
 	Freeside::Assets::ImportedModel model = assets.ImportModel("assets\\models\\DamagedHelmet.glb");
-	for (const Freeside::Assets::ImportedMesh& mesh : model.meshes)
+	for (int rootNodeIndex : model.rootNodes)
 	{
-		for (const Freeside::Assets::ImportedPrimitive& prim : mesh.primitives)
-		{
-			Freeside::MeshHandle mesh = assets.CreateMesh(prim.meshData);
-			Freeside::Entity eMesh = testScene.CreateEntity();
-			Freeside::MeshRendererComponent& cMeshRenderer = testScene.AddMeshRenderer(eMesh);
-			Freeside::TransformComponent& cMeshTransform = testScene.AddTransform(eMesh);
-			Freeside::MaterialDesc importMat = assets.ConvertGLTFMaterial(model.materials[prim.materialIndex], model.textures);
-			Freeside::MaterialHandle importMatHandle = assets.CreateMaterial(importMat);
+		Freeside::Entity root = testScene.CreateEntityFromImportedNode(
+			&assets,
+			model,
+			rootNodeIndex,
+			Freeside::Entity(-1)
+		);
 
-			cMeshRenderer.material = importMatHandle;
-			cMeshRenderer.mesh = mesh;
-			cMeshTransform.position = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
-			//cMeshTransform.rotation = Freeside::Math::Vec3(-Freeside::Math::PI * 0.5f, Freeside::Math::PI * 1.0f, 0.0f);
-			cMeshTransform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-		}
+		Freeside::TransformComponent* rootTransform = testScene.GetTransform(root);
+
+		// Optional model placement in sandbox:
+		rootTransform->position += Freeside::Math::Vec3(0.0f, 2.0f, 0.0f);
 	}
 
 	Freeside::Entity eCamera = testScene.CreateEntity();

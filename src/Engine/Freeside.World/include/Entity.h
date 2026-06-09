@@ -5,20 +5,52 @@
 #include "..\..\efg\include\render\types\Handles.h"
 #include "..\..\efg\include\render\Camera.h"
 
+#include <vector>
+
 namespace Freeside
 {
     using EntityId = uint32_t;
 
     struct Entity
     {
-        EntityId id = 0;
+        EntityId id = UINT32_MAX;
+
+        Entity() = default;
+
+        explicit Entity(EntityId idValue)
+            : id(idValue)
+        {
+        }
+
+        bool IsValid() const
+        {
+            return id != UINT32_MAX;
+        }
+
+        static Entity Invalid()
+        {
+            return Entity(UINT32_MAX);
+        }
     };
+
+    inline bool operator==(Entity a, Entity b)
+    {
+        return a.id == b.id;
+    }
+
+    inline bool operator!=(Entity a, Entity b)
+    {
+        return !(a == b);
+    }
 
     struct TransformComponent
     {
         Math::Vec3 position = {};
         Math::Quat rotation = {};
         Math::Vec3 scale = { 1.0f, 1.0f, 1.0f };
+
+        bool useMatrixOverride = false;
+        Math::Mat4 matrixOverride = Math::Mat4::Identity();
 
         Math::Mat4 GetWorldMatrix() const { return Freeside::Math::TransformMatrix(position, rotation, scale); };
     };
@@ -52,5 +84,11 @@ namespace Freeside
     struct SceneEnvironment
     {
         TextureHandle skyboxTexture = {};
+    };
+
+    struct HierarchyComponent
+    {
+        Entity parent = Entity(-1);
+        std::vector<Entity> children;
     };
 }
