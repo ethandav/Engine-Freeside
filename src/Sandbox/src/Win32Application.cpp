@@ -104,12 +104,12 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		Freeside::TransformComponent* rootTransform = testScene.GetTransform(root);
 
 		// Optional model placement in sandbox:
-		rootTransform->position += Freeside::Math::Vec3(0.0f, 2.0f, 0.0f);
+		rootTransform->position += Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 	}
 
 	Freeside::Entity eCamera = testScene.CreateEntity();
 	Freeside::CameraComponent& cCamera = testScene.AddCamera(eCamera);
-	cCamera.camera.SetPosition(Freeside::Math::Vec3(0.0f, 1.0f, -5.0f));
+	cCamera.camera.SetPosition(Freeside::Math::Vec3(0.0f, 1.0f, 5.0f));
 	cCamera.camera.SetTarget(Freeside::Math::Vec3(0.0f, 0.5f, 0.0f));
 	cCamera.isMainCamera = true;
 
@@ -147,32 +147,25 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cCrate3Transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
 	*/
 
-	Freeside::Entity ePointLight = testScene.CreateEntity();
-	Freeside::PointLightComponent& cPointLight = testScene.AddPointLight(ePointLight);
-	Freeside::TransformComponent& cPointLightTransform = testScene.AddTransform(ePointLight);
-	cPointLight.intensity = 0.0f;
-	cPointLight.radius = 10.0f;
-	cPointLightTransform.position = Freeside::Math::Vec3(1.0f, 0.5f, -3.0f);
-
 	Freeside::Entity ePointLight2 = testScene.CreateEntity();
 	Freeside::PointLightComponent& cPointLight2 = testScene.AddPointLight(ePointLight2);
 	Freeside::TransformComponent& cPointLightTransform2 = testScene.AddTransform(ePointLight2);
 	cPointLight2.intensity = 5.0f;
 	cPointLight2.radius = 10.0f;
-	cPointLightTransform2.position = Freeside::Math::Vec3(2.0f, 3.0f, -2.0f);
+	cPointLightTransform2.position = Freeside::Math::Vec3(-2.0f, 3.0f, 2.0f);
 
 	Freeside::Entity eDirLight = testScene.CreateEntity();
 	Freeside::DirectionalLightComponent& cDirLight = testScene.AddDirectionalLight(eDirLight);
 	cDirLight.intensity = 1.0f;
 	cDirLight.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	cDirLight.direction = Freeside::Math::Vec3(-0.2f, -1.0f, 0.3f);
+	cDirLight.direction = Freeside::Math::Vec3(0.2f, 1.0f, -0.3f);
 
 	Freeside::Entity eWall1 = testScene.CreateEntity();
 	Freeside::MeshRendererComponent& cWall1Renderer = testScene.AddMeshRenderer(eWall1);
 	Freeside::TransformComponent& cWall1Transform = testScene.AddTransform(eWall1);
 	cWall1Renderer.material = wallMaterialHandle;
 	cWall1Renderer.mesh = wallMeshHandle;
-	cWall1Transform.position = Freeside::Math::Vec3(0.0f, 2.0f, 2.5f);
+	cWall1Transform.position = Freeside::Math::Vec3(0.0f, 2.0f, -2.5f);
 	cWall1Transform.rotation = Freeside::Math::Quat(0.0f, 0.0f, 0.0f, 0.0f);
 	cWall1Transform.scale = Freeside::Math::Vec3(5.0f, 5.0f, 5.0f);
 
