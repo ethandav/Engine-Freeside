@@ -4,6 +4,7 @@
 
 #include "Vec3.h"
 #include "Vec4.h"
+#include "Quat.h"
 
 namespace Freeside
 {
@@ -168,10 +169,56 @@ namespace Freeside
             );
         }
 
-        inline Mat4 TransformMatrix(const Vec3 position, const Vec3 rotation, const Vec3 scale)
+        inline Mat4 Mat4FromQuat(const Quat& rotation)
+        {
+            const Quat q = Normalize(rotation);
+
+            const float x = q.x;
+            const float y = q.y;
+            const float z = q.z;
+            const float w = q.w;
+
+            const float xx = x * x;
+            const float yy = y * y;
+            const float zz = z * z;
+
+            const float xy = x * y;
+            const float xz = x * z;
+            const float yz = y * z;
+
+            const float wx = w * x;
+            const float wy = w * y;
+            const float wz = w * z;
+
+            Mat4 result = Mat4::Identity();
+
+            result.m[0][0] = 1.0f - 2.0f * (yy + zz);
+            result.m[0][1] = 2.0f * (xy - wz);
+            result.m[0][2] = 2.0f * (xz + wy);
+            result.m[0][3] = 0.0f;
+
+            result.m[1][0] = 2.0f * (xy + wz);
+            result.m[1][1] = 1.0f - 2.0f * (xx + zz);
+            result.m[1][2] = 2.0f * (yz - wx);
+            result.m[1][3] = 0.0f;
+
+            result.m[2][0] = 2.0f * (xz - wy);
+            result.m[2][1] = 2.0f * (yz + wx);
+            result.m[2][2] = 1.0f - 2.0f * (xx + yy);
+            result.m[2][3] = 0.0f;
+
+            result.m[3][0] = 0.0f;
+            result.m[3][1] = 0.0f;
+            result.m[3][2] = 0.0f;
+            result.m[3][3] = 1.0f;
+
+            return result;
+        }
+
+        inline Mat4 TransformMatrix(const Vec3 position, const Quat rotation, const Vec3 scale)
         {
             Mat4 scaleMatrix = Scale(scale.x, scale.y, scale.z);
-            Mat4 rotationMatrix = RotationZ(rotation.z) * RotationX(rotation.x) * RotationY(rotation.y);
+            Mat4 rotationMatrix = Mat4FromQuat(rotation);
             Mat4 translationMatrix = Translation(position.x, position.y, position.z);
 
             return translationMatrix * rotationMatrix * scaleMatrix;

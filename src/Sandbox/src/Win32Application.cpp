@@ -91,7 +91,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	Freeside::Scene::Scene testScene(L"Test Scene");
 
-	Freeside::Assets::ImportedModel model = assets.ImportModel("assets\\models\\snowy_mountains.glb");
+	Freeside::Assets::ImportedModel model = assets.ImportModel("assets\\models\\DamagedHelmet.glb");
 	for (const Freeside::Assets::ImportedMesh& mesh : model.meshes)
 	{
 		for (const Freeside::Assets::ImportedPrimitive& prim : mesh.primitives)
@@ -105,10 +105,9 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 			cMeshRenderer.material = importMatHandle;
 			cMeshRenderer.mesh = mesh;
-			cMeshTransform.position = Freeside::Math::Vec3(0.0f, -20.0f, -20.0f);
+			cMeshTransform.position = Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 			//cMeshTransform.rotation = Freeside::Math::Vec3(-Freeside::Math::PI * 0.5f, Freeside::Math::PI * 1.0f, 0.0f);
-			cMeshTransform.rotation = Freeside::Math::Vec3(-Freeside::Math::PI * 1.0f, Freeside::Math::PI * 1.0f, 0.0f);
-			cMeshTransform.scale = Freeside::Math::Vec3(200.0f, 200.0f, 200.0f);
+			cMeshTransform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
 		}
 	}
 
@@ -123,6 +122,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cameraController.SetMoveSpeed(5.0f);
 	cameraController.SetMouseSensitivity(0.002f);
 
+	/*
 	Freeside::Entity eCrate = testScene.CreateEntity();
 	Freeside::MeshRendererComponent& cCrateRenderer = testScene.AddMeshRenderer(eCrate);
 	Freeside::TransformComponent& cCrateTransform = testScene.AddTransform(eCrate);
@@ -149,6 +149,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cCrate3Transform.position = Freeside::Math::Vec3(1.0f, 1.0f, 0.0f);
 	cCrate3Transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
 	cCrate3Transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	*/
 
 	Freeside::Entity ePointLight = testScene.CreateEntity();
 	Freeside::PointLightComponent& cPointLight = testScene.AddPointLight(ePointLight);
@@ -176,7 +177,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cWall1Renderer.material = wallMaterialHandle;
 	cWall1Renderer.mesh = wallMeshHandle;
 	cWall1Transform.position = Freeside::Math::Vec3(0.0f, 2.0f, 2.5f);
-	cWall1Transform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+	cWall1Transform.rotation = Freeside::Math::Quat(0.0f, 0.0f, 0.0f, 0.0f);
 	cWall1Transform.scale = Freeside::Math::Vec3(5.0f, 5.0f, 5.0f);
 
 	Freeside::Entity eWall2 = testScene.CreateEntity();
@@ -185,7 +186,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cWall2Renderer.material = wallMaterialHandle;
 	cWall2Renderer.mesh = wallMeshHandle;
 	cWall2Transform.position = Freeside::Math::Vec3(-2.5f, 2.0f, 0.0f);;
-	cWall2Transform.rotation = Freeside::Math::Vec3(0.0f, -3.14159265f * 0.5f, 0.0f);
+	cWall2Transform.rotation = Freeside::Math::FromAxisAngle(Freeside::Math::Vec3(0.0f, 1.0f, 0.0f), Freeside::Math::PIDIV2);
 	cWall2Transform.scale = Freeside::Math::Vec3(5.0f, 5.0f, 5.0f);
 
 	Freeside::Entity eWall3 = testScene.CreateEntity();
@@ -194,7 +195,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cWall3Renderer.material = wallMaterialHandle;
 	cWall3Renderer.mesh = wallMeshHandle;
 	cWall3Transform.position = Freeside::Math::Vec3(2.5f, 2.0f, 0.0f);
-	cWall3Transform.rotation = Freeside::Math::Vec3(0.0f, 3.14159265f * 0.5f, 0.0f);
+	cWall3Transform.rotation = Freeside::Math::FromAxisAngle(Freeside::Math::Vec3(0.0f, 1.0f, 0.0f), -Freeside::Math::PIDIV2);
 	cWall3Transform.scale = Freeside::Math::Vec3(5.0f, 5.0f, 5.0f);
 
 	Freeside::Entity eFloor = testScene.CreateEntity();
@@ -203,7 +204,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cFloorRenderer.material = floorMaterialHandle;
 	cFloorRenderer.mesh = planeMeshHandle;
 	cFloorTransform.position = Freeside::Math::Vec3(0.0f, -0.5f, 0.0f);
-	cFloorTransform.rotation = Freeside::Math::Vec3(0.0f, 0.0f, 0.0f);
+	cFloorTransform.rotation = Freeside::Math::Quat(0.0f, 0.0f, 0.0f, 0.0f);
 	cFloorTransform.scale = Freeside::Math::Vec3(5.0f, 5.0f, 5.0f);
 
 	float angle = 0.0f;

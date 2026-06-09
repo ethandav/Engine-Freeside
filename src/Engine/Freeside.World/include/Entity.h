@@ -1,6 +1,7 @@
 #include <cstdint>
 #include "..\..\Freeside.Core\include\math\Vec3.h"
 #include "..\..\Freeside.Core\include\math\Mat4.h"
+#include "..\..\Freeside.Core\include\math\Quat.h"
 #include "..\..\efg\include\render\types\Handles.h"
 #include "..\..\efg\include\render\Camera.h"
 
@@ -16,7 +17,7 @@ namespace Freeside
     struct TransformComponent
     {
         Math::Vec3 position = {};
-        Math::Vec3 rotation = {};
+        Math::Quat rotation = {};
         Math::Vec3 scale = { 1.0f, 1.0f, 1.0f };
 
         Math::Mat4 GetWorldMatrix() const { return Freeside::Math::TransformMatrix(position, rotation, scale); };

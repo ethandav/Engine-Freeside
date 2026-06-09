@@ -32,6 +32,16 @@ namespace Freeside
             return Vec3(v.x * scalar, v.y * scalar, v.z * scalar);
         }
 
+        inline Vec3 operator*(float scalar, const Vec3& v)
+        {
+            return Vec3(v.x * scalar, v.y * scalar, v.z * scalar);
+        }
+
+        inline Vec3 operator/(const Vec3& v, float scalar)
+        {
+            return Vec3(v.x / scalar, v.y / scalar, v.z / scalar);
+        }
+
         inline Vec3& operator+=(Vec3& a, const Vec3& b)
         {
             a.x += b.x;
@@ -74,14 +84,14 @@ namespace Freeside
 
         inline Vec3 Normalize(const Vec3& v)
         {
-            const float length = std::sqrt(Dot(v, v));
+            const float length = Length(v);
 
             if (length == 0.0f)
             {
                 return Vec3();
             }
 
-            return Vec3(v.x / length, v.y / length, v.z / length);
+            return v / length;
         }
     }
 }

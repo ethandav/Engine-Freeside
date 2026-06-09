@@ -133,6 +133,7 @@
     <ClInclude Include="include\math\Mat4.h" />
     <ClInclude Include="include\math\math.h" />
     <ClInclude Include="include\math\Meshes.h" />
+    <ClInclude Include="include\math\Quat.h" />
     <ClInclude Include="include\math\Vec2.h" />
     <ClInclude Include="include\math\Vec3.h" />
     <ClInclude Include="include\math\Vec4.h" />

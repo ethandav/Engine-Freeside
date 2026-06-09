@@ -84,13 +84,13 @@ namespace Freeside::Assets
             return Mat4FromGltfMatrix(node.matrix);
         }
 
-        Freeside::Math::Vec3 translation;
-        Freeside::Math::Vec3 rotation;
-        Freeside::Math::Vec3 scale;
+        Freeside::Math::Vec3 translation(0.0f, 0.0f, 0.0f);
+        Freeside::Math::Quat rotation = Freeside::Math::Quat::Identity();
+        Freeside::Math::Vec3 scale(1.0f, 1.0f, 1.0f);
 
         if (node.translation.size() == 3)
         {
-            Freeside::Math::Vec3 translation = {
+            translation = {
                 static_cast<float>(node.translation[0]),
                 static_cast<float>(node.translation[1]),
                 static_cast<float>(node.translation[2]),
@@ -99,19 +99,22 @@ namespace Freeside::Assets
 
         if (node.scale.size() == 3)
         {
-            Freeside::Math::Vec3 rotation = {
+            rotation = {
                 static_cast<float>(node.rotation[0]),
                 static_cast<float>(node.rotation[1]),
                 static_cast<float>(node.rotation[2]),
+                static_cast<float>(node.rotation[3])
             };
+
+            rotation = Freeside::Math::Normalize(rotation);
         }
 
         if (node.rotation.size() == 4)
         {
             scale = {
-                static_cast<float>(node.scale[0]),
-                static_cast<float>(node.scale[1]),
-                static_cast<float>(node.scale[2]),
+                static_cast<float>(node.rotation[0]),
+                static_cast<float>(node.rotation[1]),
+                static_cast<float>(node.rotation[2]),
             };
         }
 
@@ -361,11 +364,7 @@ namespace Freeside::Assets
         }
     }
 
-    static void ImportNode(
-        const tinygltf::Model& model,
-        int nodeIndex,
-        const Freeside::Math::Mat4& parentTransform,
-        ImportedModel& outModel)
+    static void ImportNode(const tinygltf::Model& model, int nodeIndex, const Freeside::Math::Mat4& parentTransform, ImportedModel& outModel)
     {
         const tinygltf::Node& node = model.nodes[nodeIndex];
 
@@ -394,9 +393,7 @@ namespace Freeside::Assets
 
                 if (!hasTangents)
                 {
-                    Freeside::Math::GenerateTangents(
-                        outPrimitive.meshData.vertices,
-                        outPrimitive.meshData.indices);
+                    Freeside::Math::GenerateTangents(outPrimitive.meshData.vertices, outPrimitive.meshData.indices);
                 }
 
                 outMesh.primitives.push_back(std::move(outPrimitive));
@@ -440,21 +437,11 @@ namespace Freeside::Assets
 
         if (path.extension() == ".glb")
         {
-            loaded = loader.LoadBinaryFromFile(
-                &model,
-                &error,
-                &warning,
-                path.string()
-            );
+            loaded = loader.LoadBinaryFromFile(&model, &error, &warning, path.string());
         }
         else
         {
-            loaded = loader.LoadASCIIFromFile(
-                &model,
-                &error,
-                &warning,
-                path.string()
-            );
+            loaded = loader.LoadASCIIFromFile(&model, &error, &warning, path.string());
         }
 
         if (!warning.empty())
