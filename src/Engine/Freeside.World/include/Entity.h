@@ -52,7 +52,17 @@ namespace Freeside
         bool useMatrixOverride = false;
         Math::Mat4 matrixOverride = Math::Mat4::Identity();
 
-        Math::Mat4 GetWorldMatrix() const { return Freeside::Math::TransformMatrix(position, rotation, scale); };
+        Math::Mat4 GetLocalMatrix() const
+        {
+            Math::Mat4 componentMatrix = Freeside::Math::TransformMatrix(position, rotation, scale);
+
+            if (useMatrixOverride)
+            {
+                return componentMatrix * matrixOverride;
+            }
+
+            return componentMatrix;
+        }
     };
 
     struct MeshRendererComponent

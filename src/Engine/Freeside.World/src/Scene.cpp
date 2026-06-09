@@ -302,7 +302,7 @@ namespace Freeside
 		{
 			const TransformComponent* transform = GetTransform(entity);
 
-			Math::Mat4 local = transform->GetWorldMatrix();
+			Math::Mat4 local = transform->GetLocalMatrix();
 
 			auto hierarchyIt = m_hierarchyComponents.find(entity.id);
 
