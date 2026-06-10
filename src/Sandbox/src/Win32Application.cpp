@@ -107,23 +107,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		rootTransform->position += Freeside::Math::Vec3(0.0f, 1.0f, 0.0f);
 	}
 
-	Freeside::Assets::ImportedModel model2 = assets.ImportModel("assets\\models\\mountains.glb");
-	for (int rootNodeIndex : model.rootNodes)
-	{
-		Freeside::Entity root = testScene.CreateEntityFromImportedNode(
-			&assets,
-			model2,
-			rootNodeIndex,
-			Freeside::Entity(-1)
-		);
-
-		Freeside::TransformComponent* rootTransform = testScene.GetTransform(root);
-
-		// Optional model placement in sandbox:
-		rootTransform->position += Freeside::Math::Vec3(0.0f, -2.0f, 0.0f);
-		rootTransform->scale += Freeside::Math::Vec3(100.0f, 100.0f, 100.0f);
-	}
-
 	Freeside::Entity eCamera = testScene.CreateEntity();
 	Freeside::CameraComponent& cCamera = testScene.AddCamera(eCamera);
 	cCamera.camera.SetPosition(Freeside::Math::Vec3(0.0f, 1.0f, 5.0f));
@@ -164,19 +147,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cCrate3Transform.scale = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
 	*/
 
-	Freeside::Entity ePointLight2 = testScene.CreateEntity();
-	Freeside::PointLightComponent& cPointLight2 = testScene.AddPointLight(ePointLight2);
-	Freeside::TransformComponent& cPointLightTransform2 = testScene.AddTransform(ePointLight2);
-	cPointLight2.intensity = 5.0f;
-	cPointLight2.radius = 10.0f;
-	cPointLightTransform2.position = Freeside::Math::Vec3(-2.0f, 3.0f, 2.0f);
-
-	Freeside::Entity eDirLight = testScene.CreateEntity();
-	Freeside::DirectionalLightComponent& cDirLight = testScene.AddDirectionalLight(eDirLight);
-	cDirLight.intensity = 5.0f;
-	cDirLight.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
-	cDirLight.direction = Freeside::Math::Vec3(0.2f, -1.0f, -0.3f);
-
 	Freeside::Entity eWall1 = testScene.CreateEntity();
 	Freeside::MeshRendererComponent& cWall1Renderer = testScene.AddMeshRenderer(eWall1);
 	Freeside::TransformComponent& cWall1Transform = testScene.AddTransform(eWall1);
@@ -212,6 +182,19 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	cFloorTransform.position = Freeside::Math::Vec3(0.0f, -0.5f, 0.0f);
 	cFloorTransform.rotation = Freeside::Math::Quat(0.0f, 0.0f, 0.0f, 0.0f);
 	cFloorTransform.scale = Freeside::Math::Vec3(5.0f, 5.0f, 5.0f);
+
+	Freeside::Entity ePointLight2 = testScene.CreateEntity();
+	Freeside::PointLightComponent& cPointLight2 = testScene.AddPointLight(ePointLight2);
+	Freeside::TransformComponent& cPointLightTransform2 = testScene.AddTransform(ePointLight2);
+	cPointLight2.intensity = 5.0f;
+	cPointLight2.radius = 10.0f;
+	cPointLightTransform2.position = Freeside::Math::Vec3(-2.0f, 3.0f, 2.0f);
+
+	Freeside::Entity eDirLight = testScene.CreateEntity();
+	Freeside::DirectionalLightComponent& cDirLight = testScene.AddDirectionalLight(eDirLight);
+	cDirLight.intensity = 5.0f;
+	cDirLight.color = Freeside::Math::Vec3(1.0f, 1.0f, 1.0f);
+	cDirLight.direction = Freeside::Math::Vec3(0.2f, -1.0f, -0.3f);
 
 	float angle = 0.0f;
 	float speed = 1.0f;
