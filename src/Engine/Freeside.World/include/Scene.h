@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <filesystem>
 
 namespace Freeside
 {
@@ -18,6 +19,12 @@ namespace Freeside
 
 	namespace Scene
 	{
+
+        struct SceneLoadRequest
+        {
+            const std::filesystem::path& path;
+        };
+
         class Scene
         {
         public:

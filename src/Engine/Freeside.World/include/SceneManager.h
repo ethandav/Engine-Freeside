@@ -2,9 +2,13 @@
 
 #include "Scene.h"
 #include "SceneSerializer.h"
+#include "..\..\Freeside.Platform\include\InputState.h"
+#include "..\..\Freeside.Assets\include\AssetManager.h"
 
 #include <vector>
 #include <filesystem>
+#include <deque>
+#include <memory>
 
 namespace Freeside
 {
@@ -20,11 +24,16 @@ namespace Freeside
 
 			void Initialize(Renderer* renderer);
 			void LoadScene(const std::filesystem::path& path);
-			void RenderScene(Scene scene, uint64_t frameId);
+			void RenderScene(uint64_t frameId);
+			void Update(Freeside::InputState input, const float deltaTime);
+			void TryLoadNextScene();
+			void CreateDefaultScene();
 		private:
 			Renderer* m_renderer = nullptr;
+			Assets::AssetManager m_assetManager = {};
 			SceneSerializer m_sceneSerializer = {};
-			std::vector<Scene> m_sceneQueue = {};
+			std::deque<SceneLoadRequest> m_sceneQueue;
+			std::unique_ptr<Scene> m_activeScene;
 
 		};
 	}
