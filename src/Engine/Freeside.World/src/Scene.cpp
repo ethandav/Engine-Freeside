@@ -300,6 +300,13 @@ namespace Freeside
 				return;
 			}
 
+			// Prevent cycles:
+			// You cannot parent an entity to one of its own descendants.
+			if (newParent.IsValid() && IsDescendantOf(newParent, child))
+			{
+				return;
+			}
+
 			HierarchyComponent& childHierarchy = m_hierarchyComponents[child.id];
 
 			Entity oldParent = childHierarchy.parent;
@@ -362,6 +369,35 @@ namespace Freeside
 			}
 
 			return GetWorldMatrix(parent) * local;
+		}
+
+		bool Scene::IsDescendantOf(Entity possibleDescendant, Entity possibleAncestor) const
+		{
+			if (!possibleDescendant.IsValid() || !possibleAncestor.IsValid())
+			{
+				return false;
+			}
+
+			Entity current = possibleDescendant;
+
+			while (current.IsValid())
+			{
+				if (current == possibleAncestor)
+				{
+					return true;
+				}
+
+				auto hierarchyIt = m_hierarchyComponents.find(current.id);
+
+				if (hierarchyIt == m_hierarchyComponents.end())
+				{
+					return false;
+				}
+
+				current = hierarchyIt->second.parent;
+			}
+
+			return false;
 		}
 	}
 }

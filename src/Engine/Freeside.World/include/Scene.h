@@ -57,6 +57,8 @@ namespace Freeside
             const TransformComponent* GetTransform(Entity entity) const;
             Math::Mat4 GetWorldMatrix(Entity entity) const;
 
+            bool IsDescendantOf(Entity possibleDescendant, Entity possibleAncestor) const;
+
             void BuildCamera(efg::FramePacket& packet) const;
             void BuildRenderObjects(efg::FramePacket& packet) const;
             void BuildDirectionalLights(efg::FramePacket& packet) const;
