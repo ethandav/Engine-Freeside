@@ -191,7 +191,7 @@ namespace Freeside
 			cWall1Renderer.material = wallMaterialHandle;
 			cWall1Renderer.mesh = wallMeshHandle;
 			cWall1Transform.position = Math::Vec3(0.0f, 2.0f, -2.5f);
-			cWall1Transform.rotation = Math::Quat(0.0f, 0.0f, 0.0f, 0.0f);
+			cWall1Transform.rotation = Math::Quat::Identity();
 			cWall1Transform.scale = Math::Vec3(5.0f, 5.0f, 5.0f);
 
 			Entity eWall2 = m_activeScene->CreateEntity();
@@ -218,7 +218,7 @@ namespace Freeside
 			cFloorRenderer.material = floorMaterialHandle;
 			cFloorRenderer.mesh = planeMeshHandle;
 			cFloorTransform.position = Math::Vec3(0.0f, -0.5f, 0.0f);
-			cFloorTransform.rotation = Math::Quat(0.0f, 0.0f, 0.0f, 0.0f);
+			cFloorTransform.rotation = Math::Quat::Identity();
 			cFloorTransform.scale = Math::Vec3(5.0f, 5.0f, 5.0f);
 
 			Entity ePointLight2 = m_activeScene->CreateEntity();

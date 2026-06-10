@@ -62,6 +62,13 @@ namespace Freeside
 		FirstPersonCameraControllerComponent& Scene::AddFirstPersonCameraControllerComponent(Entity entity)
 		{
 			FirstPersonCameraControllerComponent comp = {};
+
+			TransformComponent* transform = GetTransform(entity);
+			if (!transform)
+			{
+				throw std::runtime_error("FirstPersonCameraController requires TransformComponent.");
+			}
+
 			Math::Vec3 forward = Math::RotateVector(m_transforms[entity.id].rotation, Math::Vec3(0.0f, 0.0f, 1.0f));
 			forward = Math::Normalize(forward);
 			comp.pitch = std::asin(forward.y);
@@ -334,6 +341,9 @@ namespace Freeside
 		Math::Mat4 Scene::GetWorldMatrix(Entity entity) const
 		{
 			const TransformComponent* transform = GetTransform(entity);
+
+			if (!transform)
+				return Math::Mat4::Identity();
 
 			Math::Mat4 local = transform->GetLocalMatrix();
 
