@@ -1,4 +1,5 @@
-#include <cstdint>
+#pragma once
+
 #include "..\..\Freeside.Core\include\math\Vec3.h"
 #include "..\..\Freeside.Core\include\math\Mat4.h"
 #include "..\..\Freeside.Core\include\math\Quat.h"
@@ -6,7 +7,7 @@
 #include "..\..\efg\include\render\types\Handles.h"
 #include "..\..\efg\include\render\Camera.h"
 
-
+#include <cstdint>
 #include <vector>
 
 namespace Freeside
@@ -82,6 +83,15 @@ namespace Freeside
         float orthographicWidth = 10.0f;
         float orthographicHeight = 10.0f;
         bool isMainCamera = false;
+    };
+
+    struct FirstPersonCameraControllerComponent
+    {
+        float moveSpeed = 5.0f;
+        float lookSensitivity = 0.002f;
+        float yaw = 0.0f;
+        float pitch = 0.0f;
+        bool allowVerticalMovement = true;
     };
 
     struct DirectionalLightComponent

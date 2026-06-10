@@ -1,32 +1,23 @@
 #include "..\..\include\controllers\FirstPersonCameraController.h"
+#include <algorithm>
 
 namespace Freeside
 {
-    void FirstPersonCameraController::InitializeFromCamera(const Camera& camera)
+    Math::Vec3 FirstPersonCameraController::GetForward(const FirstPersonCameraControllerComponent& controller)
     {
-        Math::Vec3 direction = Math::Normalize(camera.GetTarget() - camera.GetPosition());
-
-        m_pitch = std::asin(direction.y);
-
-        m_yaw = std::atan2(direction.x, direction.z);
-    }
-
-    Math::Vec3 FirstPersonCameraController::GetForward() const
-    {
-        const float cosPitch = std::cos(m_pitch);
+        const float cosPitch = std::cos(controller.pitch);
 
         return Math::Normalize(Math::Vec3(
-            std::sin(m_yaw) * cosPitch,
-            std::sin(m_pitch),
-            std::cos(m_yaw) * cosPitch
+            std::sin(controller.yaw) * cosPitch,
+            std::sin(controller.pitch),
+            std::cos(controller.yaw) * cosPitch
         ));
     }
 
-    Math::Vec3 FirstPersonCameraController::GetRight() const
+    Math::Vec3 FirstPersonCameraController::GetRight(const FirstPersonCameraControllerComponent& controller)
     {
-        Math::Vec3 forward = GetForward();
+        Math::Vec3 forward = GetForward(controller);
 
-        // Remove pitch for ground-plane right vector.
         forward.y = 0.0f;
         forward = Math::Normalize(forward);
 
@@ -35,33 +26,31 @@ namespace Freeside
         return Math::Normalize(Math::Cross(worldUp, forward));
     }
 
-    void FirstPersonCameraController::Update(Camera* camera, const InputState& input, float deltaTime)
+    void FirstPersonCameraController::Update(TransformComponent& transform, FirstPersonCameraControllerComponent& controller, const InputState& input, float deltaTime)
     {
-        // Mouse look.
-        m_yaw += input.mouseDeltaX * m_mouseSensitivity;
-        m_pitch -= input.mouseDeltaY * m_mouseSensitivity;
+        controller.yaw += input.mouseDeltaX * controller.lookSensitivity;
+        controller.pitch -= input.mouseDeltaY * controller.lookSensitivity;
 
-        // Clamp pitch to avoid flipping at straight up/down.
-        constexpr float MaxPitch = 1.55334306f; // ~89 degrees
-        if (m_pitch > MaxPitch)
-            m_pitch = MaxPitch;
-        if (m_pitch < -MaxPitch)
-            m_pitch = -MaxPitch;
+        constexpr float MaxPitch = 1.55334306f;
 
-        Freeside::Math::Vec3 forward = GetForward();
+        controller.pitch = std::clamp(
+            controller.pitch,
+            -MaxPitch,
+            MaxPitch
+        );
 
-        // Movement should usually be horizontal for FPS-style walking.
-        Freeside::Math::Vec3 moveForward = forward;
+        Math::Vec3 forward = GetForward(controller);
+        Math::Vec3 moveForward = forward;
         moveForward.y = 0.0f;
 
-        if (Freeside::Math::LengthSquared(moveForward) > 0.0f)
+        if (Math::LengthSquared(moveForward) > 0.0f)
         {
-            moveForward = Freeside::Math::Normalize(moveForward);
+            moveForward = Math::Normalize(moveForward);
         }
 
-        Freeside::Math::Vec3 right = GetRight();
+        Math::Vec3 right = GetRight(controller);
 
-        Freeside::Math::Vec3 moveDirection(0.0f, 0.0f, 0.0f);
+        Math::Vec3 moveDirection(0.0f, 0.0f, 0.0f);
 
         if (input.IsKeyDown(Key::W))
             moveDirection += moveForward;
@@ -75,22 +64,26 @@ namespace Freeside
         if (input.IsKeyDown(Key::A))
             moveDirection -= right;
 
-        if (input.IsKeyDown(Key::Space))
-            moveDirection.y += 1.0f;
-
-        if (input.IsKeyDown(Key::LeftCtrl))
-            moveDirection.y -= 1.0f;
-
-        if (Freeside::Math::LengthSquared(moveDirection) > 0.0f)
+        if (controller.allowVerticalMovement)
         {
-            moveDirection = Freeside::Math::Normalize(moveDirection);
+            if (input.IsKeyDown(Key::Space))
+                moveDirection.y += 1.0f;
+
+            if (input.IsKeyDown(Key::LeftCtrl))
+                moveDirection.y -= 1.0f;
         }
 
-        Freeside::Math::Vec3 position = camera->GetPosition();
-        position += moveDirection * m_moveSpeed * deltaTime;
+        if (Math::LengthSquared(moveDirection) > 0.0f)
+        {
+            moveDirection = Math::Normalize(moveDirection);
+        }
 
-        camera->SetPosition(position);
-        camera->SetTarget(position + forward);
-        camera->SetUp(Freeside::Math::Vec3(0.0f, 1.0f, 0.0f));
+        transform.position += moveDirection * controller.moveSpeed * deltaTime;
+
+        transform.rotation = Math::FromEulerXYZ(
+            -controller.pitch,
+            controller.yaw,
+            0.0f
+        );
     }
 }

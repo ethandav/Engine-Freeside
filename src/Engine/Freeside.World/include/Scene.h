@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "..\..\efg\include\render\types\FramePacket.h"
 #include "..\..\Freeside.Assets\include\ImportedAssetTypes.h"
+#include "..\..\Freeside.Platform\include\InputState.h"
 
 #include <cstdint>
 #include <string>
@@ -30,10 +31,12 @@ namespace Freeside
         public:
             Scene() {};
             Scene(std::wstring name);
+            void Update(InputState input, const float deltaTime);
             Entity CreateEntity();
             TransformComponent& AddTransform(Entity entity);
             MeshRendererComponent& AddMeshRenderer(Entity entity);
             CameraComponent& AddCamera(Entity entity);
+            FirstPersonCameraControllerComponent& AddFirstPersonCameraControllerComponent(Entity entity);
             DirectionalLightComponent& AddDirectionalLight(Entity entity);
             PointLightComponent& AddPointLight(Entity entity);
 
@@ -68,6 +71,7 @@ namespace Freeside
             std::unordered_map<EntityId, TransformComponent> m_transforms;
             std::unordered_map<EntityId, MeshRendererComponent> m_meshRenderers;
             std::unordered_map<EntityId, CameraComponent> m_cameras;
+            std::unordered_map<EntityId, FirstPersonCameraControllerComponent> m_firstPersonCameraControllers;
             std::unordered_map<EntityId, DirectionalLightComponent> m_directionalLights;
             std::unordered_map<EntityId, PointLightComponent> m_pointLights;
             std::unordered_map<EntityId, HierarchyComponent> m_hierarchyComponents;

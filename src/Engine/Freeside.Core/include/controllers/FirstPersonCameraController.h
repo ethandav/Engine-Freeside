@@ -1,29 +1,15 @@
 #pragma once
 
-#include "..\..\..\efg\include\render\Camera.h"
 #include "..\..\..\Freeside.Platform\include\InputState.h"
+#include "..\..\..\Freeside.World\include\Entity.h"
 
 namespace Freeside
 {
-    class FirstPersonCameraController
+    struct FirstPersonCameraController
     {
-    public:
-        void InitializeFromCamera(const Camera& camera);
-
-        void Update(Camera* camera, const InputState& input, float deltaTime);
-
-        void SetMoveSpeed(float speed) { m_moveSpeed = speed; }
-        void SetMouseSensitivity(float sensitivity) { m_mouseSensitivity = sensitivity; }
-
+        static void Update(TransformComponent& transform, FirstPersonCameraControllerComponent& controller, const InputState& input, float deltaTime);
     private:
-        Freeside::Math::Vec3 GetForward() const;
-        Freeside::Math::Vec3 GetRight() const;
-
-    private:
-        float m_yaw = 0.0f;
-        float m_pitch = 0.0f;
-
-        float m_moveSpeed = 5.0f;
-        float m_mouseSensitivity = 0.002f;
+        static Math::Vec3 GetForward(const FirstPersonCameraControllerComponent& controller);
+        static Math::Vec3 GetRight(const FirstPersonCameraControllerComponent& controller);
     };
 }

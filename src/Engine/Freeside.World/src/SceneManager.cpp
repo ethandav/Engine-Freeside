@@ -4,7 +4,6 @@
 #include "..\..\Freeside.Core\include\math\MatrixTransform.h"
 
 #include <stdexcept>
-#include "../../Freeside.Core/include/controllers/FirstPersonCameraController.h"
 
 namespace Freeside
 {
@@ -38,12 +37,13 @@ namespace Freeside
 
 		void SceneManager::Update(InputState input, const float deltaTime)
 		{
-			//cameraController.Update(&cCamera.camera, input, deltaTime);
 			if (!m_activeScene)
 				TryLoadNextScene();
 
 			if (!m_activeScene)
 				return;
+
+			m_activeScene->Update(input, deltaTime);
 		}
 
 		void SceneManager::TryLoadNextScene()
@@ -152,11 +152,7 @@ namespace Freeside
 				Math::Vec3(0.0f, 0.5f, 0.0f)
 			);
 			cCamera.isMainCamera = true;
-
-			FirstPersonCameraController cameraController;
-			//cameraController.InitializeFromCamera(cCamera.camera);
-			//cameraController.SetMoveSpeed(5.0f);
-			//cameraController.SetMouseSensitivity(0.002f);
+			FirstPersonCameraControllerComponent& cCameraController = m_activeScene->AddFirstPersonCameraControllerComponent(eCamera);
 
 			/*
 			Entity eCrate = testScene.CreateEntity();

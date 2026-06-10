@@ -1,6 +1,7 @@
 #include "..\include\Scene.h"
 #include "..\..\Freeside.Assets\include\AssetManager.h"
 #include "..\..\Freeside.Core\include\math\MatrixTransform.h"
+#include "..\..\Freeside.Core\include\controllers\FirstPersonCameraController.h"
 
 #include <stdexcept>
 #include <algorithm>
@@ -12,6 +13,21 @@ namespace Freeside
 	{
 		Scene::Scene(std::wstring name) : name(name)
 		{
+
+		}
+
+		void Scene::Update(InputState input, const float deltaTime)
+		{
+			for (const auto& [entityId, cameraComponent] : m_cameras)
+			{
+				if (!cameraComponent.isMainCamera)
+					continue;
+				
+				if (m_firstPersonCameraControllers.find(entityId) != m_firstPersonCameraControllers.end())
+				{
+					FirstPersonCameraController::Update(m_transforms[entityId], m_firstPersonCameraControllers[entityId], input, deltaTime);
+				}
+			}
 		}
 
 		Entity Scene::CreateEntity()
@@ -41,6 +57,18 @@ namespace Freeside
 			CameraComponent comp = {};
 			m_cameras[entity.id] = comp;
 			return m_cameras[entity.id];
+		}
+
+		FirstPersonCameraControllerComponent& Scene::AddFirstPersonCameraControllerComponent(Entity entity)
+		{
+			FirstPersonCameraControllerComponent comp = {};
+			Math::Vec3 forward = Math::RotateVector(m_transforms[entity.id].rotation, Math::Vec3(0.0f, 0.0f, 1.0f));
+			forward = Math::Normalize(forward);
+			comp.pitch = std::asin(forward.y);
+			comp.yaw = std::atan2(forward.x, forward.z);
+
+			m_firstPersonCameraControllers[entity.id] = comp;
+			return m_firstPersonCameraControllers[entity.id];
 		}
 
 		DirectionalLightComponent& Scene::AddDirectionalLight(Entity entity)
