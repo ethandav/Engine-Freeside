@@ -25,12 +25,14 @@ namespace Freeside
 
 		void SceneManager::LoadScene(const std::filesystem::path& path)
 		{
-			Scene scene = {};
-			m_sceneSerializer.Load(scene, path);
+			m_sceneQueue.push_back(SceneLoadRequest{ path });
 		}
 
 		void SceneManager::RenderScene(uint64_t frameId)
 		{
+			if (!m_activeScene || !m_renderer)
+				return;
+
 			efg::FramePacket framePacket = m_activeScene->BuildFramePacket(frameId);
 			m_renderer->SubmitFrame(std::move(framePacket));
 		}
