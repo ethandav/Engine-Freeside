@@ -1,6 +1,7 @@
 #include "..\include\SceneManager.h"
 #include "..\..\efg\include\render\Renderer.h"
 #include "..\..\Freeside.Core\include\shapes\shapes.h"
+#include "..\..\Freeside.Core\include\math\MatrixTransform.h"
 
 #include <stdexcept>
 #include "../../Freeside.Core/include/controllers/FirstPersonCameraController.h"
@@ -146,6 +147,10 @@ namespace Freeside
 			CameraComponent& cCamera = m_activeScene->AddCamera(eCamera);
 			TransformComponent& cCameraTransform = m_activeScene->AddTransform(eCamera);
 			cCameraTransform.position = {0.0f, 1.0f, 5.0f};
+			cCameraTransform.rotation = Math::RotationLookingAt(
+				cCameraTransform.position,
+				Math::Vec3(0.0f, 0.5f, 0.0f)
+			);
 			cCamera.isMainCamera = true;
 
 			FirstPersonCameraController cameraController;

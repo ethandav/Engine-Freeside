@@ -3,6 +3,7 @@
 #include "..\..\..\..\include\d3d12\resources\D3D12GpuAlignment.h"
 #include "..\..\..\..\include\d3d12\types\D3D12DrawTypes.h"
 #include "..\..\..\..\include\d3d12\resources\D3D12GpuTexture.h"
+#include "..\..\..\..\..\Freeside.Core\include\math\MatrixTransform.h"
 
 #include <algorithm>
 

@@ -1,4 +1,6 @@
 #include "..\..\include\render\Camera.h"
+#include "..\..\..\Freeside.Core\include\math\MatrixTransform.h"
+
 
 namespace Freeside
 {

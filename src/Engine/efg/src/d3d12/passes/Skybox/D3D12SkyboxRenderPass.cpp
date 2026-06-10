@@ -3,6 +3,7 @@
 #include "..\..\..\..\include\d3d12\passes\Skybox\D3D12SkyboxRenderPassTypes.h"
 #include "..\..\..\..\..\Freeside.Core\include\shapes\skybox.h"
 #include "..\..\..\..\include\d3d12\systems\D3D12ResourceSystem.h"
+#include "..\..\..\..\..\Freeside.Core\include\math\MatrixTransform.h"
 
 namespace efg::d3d12
 {

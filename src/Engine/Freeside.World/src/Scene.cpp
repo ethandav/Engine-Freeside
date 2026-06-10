@@ -1,5 +1,6 @@
 #include "..\include\Scene.h"
 #include "..\..\Freeside.Assets\include\AssetManager.h"
+#include "..\..\Freeside.Core\include\math\MatrixTransform.h"
 
 #include <stdexcept>
 #include <algorithm>
@@ -83,15 +84,11 @@ namespace Freeside
 
 				const TransformComponent& transform = transformIt->second;
 
-				Math::Vec3 forward = Math::RotateVector(transform.rotation, Math::Vec3(0.0f, 0.0f, -1.0f));
+				Math::Vec3 forward = Math::RotateVector(transform.rotation, Math::Vec3(0.0f, 0.0f, 1.0f));
 				Math::Vec3 up = Math::RotateVector(transform.rotation, Math::Vec3(0.0f, 1.0f, 0.0f));
 				Math::Vec3 right = Math::RotateVector(transform.rotation, Math::Vec3(1.0f, 0.0f, 0.0f));
 
-				packet.camera.LookAt(
-					transform.position,
-					transform.position + forward,
-					up
-				);
+				packet.camera.LookAt(transform.position, transform.position + forward, up);
 				packet.camera.SetPosition(transform.position);
 
 				return;

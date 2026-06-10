@@ -101,58 +101,5 @@ namespace Freeside
             a = a * b;
             return a;
         }
-
-        inline Quat FromAxisAngle(const Vec3& axis, float angleRadians)
-        {
-            const Vec3 normalizedAxis = Normalize(axis);
-
-            const float halfAngle = angleRadians * 0.5f;
-            const float s = std::sin(halfAngle);
-            const float c = std::cos(halfAngle);
-
-            return Normalize(Quat(
-                normalizedAxis.x * s,
-                normalizedAxis.y * s,
-                normalizedAxis.z * s,
-                c
-            ));
-        }
-
-        inline Quat FromEulerXYZ(float xRadians, float yRadians, float zRadians)
-        {
-            const float halfX = xRadians * 0.5f;
-            const float halfY = yRadians * 0.5f;
-            const float halfZ = zRadians * 0.5f;
-
-            const float sx = std::sin(halfX);
-            const float cx = std::cos(halfX);
-
-            const float sy = std::sin(halfY);
-            const float cy = std::cos(halfY);
-
-            const float sz = std::sin(halfZ);
-            const float cz = std::cos(halfZ);
-
-            Quat qx(sx, 0.0f, 0.0f, cx);
-            Quat qy(0.0f, sy, 0.0f, cy);
-            Quat qz(0.0f, 0.0f, sz, cz);
-
-            return Normalize(qz * qy * qx);
-        }
-
-        inline Quat FromEulerXYZ(const Vec3& radians)
-        {
-            return FromEulerXYZ(radians.x, radians.y, radians.z);
-        }
-
-        inline Vec3 RotateVector(const Quat& rotation, const Vec3& vector)
-        {
-            const Quat q = Normalize(rotation);
-
-            const Quat v(vector.x, vector.y, vector.z, 0.0f);
-            const Quat result = q * v * Inverse(q);
-
-            return Vec3(result.x, result.y, result.z);
-        }
     }
 }

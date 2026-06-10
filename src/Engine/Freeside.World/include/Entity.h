@@ -2,8 +2,10 @@
 #include "..\..\Freeside.Core\include\math\Vec3.h"
 #include "..\..\Freeside.Core\include\math\Mat4.h"
 #include "..\..\Freeside.Core\include\math\Quat.h"
+#include "..\..\Freeside.Core\include\math\MatrixTransform.h"
 #include "..\..\efg\include\render\types\Handles.h"
 #include "..\..\efg\include\render\Camera.h"
+
 
 #include <vector>
 

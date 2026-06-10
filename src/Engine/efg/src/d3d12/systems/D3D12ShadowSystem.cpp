@@ -3,6 +3,7 @@
 #include "..\..\..\include\d3d12\descriptors\D3D12DescriptorAllocation.h"
 #include "..\..\..\include\render\Camera.h"
 #include "..\..\..\include\render\Lights.h"
+#include "..\..\..\..\Freeside.Core\include\math\MatrixTransform.h"
 
 namespace efg::d3d12
 {

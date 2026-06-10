@@ -8,6 +8,7 @@
 #include "..\..\..\..\include\d3d12\types\D3D12DrawTypes.h"
 #include "..\..\..\..\include\d3d12\core\D3D12Pix.h"
 #include "..\..\..\..\include\d3d12\frame\D3D12PassContext.h"
+#include "..\..\..\..\..\Freeside.Core\include\math\MatrixTransform.h"
 
 #include <algorithm>
 
