@@ -23,7 +23,7 @@ namespace Freeside
 
         struct SceneLoadRequest
         {
-            const std::filesystem::path& path;
+            std::filesystem::path path;
         };
 
         class Scene
