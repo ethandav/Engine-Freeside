@@ -2,6 +2,7 @@
 #include "..\..\efg\include\render\Renderer.h"
 #include "..\..\Freeside.Core\include\shapes\shapes.h"
 #include "..\..\Freeside.Core\include\math\MatrixTransform.h"
+#include "..\include\SceneImporter.h"
 
 #include <stdexcept>
 
@@ -132,17 +133,17 @@ namespace Freeside
 			Assets::ImportedModel model = m_assetManager.ImportModel("assets\\models\\DamagedHelmet.glb");
 			for (int rootNodeIndex : model.rootNodes)
 			{
-				Entity root = m_activeScene->CreateEntityFromImportedNode(
-					&m_assetManager,
-					model,
-					rootNodeIndex,
-					Entity(-1)
+				Entity root = SceneImporter::ImportModel(
+					*m_activeScene,
+					m_assetManager,
+					model
 				);
 
 				TransformComponent* rootTransform = m_activeScene->GetTransform(root);
-
-				// Optional model placement in sandbox:
-				rootTransform->position += Math::Vec3(0.0f, 1.0f, 0.0f);
+				if (rootTransform)
+				{
+					rootTransform->position += Math::Vec3(0.0f, 1.0f, 0.0f);
+				}
 			}
 
 			Entity eCamera = m_activeScene->CreateEntity();

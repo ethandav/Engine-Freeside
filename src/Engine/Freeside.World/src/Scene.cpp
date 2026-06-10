@@ -198,55 +198,6 @@ namespace Freeside
 			packet.skyboxTexture = m_environment.skyboxTexture;
 		}
 
-		Entity Scene::CreateEntityFromImportedNode(Assets::AssetManager* assets, const Assets::ImportedModel& model, int nodeIndex, Entity parent)
-		{
-			const Assets::ImportedNode& importedNode = model.nodes[nodeIndex];
-
-			Entity entity = CreateEntity();
-
-			TransformComponent& transform = AddTransform(entity);
-			transform.position = importedNode.position;
-			transform.rotation = importedNode.rotation;
-			transform.scale = importedNode.scale;
-			transform.useMatrixOverride = importedNode.useMatrixOverride;
-			transform.matrixOverride = importedNode.matrixOverride;
-
-			if (parent.IsValid())
-			{
-				SetParent(entity, parent);
-			}
-
-			if (importedNode.meshIndex >= 0)
-			{
-				const Assets::ImportedMesh& importedMesh = model.meshes[importedNode.meshIndex];
-
-				for (const Assets::ImportedPrimitive& prim : importedMesh.primitives)
-				{
-					MeshHandle meshHandle = assets->CreateMesh(prim.meshData);
-					MaterialDesc importMat = assets->ConvertGLTFMaterial(model.materials[prim.materialIndex], model.textures);
-					Freeside::MaterialHandle materialHandle = assets->CreateMaterial(importMat);
-					Freeside::Entity primitiveEntity = CreateEntity();
-					SetParent(primitiveEntity, entity);
-
-					TransformComponent& primitiveTransform = AddTransform(primitiveEntity);
-					primitiveTransform.position = {};
-					primitiveTransform.rotation = Freeside::Math::Quat::Identity();
-					primitiveTransform.scale = { 1.0f, 1.0f, 1.0f };
-
-					Freeside::MeshRendererComponent& renderer = AddMeshRenderer(primitiveEntity);
-					renderer.mesh = meshHandle;
-					renderer.material = materialHandle;
-				}
-			}
-
-			for (int childNodeIndex : importedNode.children)
-			{
-				CreateEntityFromImportedNode(assets, model, childNodeIndex, entity);
-			}
-
-			return entity;
-		}
-
 		HierarchyComponent& Scene::AddHierarchy(Entity entity)
 		{
 			return m_hierarchyComponents[entity.id];
@@ -300,8 +251,6 @@ namespace Freeside
 				return;
 			}
 
-			// Prevent cycles:
-			// You cannot parent an entity to one of its own descendants.
 			if (newParent.IsValid() && IsDescendantOf(newParent, child))
 			{
 				return;

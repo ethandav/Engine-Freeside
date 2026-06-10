@@ -12,11 +12,6 @@
 namespace Freeside
 {
 	class Renderer;
-    
-    namespace Assets
-    {
-        class AssetManager;
-    }
 
 	namespace Scene
 	{
@@ -39,16 +34,11 @@ namespace Freeside
             FirstPersonCameraControllerComponent& AddFirstPersonCameraControllerComponent(Entity entity);
             DirectionalLightComponent& AddDirectionalLight(Entity entity);
             PointLightComponent& AddPointLight(Entity entity);
-
             efg::FramePacket BuildFramePacket(uint64_t frameId) const;
-
             SceneEnvironment& Environment() { return m_environment; }
-
-            Freeside::Entity CreateEntityFromImportedNode(Assets::AssetManager* assets, const Assets::ImportedModel& model, int nodeIndex, Entity parent);
             HierarchyComponent& AddHierarchy(Entity entity);
             HierarchyComponent* GetHierarchy(Entity entity);
             void SetParent(Entity child, Entity newParent);
-
             TransformComponent* GetTransform(Entity entity);
 
             std::wstring name;
@@ -56,9 +46,7 @@ namespace Freeside
         private:
             const TransformComponent* GetTransform(Entity entity) const;
             Math::Mat4 GetWorldMatrix(Entity entity) const;
-
             bool IsDescendantOf(Entity possibleDescendant, Entity possibleAncestor) const;
-
             void BuildCamera(efg::FramePacket& packet) const;
             void BuildRenderObjects(efg::FramePacket& packet) const;
             void BuildDirectionalLights(efg::FramePacket& packet) const;
@@ -67,9 +55,7 @@ namespace Freeside
 
         private:
             EntityId m_nextEntityId = 1;
-
             std::vector<Entity> m_entities;
-
             std::unordered_map<EntityId, TransformComponent> m_transforms;
             std::unordered_map<EntityId, MeshRendererComponent> m_meshRenderers;
             std::unordered_map<EntityId, CameraComponent> m_cameras;
@@ -77,7 +63,6 @@ namespace Freeside
             std::unordered_map<EntityId, DirectionalLightComponent> m_directionalLights;
             std::unordered_map<EntityId, PointLightComponent> m_pointLights;
             std::unordered_map<EntityId, HierarchyComponent> m_hierarchyComponents;
-
             SceneEnvironment m_environment;
         };
 	}
