@@ -115,7 +115,7 @@ namespace Freeside
 
     struct HierarchyComponent
     {
-        Entity parent = Entity(-1);
+        Entity parent = Entity::Invalid();
         std::vector<Entity> children;
     };
 }
