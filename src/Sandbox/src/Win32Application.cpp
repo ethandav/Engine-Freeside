@@ -32,6 +32,8 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	sceneManager.Initialize(&renderer);
 	assets.Initialize(&renderer);
 
+	sceneManager.LoadScene("scenes\\testScene\\test_scene.json");
+
 	Freeside::MeshHandle cubeMeshHandle = assets.CreateMesh(cubeMeshData);
 	Freeside::MeshHandle planeMeshHandle = assets.CreateMesh(planeMeshData);
 	Freeside::MeshHandle wallMeshHandle = assets.CreateMesh(wallMeshData);

@@ -21,6 +21,7 @@ namespace Freeside
         class Scene
         {
         public:
+            Scene() {};
             Scene(std::wstring name);
             Entity CreateEntity();
             TransformComponent& AddTransform(Entity entity);
