@@ -144,14 +144,14 @@ namespace Freeside
 
 			Entity eCamera = m_activeScene->CreateEntity();
 			CameraComponent& cCamera = m_activeScene->AddCamera(eCamera);
-			cCamera.camera.SetPosition(Math::Vec3(0.0f, 1.0f, 5.0f));
-			cCamera.camera.SetTarget(Math::Vec3(0.0f, 0.5f, 0.0f));
+			TransformComponent& cCameraTransform = m_activeScene->AddTransform(eCamera);
+			cCameraTransform.position = {0.0f, 1.0f, 5.0f};
 			cCamera.isMainCamera = true;
 
 			FirstPersonCameraController cameraController;
-			cameraController.InitializeFromCamera(cCamera.camera);
-			cameraController.SetMoveSpeed(5.0f);
-			cameraController.SetMouseSensitivity(0.002f);
+			//cameraController.InitializeFromCamera(cCamera.camera);
+			//cameraController.SetMoveSpeed(5.0f);
+			//cameraController.SetMouseSensitivity(0.002f);
 
 			/*
 			Entity eCrate = testScene.CreateEntity();

@@ -73,7 +73,12 @@ namespace Freeside
 
     struct CameraComponent
     {
-        Camera camera = {};
+        ProjectionType projectionType = ProjectionType::Perspective;
+        float fovYRadians = 0.78539816339f; // 45 degrees
+        float nearZ = 0.1f;
+        float farZ = 1000.0f;
+        float orthographicWidth = 10.0f;
+        float orthographicHeight = 10.0f;
         bool isMainCamera = false;
     };
 

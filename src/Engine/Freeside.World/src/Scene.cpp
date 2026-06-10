@@ -77,14 +77,22 @@ namespace Freeside
 				if (!cameraComponent.isMainCamera)
 					continue;
 
-				//auto transformIt = m_transforms.find(entityId);
-				//if (transformIt == m_transforms.end())
-				//	continue;
+				auto transformIt = m_transforms.find(entityId);
+				if (transformIt == m_transforms.end())
+					continue;
 
-				packet.camera = cameraComponent.camera;
+				const TransformComponent& transform = transformIt->second;
 
-				//const TransformComponent& transform = transformIt->second;
-				//packet.camera.SetPosition(transform.position);
+				Math::Vec3 forward = Math::RotateVector(transform.rotation, Math::Vec3(0.0f, 0.0f, -1.0f));
+				Math::Vec3 up = Math::RotateVector(transform.rotation, Math::Vec3(0.0f, 1.0f, 0.0f));
+				Math::Vec3 right = Math::RotateVector(transform.rotation, Math::Vec3(1.0f, 0.0f, 0.0f));
+
+				packet.camera.LookAt(
+					transform.position,
+					transform.position + forward,
+					up
+				);
+				packet.camera.SetPosition(transform.position);
 
 				return;
 			}
