@@ -1,12 +1,24 @@
 #include "..\..\..\include\d3d12\core\D3D12RendererBackend.h"
 #include "..\..\..\include\d3d12\core\D3D12Pix.h"
 
+#if defined(EFG_ENABLE_IMGUI)
+#include "imgui.h"
+#include "imgui_impl_dx12.h"
+#include "imgui_impl_win32.h"
+
+static efg::d3d12::D3D12DescriptorContext* g_imguiDescriptorContext = nullptr;
+#endif
+
 namespace efg::d3d12
 {
     void D3D12RendererBackend::Initialize(const Freeside::RendererDesc& desc)
     {
         InitializeD3D12Systems(desc);
         CreateRenderTargets(desc.width, desc.height);
+#if defined(EFG_ENABLE_IMGUI)
+        InitializeImgui(desc.nativeWindowHandle);
+        g_imguiDescriptorContext = &m_device.DescriptorContext();
+#endif
     }
 
     void D3D12RendererBackend::CreateRenderTargets(uint32_t width, uint32_t height)
@@ -45,6 +57,67 @@ namespace efg::d3d12
         m_passes.Initialize(&m_device, &m_resources, &m_pipeline, &m_frame, &m_renderTargets);
     }
 
+#if defined(EFG_ENABLE_IMGUI)
+    void D3D12RendererBackend::InitializeImgui(void* hwnd)
+    {
+        // Setup Dear ImGui context
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // IF using Docking Branch
+
+        // Setup Platform/Renderer backends
+        ImGui_ImplDX12_InitInfo init_info = {};
+        init_info.Device = m_device.GraphicsContext().GetDevice();
+        init_info.CommandQueue = m_device.DirectCommandContext().GetDirectCommandQueue();;
+        init_info.NumFramesInFlight = NumFramesInFlight;
+        init_info.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM; // Or your render target format.
+
+        // Allocating SRV descriptors (for textures) is up to the application, so we provide callbacks.
+        // The example_win32_directx12/main.cpp application include a simple free-list based allocator.
+        init_info.SrvDescriptorHeap = m_device.DescriptorContext().GetCBVSRVUAVHeap();
+        init_info.SrvDescriptorAllocFn = [](ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE* out_cpu_handle, D3D12_GPU_DESCRIPTOR_HANDLE* out_gpu_handle)
+            { 
+                GpuDescriptorAllocation allocation = g_imguiDescriptorContext->AllocateShaderVisibleCBVSRVUAV();
+
+                *out_cpu_handle = allocation.cpu;
+                *out_gpu_handle = allocation.gpu;
+            };
+        init_info.SrvDescriptorFreeFn = [](ImGui_ImplDX12_InitInfo*, D3D12_CPU_DESCRIPTOR_HANDLE cpu_handle, D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle)
+            {
+                return;
+            };
+
+        ImGui_ImplWin32_Init(hwnd);
+        ImGui_ImplDX12_Init(&init_info);
+    }
+
+    void D3D12RendererBackend::BeginImguiFrame()
+    {
+        ImGui_ImplDX12_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+    }
+
+    void D3D12RendererBackend::RenderImguiFrame()
+    {
+        ImGui::Render();
+
+        ID3D12DescriptorHeap* heaps[] =
+        {
+            m_device.DescriptorContext().GetCBVSRVUAVHeap()
+        };
+
+        auto* commandList = m_device.DirectCommandContext().GetDirectCommandList();
+
+        commandList->SetDescriptorHeaps(_countof(heaps), heaps);
+
+        ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+    }
+#endif
+
     void D3D12RendererBackend::Shutdown()
     {
         m_device.DirectFence().WaitForGPU(m_device.DirectCommandContext().GetDirectCommandQueue());
@@ -55,6 +128,11 @@ namespace efg::d3d12
     {
         FrameContext frameCtx = m_frame.BeginFrame(&m_renderQueue);
         m_passes.Execute(scene, frameCtx, m_renderQueue);
+#if defined(EFG_ENABLE_IMGUI)
+        BeginImguiFrame();
+        ImGui::ShowDemoWindow();
+        RenderImguiFrame();
+#endif
         m_frame.EndFrame(frameCtx, m_renderTargets);
     }
 

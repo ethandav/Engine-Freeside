@@ -37,5 +37,14 @@ namespace efg::d3d12
 		D3D12RenderPassSystem m_passes = {};
 		RenderTargets m_renderTargets = {};
 		RenderQueue m_renderQueue = {};
+
+#if defined(EFG_ENABLE_IMGUI)
+		void BeginImguiFrame();
+		void RenderImguiFrame();
+		void InitializeImgui(void* hwnd);
+
+		D3D12_CPU_DESCRIPTOR_HANDLE m_imguiFontSrvCpu = {};
+		D3D12_GPU_DESCRIPTOR_HANDLE m_imguiFontSrvGpu = {};
+#endif
 	};
 }

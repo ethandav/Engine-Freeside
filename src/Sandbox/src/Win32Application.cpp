@@ -18,8 +18,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 		1080
 	};
 
-
-
 	window.Create(hInstance, rendererDesc.width, rendererDesc.height, L"Ethan's Framework (for) Graphics");
 	window.Show(nCmdShow);
 	window.SetCursorLocked(true);
