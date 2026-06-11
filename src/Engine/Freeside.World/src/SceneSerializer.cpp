@@ -3,6 +3,7 @@
 #include "..\..\Freeside.Core\include\math\Vec3.h"
 #include "..\..\Freeside.Assets\include\ImportedAssetTypes.h"
 #include "..\include\SceneImporter.h"
+#include "..\..\Freeside.Core\include\shapes\shapes.h"
 
 #include <nlohmann/json.hpp>
 #include <string>
@@ -66,6 +67,24 @@ namespace Freeside::Scene
         );
     }
 
+    static Math::Vec2 ReadVec2(const nlohmann::json& j)
+    {
+        return Math::Vec2(
+            j[0].get<float>(),
+            j[1].get<float>()
+        );
+    }
+
+    static Math::Vec4 ReadVec4(const nlohmann::json& j)
+    {
+        return Math::Vec4(
+            j[0].get<float>(),
+            j[1].get<float>(),
+            j[2].get<float>(),
+            j[3].get<float>()
+        );
+    }
+
     static void DeserializeTransform(TransformComponent& transform, const nlohmann::json& transformJson)
     {
         transform.position = ReadVec3(transformJson["position"]);
@@ -107,6 +126,110 @@ namespace Freeside::Scene
         directionalLight.color = ReadVec3(directionalLightJson["color"]);
         directionalLight.intensity = directionalLightJson["intensity"].get<float>();
         directionalLight.direction = ReadVec3(directionalLightJson["direction"]);
+    }
+
+    static MeshHandle DeserializeMeshRef(const nlohmann::json& meshJson, Assets::AssetManager& assets)
+    {
+        std::string type = meshJson["type"].get<std::string>();
+
+        if (type == "builtin")
+        {
+            std::string name = meshJson["name"].get<std::string>();
+
+            if (name == "cube")
+                return assets.CreateMesh(Shapes::Cube().mesh);
+
+            if (name == "plane")
+                return assets.CreateMesh(Shapes::Plane().mesh);
+
+            if (name == "wall")
+                return assets.CreateMesh(Shapes::Wall().mesh);
+
+            throw std::runtime_error("Unknown builtin mesh: " + name);
+        }
+
+        throw std::runtime_error("Unknown mesh type: " + type);
+    }
+
+    static MaterialHandle DeserializeMaterial(
+        const nlohmann::json& materialJson,
+        Assets::AssetManager& assets)
+    {
+        MaterialDesc desc = {};
+
+        if (materialJson.contains("baseColorFactor"))
+            desc.baseColorFactor = ReadVec4(materialJson["baseColorFactor"]);
+        else
+            desc.baseColorFactor = Math::Vec4(1, 1, 1, 1);
+
+        if (materialJson.contains("metallicFactor"))
+            desc.metallicFactor = materialJson["metallicFactor"].get<float>();
+
+        if (materialJson.contains("roughnessFactor"))
+            desc.roughnessFactor = materialJson["roughnessFactor"].get<float>();
+
+        if (materialJson.contains("specular"))
+            desc.specular = ReadVec2(materialJson["specular"]);
+
+        if (materialJson.contains("uvScale"))
+            desc.uvScale = ReadVec2(materialJson["uvScale"]);
+        else
+            desc.uvScale = Math::Vec2(1.0f, 1.0f);
+
+        if (materialJson.contains("textures"))
+        {
+            const nlohmann::json& texturesJson = materialJson["textures"];
+
+            if (texturesJson.contains("baseColor"))
+            {
+                desc.baseColorTexture =
+                    assets.CreateTextureFromImagePath(
+                        ToWide(texturesJson["baseColor"].get<std::string>())
+                    );
+            }
+
+            if (texturesJson.contains("normal"))
+            {
+                desc.normalTexture =
+                    assets.CreateTextureFromImagePath(
+                        ToWide(texturesJson["normal"].get<std::string>())
+                    );
+            }
+
+            if (texturesJson.contains("height"))
+            {
+                desc.heightTexture =
+                    assets.CreateTextureFromImagePath(
+                        ToWide(texturesJson["height"].get<std::string>())
+                    );
+            }
+
+            if (texturesJson.contains("metallicRoughness"))
+            {
+                desc.metallicRoughnessTexture =
+                    assets.CreateTextureFromImagePath(
+                        ToWide(texturesJson["metallicRoughness"].get<std::string>())
+                    );
+            }
+
+            if (texturesJson.contains("ao"))
+            {
+                desc.occlusionTexture =
+                    assets.CreateTextureFromImagePath(
+                        ToWide(texturesJson["ao"].get<std::string>())
+                    );
+            }
+
+            if (texturesJson.contains("emissive"))
+            {
+                desc.emissiveTexture =
+                    assets.CreateTextureFromImagePath(
+                        ToWide(texturesJson["emissive"].get<std::string>())
+                    );
+            }
+        }
+
+        return assets.CreateMaterial(desc);
     }
 
     static bool HasComponent(const nlohmann::json& entityJson, const char* componentName)
@@ -205,6 +328,16 @@ namespace Freeside::Scene
             {
                 DirectionalLightComponent& light = scene.AddDirectionalLight(entity);
                 DeserializeDirectionalLight(light, entityJson["components"]["directionalLight"]);
+            }
+
+            if (HasComponent(entityJson, "meshRenderer"))
+            {
+                const json& meshRendererJson = entityJson["components"]["meshRenderer"];
+
+                MeshRendererComponent& renderer = scene.AddMeshRenderer(entity);
+
+                renderer.mesh = DeserializeMeshRef(meshRendererJson["mesh"], assets);
+                renderer.material = DeserializeMaterial(meshRendererJson["material"], assets);
             }
         }
 

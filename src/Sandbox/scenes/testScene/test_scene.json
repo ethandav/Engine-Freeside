@@ -20,11 +20,11 @@
       "parent": 10,
 
       "components": {
-        "transform": {
-        "position": [0.0, 1.0, -5.0],
-        "rotation": [0.0, 0.0, 0.0, 1.0],
-          "scale": [1.0, 1.0, 1.0]
-        },
+      "transform": {
+        "position": [0.0, 1.0, 5.0],
+        "rotation": [0.9987585, 0.0, 0.0, 0.0498137],
+        "scale": [1.0, 1.0, 1.0]
+      },
 
         "camera": {
           "projectionType": "perspective",
@@ -90,6 +90,142 @@
           "color": [1.0, 1.0, 1.0],
           "intensity": 5.0,
           "direction": [0.2, -1.0, -0.3]
+        }
+      }
+    },
+
+    {
+      "id": 5,
+      "name": "Floor",
+
+      "components": {
+        "transform": {
+          "position": [0.0, -0.5, 0.0],
+          "rotation": [0.0, 0.0, 0.0, 1.0],
+          "scale": [5.0, 5.0, 5.0]
+        },
+
+        "meshRenderer": {
+          "mesh": {
+            "type": "builtin",
+            "name": "plane"
+          },
+
+          "material": {
+            "baseColorFactor": [1.0, 1.0, 1.0, 1.0],
+            "metallicFactor": 0.0,
+            "roughnessFactor": 1.0,
+            "specular": [1.0, 64.0],
+            "uvScale": [2.0, 2.0],
+
+            "textures": {
+              "baseColor": "assets/textures/floor.png",
+              "normal": "assets/textures/floor_normals.png",
+              "height": "assets/textures/floor_height.png"
+            }
+          }
+        }
+      }
+    },
+
+    {
+      "id": 6,
+      "name": "WallBack",
+
+      "components": {
+        "transform": {
+          "position": [0.0, 2.0, -2.5],
+          "rotation": [0.0, 0.0, 0.0, 1.0],
+          "scale": [5.0, 5.0, 5.0]
+        },
+
+        "meshRenderer": {
+          "mesh": {
+            "type": "builtin",
+            "name": "wall"
+          },
+
+          "material": {
+            "baseColorFactor": [1.0, 1.0, 1.0, 1.0],
+            "metallicFactor": 0.0,
+            "roughnessFactor": 1.0,
+            "specular": [1.0, 64.0],
+            "uvScale": [2.0, 2.0],
+
+            "textures": {
+              "baseColor": "assets/textures/brick.png",
+              "normal": "assets/textures/brick_normals.png",
+              "height": "assets/textures/brick_height.png"
+            }
+          }
+        }
+      }
+    },
+
+    {
+      "id": 7,
+      "name": "WallLeft",
+
+      "components": {
+        "transform": {
+          "position": [2.5, 2.0, 0.0],
+          "rotation": [0.0, -0.70710678, 0.0, 0.70710678],
+          "scale": [5.0, 5.0, 5.0]
+        },
+
+        "meshRenderer": {
+          "mesh": {
+            "type": "builtin",
+            "name": "wall"
+          },
+
+          "material": {
+            "baseColorFactor": [1.0, 1.0, 1.0, 1.0],
+            "metallicFactor": 0.0,
+            "roughnessFactor": 1.0,
+            "specular": [1.0, 64.0],
+            "uvScale": [2.0, 2.0],
+
+            "textures": {
+              "baseColor": "assets/textures/brick.png",
+              "normal": "assets/textures/brick_normals.png",
+              "height": "assets/textures/brick_height.png"
+            }
+          }
+        }
+      }
+    },
+
+    {
+      "id": 8,
+      "name": "WallRight",
+
+      "components": {
+        "transform": {
+          "position": [-2.5, 2.0, 0.0],
+          "rotation": [0.0, 0.70710678, 0.0, 0.70710678],
+          "scale": [5.0, 5.0, 5.0]
+        },
+
+        "meshRenderer": {
+          "mesh": {
+            "type": "builtin",
+            "name": "wall"
+          },
+
+          "material": {
+            "baseColorFactor": [1.0, 1.0, 1.0, 1.0],
+            "metallicFactor": 0.0,
+            "roughnessFactor": 1.0,
+            "specular": [1.0, 64.0],
+            "uvScale": [2.0, 2.0],
+
+            "textures": {
+              "baseColor": "assets/textures/brick.png",
+              "normal": "assets/textures/brick_normals.png",
+              "height": "assets/textures/brick_height.png"
+            }
+          }
         }
       }
     }
