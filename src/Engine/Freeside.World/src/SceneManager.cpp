@@ -68,6 +68,7 @@ namespace Freeside
 		void SceneManager::CreateDefaultScene()
 		{
 			LoadScene(L"scenes\\testScene\\test_scene.json");
+			/*
 			m_activeScene = std::make_unique<Scene>(L"Test Scene");
 
 			MeshDesc cubeMeshData = Shapes::Cube().mesh;
@@ -156,7 +157,6 @@ namespace Freeside
 			);
 			cCamera.isMainCamera = true;
 			FirstPersonCameraControllerComponent& cCameraController = m_activeScene->AddFirstPersonCameraControllerComponent(eCamera);
-
 			
 			//Entity eCrate = testScene.CreateEntity();
 			//MeshRendererComponent& cCrateRenderer = testScene.AddMeshRenderer(eCrate);
@@ -233,6 +233,7 @@ namespace Freeside
 			cDirLight.intensity = 5.0f;
 			cDirLight.color = Math::Vec3(1.0f, 1.0f, 1.0f);
 			cDirLight.direction = Math::Vec3(0.2f, -1.0f, -0.3f);
+			*/
 		}
 	}
 }
