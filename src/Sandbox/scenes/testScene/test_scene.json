@@ -43,7 +43,7 @@
 
       "components": {
         "transform": {
-          "position": [0.0, 1.0, -2.0],
+          "position": [0.0, 1.0, 2.0],
           "rotation": [0.0, 0.0, 0.0, 1.0],
           "scale": [1.0, 1.0, 1.0]
         },
@@ -69,6 +69,20 @@
         },
         "importModel": {
           "path": "assets/models/DamagedHelmet.glb"
+        }
+      }
+    },
+
+    {
+      "id": 4,
+      "name": "Directional Light",
+      "parent": 10,
+
+      "components": {
+        "directionalLight": {
+          "color": [1.0, 1.0, 1.0],
+          "intensity": 5.0,
+          "direction": [0.2, -1.0, -0.3]
         }
       }
     }

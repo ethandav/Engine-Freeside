@@ -51,6 +51,13 @@ namespace Freeside::Scene
         camera.orthographicHeight = cameraJson["orthographicHeight"].get<float>();
     }
 
+    static void DeserializefirstPersonCameraController(FirstPersonCameraControllerComponent& camera, const nlohmann::json& cameraControllerJson)
+    {
+        camera.lookSensitivity = cameraControllerJson["lookSensitivity"].get<float>();
+        camera.moveSpeed = cameraControllerJson["moveSpeed"].get<float>();
+        camera.allowVerticalMovement = cameraControllerJson["allowVerticalMovement"].get<bool>();
+    }
+
     static void DeserializePointLight(PointLightComponent& pointLight, const nlohmann::json& pointLightJson)
     {
         pointLight.color = ReadVec3(pointLightJson["color"]);
@@ -130,10 +137,22 @@ namespace Freeside::Scene
                 DeserializeCamera(camera, entityJson["components"]["camera"]);
             }
 
+            if (HasComponent(entityJson, "firstPersonCameraController"))
+            {
+                FirstPersonCameraControllerComponent& camera = scene.AddFirstPersonCameraControllerComponent(entity);
+                DeserializefirstPersonCameraController(camera, entityJson["components"]["firstPersonCameraController"]);
+            }
+
             if (HasComponent(entityJson, "pointLight"))
             {
                 PointLightComponent& light = scene.AddPointLight(entity);
                 DeserializePointLight(light, entityJson["components"]["pointLight"]);
+            }
+
+            if (HasComponent(entityJson, "directionalLight"))
+            {
+                DirectionalLightComponent& light = scene.AddDirectionalLight(entity);
+                DeserializeDirectionalLight(light, entityJson["components"]["directionalLight"]);
             }
         }
 
