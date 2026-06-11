@@ -7,9 +7,46 @@
 #include <nlohmann/json.hpp>
 #include <string>
 #include <fstream>
+#include <Windows.h>
 
 namespace Freeside::Scene
 {
+
+    static std::wstring ToWide(const std::string& text)
+    {
+        if (text.empty())
+        {
+            return {};
+        }
+
+        int requiredSize = MultiByteToWideChar(
+            CP_UTF8,
+            0,
+            text.data(),
+            static_cast<int>(text.size()),
+            nullptr,
+            0
+        );
+
+        if (requiredSize <= 0)
+        {
+            return {};
+        }
+
+        std::wstring result(requiredSize, L'\0');
+
+        MultiByteToWideChar(
+            CP_UTF8,
+            0,
+            text.data(),
+            static_cast<int>(text.size()),
+            result.data(),
+            requiredSize
+        );
+
+        return result;
+    }
+
     static Math::Vec3 ReadVec3(const nlohmann::json& vecJson)
     {
         return Math::Vec3(
@@ -95,6 +132,21 @@ namespace Freeside::Scene
 
         nlohmann::json sceneJson;
         file >> sceneJson;
+
+        json environmentJson = sceneJson["environment"];
+        json skyboxJson = environmentJson["skyboxTextures"];
+
+        std::array<std::wstring, 6> skyboxImages =
+        {
+            ToWide(skyboxJson[0].get<std::string>()),
+            ToWide(skyboxJson[1].get<std::string>()),
+            ToWide(skyboxJson[2].get<std::string>()),
+            ToWide(skyboxJson[3].get<std::string>()),
+            ToWide(skyboxJson[4].get<std::string>()),
+            ToWide(skyboxJson[5].get<std::string>())
+        };
+
+        scene.Environment().skyboxTexture = assets.CreateSkyboxFromImagePaths(skyboxImages);
 
         std::unordered_map<uint32_t, Entity> entityMap;
 

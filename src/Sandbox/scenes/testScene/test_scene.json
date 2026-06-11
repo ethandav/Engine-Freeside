@@ -3,7 +3,14 @@
   "name": "Test Scene",
 
   "environment": {
-    "skyboxTexture": "assets/textures/skybox/default_skybox.json"
+    "skyboxTextures": [
+      "assets/textures/skybox/right.jpg",
+      "assets/textures/skybox/left.jpg",
+      "assets/textures/skybox/top.jpg",
+      "assets/textures/skybox/bottom.jpg",
+      "assets/textures/skybox/front.jpg",
+      "assets/textures/skybox/back.jpg"
+    ]
   },
 
   "entities": [
