@@ -104,16 +104,7 @@ namespace efg::d3d12
     void D3D12RendererBackend::RenderImguiFrame()
     {
         ImGui::Render();
-
-        ID3D12DescriptorHeap* heaps[] =
-        {
-            m_device.DescriptorContext().GetCBVSRVUAVHeap()
-        };
-
         auto* commandList = m_device.DirectCommandContext().GetDirectCommandList();
-
-        commandList->SetDescriptorHeaps(_countof(heaps), heaps);
-
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
     }
 #endif
