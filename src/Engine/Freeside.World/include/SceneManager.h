@@ -34,7 +34,6 @@ namespace Freeside
 			SceneSerializer m_sceneSerializer = {};
 			std::deque<SceneLoadRequest> m_sceneQueue;
 			std::unique_ptr<Scene> m_activeScene;
-
 		};
 	}
 }

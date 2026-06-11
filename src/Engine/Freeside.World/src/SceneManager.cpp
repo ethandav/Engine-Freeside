@@ -62,11 +62,12 @@ namespace Freeside
 
 			m_activeScene = std::make_unique<Scene>(L"Loaded Scene");
 
-			m_sceneSerializer.Load(*m_activeScene, request.path);
+			m_sceneSerializer.Load(*m_activeScene, request.path, m_assetManager);
 		}
 
 		void SceneManager::CreateDefaultScene()
 		{
+			LoadScene(L"scenes\\testScene\\test_scene.json");
 			m_activeScene = std::make_unique<Scene>(L"Test Scene");
 
 			MeshDesc cubeMeshData = Shapes::Cube().mesh;
@@ -130,20 +131,19 @@ namespace Freeside
 			floorMaterial.heightTexture = hFloorHeightTexture;
 			MaterialHandle floorMaterialHandle = m_assetManager.CreateMaterial(floorMaterial);
 
-			Assets::ImportedModel model = m_assetManager.ImportModel("assets\\models\\DamagedHelmet.glb");
-			for (int rootNodeIndex : model.rootNodes)
-			{
-				Entity root = SceneImporter::ImportModel(
-					*m_activeScene,
-					m_assetManager,
-					model
-				);
+			Assets::ImportedModel model =
+				m_assetManager.ImportModel("assets\\models\\DamagedHelmet.glb");
 
-				TransformComponent* rootTransform = m_activeScene->GetTransform(root);
-				if (rootTransform)
-				{
-					rootTransform->position += Math::Vec3(0.0f, 1.0f, 0.0f);
-				}
+			Entity root = SceneImporter::ImportModel(
+				*m_activeScene,
+				m_assetManager,
+				model
+			);
+
+			TransformComponent* rootTransform = m_activeScene->GetTransform(root);
+			if (rootTransform)
+			{
+				rootTransform->position += Math::Vec3(0.0f, 1.0f, 0.0f);
 			}
 
 			Entity eCamera = m_activeScene->CreateEntity();
@@ -157,34 +157,33 @@ namespace Freeside
 			cCamera.isMainCamera = true;
 			FirstPersonCameraControllerComponent& cCameraController = m_activeScene->AddFirstPersonCameraControllerComponent(eCamera);
 
-			/*
-			Entity eCrate = testScene.CreateEntity();
-			MeshRendererComponent& cCrateRenderer = testScene.AddMeshRenderer(eCrate);
-			TransformComponent& cCrateTransform = testScene.AddTransform(eCrate);
-			cCrateRenderer.material = crateMaterialHandle;
-			cCrateRenderer.mesh = cubeMeshHandle;
-			cCrateTransform.position = Math::Vec3(-1.0f, 0.0f, 0.0f);
-			cCrateTransform.rotation = Math::Vec3(0.0f, Math::PI * 0.1f, 0.0f);
-			cCrateTransform.scale = Math::Vec3(1.0f, 1.0f, 1.0f);
-
-			Entity eCrate2 = testScene.CreateEntity();
-			MeshRendererComponent& cCrate2Renderer = testScene.AddMeshRenderer(eCrate2);
-			TransformComponent& cCrate2Transform = testScene.AddTransform(eCrate2);
-			cCrate2Renderer.material = crateMaterialHandle;
-			cCrate2Renderer.mesh = cubeMeshHandle;
-			cCrate2Transform.position = Math::Vec3(1.0f, 0.0f, 0.0f);
-			cCrate2Transform.rotation = Math::Vec3(0.0f, Math::PI * 0.2f, 0.0f);
-			cCrate2Transform.scale = Math::Vec3(1.0f, 1.0f, 1.0f);
-
-			Entity eCrate3 = testScene.CreateEntity();
-			MeshRendererComponent& cCrate3Renderer = testScene.AddMeshRenderer(eCrate3);
-			TransformComponent& cCrate3Transform = testScene.AddTransform(eCrate3);
-			cCrate3Renderer.material = crateMaterialHandle;
-			cCrate3Renderer.mesh = cubeMeshHandle;
-			cCrate3Transform.position = Math::Vec3(1.0f, 1.0f, 0.0f);
-			cCrate3Transform.rotation = Math::Vec3(0.0f, 0.0f, 0.0f);
-			cCrate3Transform.scale = Math::Vec3(1.0f, 1.0f, 1.0f);
-			*/
+			
+			//Entity eCrate = testScene.CreateEntity();
+			//MeshRendererComponent& cCrateRenderer = testScene.AddMeshRenderer(eCrate);
+			//TransformComponent& cCrateTransform = testScene.AddTransform(eCrate);
+			//cCrateRenderer.material = crateMaterialHandle;
+			//cCrateRenderer.mesh = cubeMeshHandle;
+			//cCrateTransform.position = Math::Vec3(-1.0f, 0.0f, 0.0f);
+			//cCrateTransform.rotation = Math::Vec3(0.0f, Math::PI * 0.1f, 0.0f);
+			//cCrateTransform.scale = Math::Vec3(1.0f, 1.0f, 1.0f);
+			//
+			//Entity eCrate2 = testScene.CreateEntity();
+			//MeshRendererComponent& cCrate2Renderer = testScene.AddMeshRenderer(eCrate2);
+			//TransformComponent& cCrate2Transform = testScene.AddTransform(eCrate2);
+			//cCrate2Renderer.material = crateMaterialHandle;
+			//cCrate2Renderer.mesh = cubeMeshHandle;
+			//cCrate2Transform.position = Math::Vec3(1.0f, 0.0f, 0.0f);
+			//cCrate2Transform.rotation = Math::Vec3(0.0f, Math::PI * 0.2f, 0.0f);
+			//cCrate2Transform.scale = Math::Vec3(1.0f, 1.0f, 1.0f);
+			//
+			//Entity eCrate3 = testScene.CreateEntity();
+			//MeshRendererComponent& cCrate3Renderer = testScene.AddMeshRenderer(eCrate3);
+			//TransformComponent& cCrate3Transform = testScene.AddTransform(eCrate3);
+			//cCrate3Renderer.material = crateMaterialHandle;
+			//cCrate3Renderer.mesh = cubeMeshHandle;
+			//cCrate3Transform.position = Math::Vec3(1.0f, 1.0f, 0.0f);
+			//cCrate3Transform.rotation = Math::Vec3(0.0f, 0.0f, 0.0f);
+			//cCrate3Transform.scale = Math::Vec3(1.0f, 1.0f, 1.0f);
 
 			Entity eWall1 = m_activeScene->CreateEntity();
 			MeshRendererComponent& cWall1Renderer = m_activeScene->AddMeshRenderer(eWall1);

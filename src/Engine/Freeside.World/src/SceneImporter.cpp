@@ -2,6 +2,26 @@
 
 namespace Freeside::Scene
 {
+    std::vector<Entity> SceneImporter::ImportModel(Scene& scene, Assets::AssetManager& assets, const Assets::ImportedModel& model,Entity parent)
+    {
+        std::vector<Entity> roots;
+
+        for (int rootNodeIndex : model.rootNodes)
+        {
+            Entity root = ImportNode(
+                scene,
+                assets,
+                model,
+                rootNodeIndex,
+                parent
+            );
+
+            roots.push_back(root);
+        }
+
+        return roots;
+    }
+
     Entity SceneImporter::ImportModel(Scene& scene, Assets::AssetManager& assets, const Assets::ImportedModel& model)
     {
         Entity lastRoot = Entity::Invalid();

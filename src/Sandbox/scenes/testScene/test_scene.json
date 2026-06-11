@@ -1,42 +1,74 @@
 {
   "version": 1,
-  "name": "SandboxScene",
+  "name": "Test Scene",
+
+  "environment": {
+    "skyboxTexture": "assets/textures/skybox/default_skybox.json"
+  },
 
   "entities": [
     {
-      "id": "7f9e7b2e-5e2f-4e2a-9d5d-20a6c89d3a11",
-      "name": "Damaged Helmet",
+      "id": 1,
+      "name": "Main Camera",
+      "parent": 10,
 
       "components": {
-        "Transform": {
-          "position": [0.0, 1.0, 0.0],
-          "rotation": [0.0, 0.0, 0.0],
+        "transform": {
+        "position": [0.0, 1.0, -5.0],
+        "rotation": [0.0, 0.0, 0.0, 1.0],
           "scale": [1.0, 1.0, 1.0]
         },
 
-        "MeshRenderer": {
-          "mesh": "assets/models/DamagedHelmet.glb#mesh/0/primitive/0",
-          "material": "assets/materials/DamagedHelmet.material.json"
+        "camera": {
+          "projectionType": "perspective",
+          "fovYRadians": 0.78539816339,
+          "nearZ": 0.1,
+          "farZ": 1000.0,
+          "orthographicWitdth": 10.0,
+          "orthographicHeight": 10.0,
+          "isMainCamera": true
+        },
+        "firstPersonCameraController": {
+          "moveSpeed": 5.0,
+          "lookSensitivity": 0.002,
+          "allowVerticalMovement": true
         }
       }
     },
 
     {
-      "id": "b06df4c2-1c5e-4cfd-8201-d35f5a74e1b7",
+      "id": 2,
       "name": "Point Light",
+      "parent": 10,
 
       "components": {
-        "Transform": {
-          "position": [2.0, 3.0, -2.0],
-          "rotation": [0.0, 0.0, 0.0],
+        "transform": {
+          "position": [0.0, 1.0, -1.0],
+          "rotation": [0.0, 0.0, 0.0, 1.0],
           "scale": [1.0, 1.0, 1.0]
         },
 
-        "PointLight": {
-          "color": [1.0, 0.9, 0.7],
-          "intensity": 8.0,
-          "range": 10.0,
-          "castsShadow": true
+        "pointLight": {
+          "color": [1.0, 1.0, 1.0],
+          "intensity": 5.0,
+          "radius": 10.0
+        }
+      }
+    },
+
+    {
+      "id": 3,
+      "name": "Mesh Import",
+      "parent": 10,
+
+      "components": {
+        "transform": {
+          "position": [0.0, 1.0, 0.0],
+          "rotation": [0.0, 0.0, 0.0, 1.0],
+          "scale": [1.0, 1.0, 1.0]
+        },
+        "importModel": {
+          "path": "assets/models/DamagedHelmet.glb"
         }
       }
     }

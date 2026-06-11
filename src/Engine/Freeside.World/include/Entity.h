@@ -49,7 +49,7 @@ namespace Freeside
     struct TransformComponent
     {
         Math::Vec3 position = {};
-        Math::Quat rotation = {};
+        Math::Quat rotation = Math::Quat::Identity();
         Math::Vec3 scale = { 1.0f, 1.0f, 1.0f };
 
         bool useMatrixOverride = false;
