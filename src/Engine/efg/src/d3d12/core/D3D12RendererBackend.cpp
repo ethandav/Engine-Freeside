@@ -113,6 +113,11 @@ namespace efg::d3d12
     {
         m_device.DirectFence().WaitForGPU(m_device.DirectCommandContext().GetDirectCommandQueue());
         m_frame.Shutdown();
+#if defined(EFG_ENABLE_IMGUI)
+        ImGui_ImplDX12_Shutdown();
+        ImGui_ImplWin32_Shutdown();
+        ImGui::DestroyContext();
+#endif
     }
 
     void D3D12RendererBackend::Render(const FramePacket& scene)
