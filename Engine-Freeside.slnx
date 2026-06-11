@@ -3,6 +3,7 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="src/Editor/Freeside.EditorUI/Freeside.EditorUI.vcxproj" Id="a2d06582-0962-4ace-846a-f1033de22c9c" />
   <Project Path="src/Engine/efg/efg.vcxproj" Id="a6d3881d-a23c-4ab4-b93f-d9fc5312cd53" />
   <Project Path="src/Engine/Freeside.Assets/Freeside.Assets.vcxproj" Id="9d0bc5ff-b1e9-4b0b-899a-918c61f7d1d9" />
   <Project Path="src/Engine/Freeside.Core/Freeside.Core.vcxproj" Id="1f3ee634-8f6a-4118-964c-ff915ca23935" />
