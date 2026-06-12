@@ -17,6 +17,10 @@ namespace Freeside::Editor
         void DrawEntityHierarchy(Scene::Scene& scene);
         void DrawInspector(Scene::Scene& scene);
         void DrawAddComponentMenu(Scene::Scene& scene, Entity entity);
+        void DrawTransformComponent(TransformComponent* transform);
+        void DrawMeshRendererComponent(MeshRendererComponent* meshRenderer);
+        void DrawPointLightComponent(PointLightComponent* light);
+        void DrawDirectionalLightComponent(DirectionalLightComponent* light);
 
         struct EditorState
         {

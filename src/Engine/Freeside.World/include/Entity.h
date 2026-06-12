@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <string>
 
 namespace Freeside
 {
@@ -17,6 +18,7 @@ namespace Freeside
     struct Entity
     {
         EntityId id = UINT32_MAX;
+        std::string name;
 
         Entity() = default;
 

@@ -276,7 +276,7 @@ namespace Freeside::Scene
         for (const auto& entityJson : sceneJson["entities"])
         {
             uint32_t serializedId = entityJson["id"];
-            Entity entity = scene.CreateEntity();
+            Entity entity = scene.CreateEntity(entityJson["name"].get<std::string>());
             entityMap[serializedId] = entity;
         }
 

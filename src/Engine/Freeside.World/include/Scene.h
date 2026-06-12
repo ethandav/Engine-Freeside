@@ -28,6 +28,7 @@ namespace Freeside
             Scene(std::wstring name);
             void Update(InputState input, const float deltaTime);
             Entity CreateEntity();
+            Entity CreateEntity(std::string name);
             TransformComponent& AddTransform(Entity entity);
             MeshRendererComponent& AddMeshRenderer(Entity entity);
             CameraComponent& AddCamera(Entity entity);
@@ -39,7 +40,21 @@ namespace Freeside
             HierarchyComponent& AddHierarchy(Entity entity);
             HierarchyComponent* GetHierarchy(Entity entity);
             void SetParent(Entity child, Entity newParent);
+            const std::vector<Entity>& GetEntities() const;
+
+            bool HasTransform(Entity entity) const;
+            bool HasMeshRenderer(Entity entity) const;
+            bool HasCamera(Entity entity) const;
+            bool HasDirectionalLight(Entity entity) const;
+            bool HasPointLight(Entity entity) const;
+
             TransformComponent* GetTransform(Entity entity);
+            MeshRendererComponent* GetMeshRenderer(Entity entity);
+            CameraComponent* GetCamera(Entity entity);
+            DirectionalLightComponent* GetDirectionalLight(Entity entity);
+            PointLightComponent* GetPointLight(Entity entity);
+
+            bool IsValid(Entity entity) const;
 
             std::wstring name;
 

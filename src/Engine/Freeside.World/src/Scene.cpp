@@ -38,6 +38,15 @@ namespace Freeside
 			return entity;
 		}
 
+		Entity Scene::CreateEntity(std::string name)
+		{
+			Entity entity = {};
+			entity.name = name;
+			entity.id = m_nextEntityId++;
+			m_entities.push_back(entity);
+			return entity;
+		}
+
 		TransformComponent& Scene::AddTransform(Entity entity)
 		{
 			TransformComponent comp = {};
@@ -217,14 +226,65 @@ namespace Freeside
 
 		TransformComponent* Scene::GetTransform(Entity entity)
 		{
-			auto it = m_transforms.find(entity.id);
+			return &m_transforms.at(entity.id);
+		}
 
-			if (it == m_transforms.end())
-			{
-				return nullptr;
-			}
+		MeshRendererComponent* Scene::GetMeshRenderer(Entity entity)
+		{
+			return &m_meshRenderers.at(entity.id);
+		}
 
-			return &it->second;
+		CameraComponent* Scene::GetCamera(Entity entity)
+		{
+			return &m_cameras.at(entity.id);
+		}
+
+		DirectionalLightComponent* Scene::GetDirectionalLight(Entity entity)
+		{
+			return &m_directionalLights.at(entity.id);
+		}
+
+		PointLightComponent* Scene::GetPointLight(Entity entity)
+		{
+			return &m_pointLights.at(entity.id);
+		}
+
+		bool Scene::HasTransform(Entity entity) const
+		{
+			return m_transforms.find(entity.id) != m_transforms.end();
+		}
+
+		bool Scene::HasMeshRenderer(Entity entity) const
+		{
+			return m_meshRenderers.find(entity.id) != m_meshRenderers.end();
+		}
+
+		bool Scene::HasCamera(Entity entity) const
+		{
+			return m_cameras.find(entity.id) != m_cameras.end();
+		}
+
+		bool Scene::HasDirectionalLight(Entity entity) const
+		{
+			return m_directionalLights.find(entity.id) != m_directionalLights.end();
+		}
+
+		bool Scene::HasPointLight(Entity entity) const
+		{
+			return m_pointLights.find(entity.id) != m_pointLights.end();
+		}
+
+		bool Scene::IsValid(Entity entity) const
+		{
+			return std::find_if(
+				m_entities.begin(),
+				m_entities.end(),
+				[&](Entity e) { return e.id == entity.id; }) != m_entities.end();
+		}
+
+		const std::vector<Entity>& Scene::GetEntities() const
+		{
+			return m_entities;
 		}
 
 		const TransformComponent* Scene::GetTransform(Entity entity) const

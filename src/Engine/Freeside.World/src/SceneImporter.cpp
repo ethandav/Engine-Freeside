@@ -31,6 +31,8 @@ namespace Freeside::Scene
             lastRoot = ImportNode(scene, assets, model, rootNodeIndex, Entity::Invalid());
         }
 
+        lastRoot.name = "Imported Model";
+
         return lastRoot;
     }
 
