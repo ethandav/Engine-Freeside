@@ -20,7 +20,10 @@ namespace efg::d3d12
 	public:
 		void Initialize(const Freeside::RendererDesc& desc) override;
 		void Shutdown() override;
-		void Render(const FramePacket& scene) override;
+		void RenderAsync(const FramePacket& scene) override;
+		void RenderImmediate(const FramePacket& scene) override;
+		void StartFrame() override;
+		void EndFrame() override;
 		Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh) override;
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) override;
 		Freeside::TextureHandle CreateMaterialTexture2d(const Freeside::TextureDesc& texture) override;
@@ -37,6 +40,8 @@ namespace efg::d3d12
 		D3D12RenderPassSystem m_passes = {};
 		RenderTargets m_renderTargets = {};
 		RenderQueue m_renderQueue = {};
+
+		FrameContext m_currentFrameContext = {};
 
 #if defined(EFG_ENABLE_IMGUI)
 		void BeginImguiFrame();

@@ -30,6 +30,8 @@ namespace Freeside
 		void Shutdown();
 		void SubmitFrame(efg::FramePacket sceneRenderData);
 		void RenderImmediate(efg::FramePacket sceneRenderData);
+		void StartFrame();
+		void EndFrame();
 		MeshHandle CreateMesh(const MeshDesc& mesh);
 		MaterialHandle RegisterMaterial(const MaterialDesc& mat);
 		TextureHandle CreateMaterialTexture2d(const TextureDesc& texture);

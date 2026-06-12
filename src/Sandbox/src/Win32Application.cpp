@@ -67,8 +67,15 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 		Freeside::InputState input = window.PollInput();
 
+#if defined(EFG_RENDER_IMMEDIATE)
+		renderer.StartFrame();
+#endif
 		sceneManager.Update(input, deltaTime);
 		sceneManager.RenderScene(frameId);
+
+#if defined(EFG_RENDER_IMMEDIATE)
+		renderer.EndFrame();
+#endif
 	}
 }
 

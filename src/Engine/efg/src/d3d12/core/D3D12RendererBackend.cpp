@@ -135,16 +135,37 @@ namespace efg::d3d12
 #endif
     }
 
-    void D3D12RendererBackend::Render(const FramePacket& scene)
+    void D3D12RendererBackend::RenderAsync(const FramePacket& scene)
     {
         FrameContext frameCtx = m_frame.BeginFrame(&m_renderQueue);
         m_passes.Execute(scene, frameCtx, m_renderQueue);
 #if defined(EFG_ENABLE_IMGUI)
         BeginImguiFrame();
-        ImGui::ShowDemoWindow();
         RenderImguiFrame();
 #endif
         m_frame.EndFrame(frameCtx, m_renderTargets);
+    }
+
+    void D3D12RendererBackend::RenderImmediate(const FramePacket& scene)
+    {
+        m_passes.Execute(scene, m_currentFrameContext, m_renderQueue);
+    }
+
+    void D3D12RendererBackend::StartFrame()
+    {
+        m_currentFrameContext = m_frame.BeginFrame(&m_renderQueue);
+#if defined(EFG_ENABLE_IMGUI)
+        BeginImguiFrame();
+#endif
+    }
+
+    void D3D12RendererBackend::EndFrame()
+    {
+#if defined(EFG_ENABLE_IMGUI)
+        RenderImguiFrame();
+#endif
+        m_frame.EndFrame(m_currentFrameContext, m_renderTargets);
+        m_currentFrameContext = {};
     }
 
     Freeside::MeshHandle D3D12RendererBackend::CreateMesh(const Freeside::MeshDesc& mesh)

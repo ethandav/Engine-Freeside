@@ -51,7 +51,17 @@ namespace Freeside
 
     void Renderer::RenderImmediate(efg::FramePacket sceneRenderData)
     {
-        m_backend->Render(sceneRenderData);
+        m_backend->RenderImmediate(sceneRenderData);
+    }
+
+    void Renderer::StartFrame()
+    {
+        m_backend->StartFrame();
+    }
+
+    void Renderer::EndFrame()
+    {
+        m_backend->EndFrame();
     }
 
     MeshHandle Renderer::CreateMesh(const MeshDesc& mesh)

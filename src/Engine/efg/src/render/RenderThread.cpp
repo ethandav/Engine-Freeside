@@ -53,7 +53,7 @@ namespace efg
                 m_hasSpaceCv.notify_one();
             }
 
-            m_backend->Render(sceneData);
+            m_backend->RenderAsync(sceneData);
         }
 
         //m_backend->WaitForGPU();
