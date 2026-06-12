@@ -74,7 +74,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 #endif
 
 #if defined(FREESIDE_EDITOR)
-		editorUi.Update();
+		editorUi.Draw(sceneManager);
 #endif
 
 		sceneManager.Update(input, deltaTime);

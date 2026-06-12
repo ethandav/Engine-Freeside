@@ -7,8 +7,20 @@ namespace Freeside::Editor
 		m_renderer = renderer;
 	}
 
-	void EditorInterface::Update()
+	void EditorInterface::Draw(Scene::SceneManager& sceneManager)
 	{
 		ImGui::ShowDemoWindow();
+	}
+
+	void EditorInterface::DrawEntityHierarchy(Scene::Scene& scene)
+	{
+	}
+
+	void EditorInterface::DrawInspector(Scene::Scene& scene)
+	{
+	}
+
+	void EditorInterface::DrawAddComponentMenu(Scene::Scene& scene, Entity entity)
+	{
 	}
 }
