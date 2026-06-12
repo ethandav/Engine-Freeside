@@ -35,7 +35,11 @@ namespace Freeside
 				return;
 
 			efg::FramePacket framePacket = m_activeScene->BuildFramePacket(frameId);
+#if defined(EFG_RENDER_IMMEDIATE)
+			m_renderer->RenderImmediate(framePacket);
+#else
 			m_renderer->SubmitFrame(std::move(framePacket));
+#endif
 		}
 
 		void SceneManager::Update(InputState input, const float deltaTime)

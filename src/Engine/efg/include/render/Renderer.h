@@ -29,10 +29,14 @@ namespace Freeside
 		float GetRendererAspectRatio();
 		void Shutdown();
 		void SubmitFrame(efg::FramePacket sceneRenderData);
+		void RenderImmediate(efg::FramePacket sceneRenderData);
 		MeshHandle CreateMesh(const MeshDesc& mesh);
 		MaterialHandle RegisterMaterial(const MaterialDesc& mat);
 		TextureHandle CreateMaterialTexture2d(const TextureDesc& texture);
 		TextureHandle CreateTextureCube(const std::array<TextureDesc, 6> faces);
+#if defined(EFG_ENABLE_IMGUI)
+		bool HandleNativeWindowMessage(void* hwnd, uint32_t message, uintptr_t wParam, intptr_t lParam, intptr_t& outResult);
+#endif
 	private:
 		std::unique_ptr<efg::d3d12::IRendererBackend> m_backend;
 		std::unique_ptr<efg::RenderThread> m_renderThread;

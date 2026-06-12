@@ -20,7 +20,29 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 	window.Create(hInstance, rendererDesc.width, rendererDesc.height, L"Ethan's Framework (for) Graphics");
 	window.Show(nCmdShow);
+#ifndef FREESIDE_EDITOR
 	window.SetCursorLocked(true);
+#endif
+
+#if defined(EFG_ENABLE_IMGUI)
+	window.SetNativeMessageHandler(
+		[&renderer](
+			void* hwnd,
+			uint32_t message,
+			uintptr_t wParam,
+			intptr_t lParam,
+			intptr_t& result)
+		{
+			return renderer.HandleNativeWindowMessage(
+				hwnd,
+				message,
+				wParam,
+				lParam,
+				result
+			);
+		}
+	);
+#endif
 
 	rendererDesc.nativeWindowHandle = window.GetHwnd();
 	renderer.Initialize(rendererDesc);

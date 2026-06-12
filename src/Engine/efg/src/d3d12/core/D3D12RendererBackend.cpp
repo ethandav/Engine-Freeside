@@ -7,6 +7,8 @@
 #include "imgui_impl_win32.h"
 
 static efg::d3d12::D3D12DescriptorContext* g_imguiDescriptorContext = nullptr;
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 #endif
 
 namespace efg::d3d12
@@ -92,6 +94,19 @@ namespace efg::d3d12
 
         ImGui_ImplWin32_Init(hwnd);
         ImGui_ImplDX12_Init(&init_info);
+    }
+
+    bool D3D12RendererBackend::HandleImguiWindowMessage(void* hwnd, uint32_t message, uintptr_t wParam, intptr_t lParam, intptr_t& outResult)
+    {
+        LRESULT result = ImGui_ImplWin32_WndProcHandler(static_cast<HWND>(hwnd), static_cast<UINT>(message), static_cast<WPARAM>(wParam), static_cast<LPARAM>(lParam));
+
+        if (result != 0)
+        {
+            outResult = static_cast<intptr_t>(result);
+            return true;
+        }
+
+        return false;
     }
 
     void D3D12RendererBackend::BeginImguiFrame()

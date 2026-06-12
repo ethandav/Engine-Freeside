@@ -20,5 +20,8 @@ namespace efg::d3d12
         virtual Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) = 0;
         virtual Freeside::TextureHandle CreateMaterialTexture2d(const Freeside::TextureDesc& texture) = 0;
         virtual Freeside::TextureHandle CreateTextureCube(const std::array<Freeside::TextureDesc, 6> faces) = 0;
+#if defined(EFG_ENABLE_IMGUI)
+        virtual bool HandleImguiWindowMessage(void* hwnd, uint32_t message, uintptr_t wParam, intptr_t lParam, intptr_t& outResult) = 0;
+#endif
     };
 }

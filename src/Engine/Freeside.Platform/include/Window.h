@@ -8,6 +8,7 @@
 
 #include <Windows.h>
 #include <string>
+#include <functional>
 
 namespace Freeside
 {
@@ -22,12 +23,16 @@ namespace Freeside
 		InputState PollInput();
 		bool IsCursorLocked() const { return m_cursorLocked; };
 		void SetCursorLocked(bool locked);
+		
+		using NativeMessageHandler = std::function<bool(HWND, UINT, WPARAM, LPARAM, LRESULT&)>;
+		void SetNativeMessageHandler(NativeMessageHandler handler);
 
 	private:
 		bool m_isOpen = false;
 		HWND m_hwnd = nullptr;
 		InputState m_input;
 		bool m_cursorLocked = false;
+		NativeMessageHandler m_nativeMessageHandler;
 
 		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 		LRESULT HandleMessage(UINT message, WPARAM wParam, LPARAM lParam);

@@ -45,6 +45,8 @@ namespace efg::d3d12
 
 		D3D12_CPU_DESCRIPTOR_HANDLE m_imguiFontSrvCpu = {};
 		D3D12_GPU_DESCRIPTOR_HANDLE m_imguiFontSrvGpu = {};
+	public:
+		bool HandleImguiWindowMessage(void* hwnd, uint32_t message, uintptr_t wParam, intptr_t lParam, intptr_t& outResult) override;
 #endif
 	};
 }

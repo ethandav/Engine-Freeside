@@ -115,6 +115,11 @@ namespace Freeside
         }
     }
 
+    void Window::SetNativeMessageHandler(NativeMessageHandler handler)
+    {
+        m_nativeMessageHandler = std::move(handler);
+    }
+
     /*
     To Implement:
     WM_SIZE
@@ -157,6 +162,16 @@ namespace Freeside
 
     LRESULT Window::HandleMessage(UINT message, WPARAM wParam, LPARAM lParam)
     {
+        if (m_nativeMessageHandler)
+        {
+            LRESULT result = 0;
+
+            if (m_nativeMessageHandler(m_hwnd, message, wParam, lParam, result))
+            {
+                return result;
+            }
+        }
+
         switch (message)
         {
         case WM_CLOSE:

@@ -49,6 +49,11 @@ namespace Freeside
         m_renderThread->Submit(std::move(sceneRenderData));
     }
 
+    void Renderer::RenderImmediate(efg::FramePacket sceneRenderData)
+    {
+        m_backend->Render(sceneRenderData);
+    }
+
     MeshHandle Renderer::CreateMesh(const MeshDesc& mesh)
     {
         return m_backend->CreateMesh(mesh);
@@ -68,4 +73,17 @@ namespace Freeside
     {
         return m_backend->CreateTextureCube(faces);
     }
+
+#if defined(EFG_ENABLE_IMGUI)
+    bool Renderer::HandleNativeWindowMessage(void* hwnd, uint32_t message, uintptr_t wParam, intptr_t lParam, intptr_t& outResult)
+    {
+        return m_backend->HandleImguiWindowMessage(
+            hwnd,
+            message,
+            wParam,
+            lParam,
+            outResult
+        );
+    }
+#endif
 }
