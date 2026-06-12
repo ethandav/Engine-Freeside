@@ -1,5 +1,6 @@
 #pragma once
 #include "..\..\..\Engine\efg\include\render\Renderer.h"
+#include "..\..\..\Editor\Freeside.EditorUI\imgui\imgui.h"
 
 namespace Freeside::Editor
 {

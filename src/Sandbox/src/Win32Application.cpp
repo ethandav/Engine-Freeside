@@ -1,6 +1,7 @@
 #include "..\include\Win32Application.h"
 #include "..\..\Engine\Freeside.Core\freeside.h"
 #include "..\..\Engine\Freeside.Core\include\controllers\FirstPersonCameraController.h"
+#include "..\..\Editor\Freeside.EditorUI\include\EditorInterface.h"
 
 #include <random>
 
@@ -11,6 +12,7 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::Renderer renderer;
 	Freeside::Scene::SceneManager sceneManager;
 	Freeside::Assets::AssetManager assets;
+	Freeside::Editor::EditorInterface editorUi;
 
 	Freeside::RendererDesc rendererDesc = {
 		nullptr,
@@ -70,6 +72,11 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 #if defined(EFG_RENDER_IMMEDIATE)
 		renderer.StartFrame();
 #endif
+
+#if defined(FREESIDE_EDITOR)
+		editorUi.Update();
+#endif
+
 		sceneManager.Update(input, deltaTime);
 		sceneManager.RenderScene(frameId);
 

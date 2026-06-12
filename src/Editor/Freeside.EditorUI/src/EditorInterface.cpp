@@ -9,5 +9,6 @@ namespace Freeside::Editor
 
 	void EditorInterface::Update()
 	{
+		ImGui::ShowDemoWindow();
 	}
 }
