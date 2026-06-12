@@ -73,5 +73,10 @@ namespace Freeside
 		{
 			LoadScene(L"scenes\\testScene\\test_scene.json");
 		}
+
+		Scene* SceneManager::GetActiveScene()
+		{
+			return m_activeScene.get();
+		}
 	}
 }

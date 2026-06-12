@@ -9,7 +9,13 @@ namespace Freeside::Editor
 
 	void EditorInterface::Draw(Scene::SceneManager& sceneManager)
 	{
-		ImGui::ShowDemoWindow();
+		Freeside::Scene::Scene* scene = sceneManager.GetActiveScene();
+
+		if (!scene)
+			return;
+
+		DrawEntityHierarchy(*scene);
+		DrawInspector(*scene);
 	}
 
 	void EditorInterface::DrawEntityHierarchy(Scene::Scene& scene)

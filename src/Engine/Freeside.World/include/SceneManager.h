@@ -28,6 +28,7 @@ namespace Freeside
 			void Update(Freeside::InputState input, const float deltaTime);
 			void TryLoadNextScene();
 			void CreateDefaultScene();
+			Scene* GetActiveScene();
 		private:
 			Renderer* m_renderer = nullptr;
 			Assets::AssetManager m_assetManager = {};
