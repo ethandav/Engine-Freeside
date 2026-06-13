@@ -22,25 +22,13 @@ namespace Freeside::Scene
         return roots;
     }
 
-    Entity SceneImporter::ImportModel(Scene& scene, Assets::AssetManager& assets, const Assets::ImportedModel& model)
-    {
-        Entity lastRoot = Entity::Invalid();
-
-        for (int rootNodeIndex : model.rootNodes)
-        {
-            lastRoot = ImportNode(scene, assets, model, rootNodeIndex, Entity::Invalid());
-        }
-
-        lastRoot.name = "Imported Model";
-
-        return lastRoot;
-    }
-
     Entity SceneImporter::ImportNode(Scene& scene, Assets::AssetManager& assets, const Assets::ImportedModel& model, int nodeIndex, Entity parent)
     {
         const Assets::ImportedNode& importedNode = model.nodes[nodeIndex];
 
-        Entity entity = scene.CreateEntity();
+        std::string nodeName = importedNode.name.empty() ? "Imported Mesh Node" : importedNode.name;
+
+        Entity entity = scene.CreateEntity(nodeName);
 
         TransformComponent& transform = scene.AddTransform(entity);
         transform.position = importedNode.position;
@@ -57,13 +45,17 @@ namespace Freeside::Scene
         if (importedNode.meshIndex >= 0)
         {
             const Assets::ImportedMesh& importedMesh = model.meshes[importedNode.meshIndex];
+            int primIndex = 0;
 
             for (const Assets::ImportedPrimitive& prim : importedMesh.primitives)
             {
                 MeshHandle meshHandle = assets.CreateMesh(prim.meshData);
                 MaterialDesc materialDesc = assets.ConvertGLTFMaterial(model.materials[prim.materialIndex], model.textures);
                 MaterialHandle materialHandle = assets.CreateMaterial(materialDesc);
-                Entity primitiveEntity = scene.CreateEntity();
+
+                std::string primitiveName = importedMesh.name.empty() ? "Primitive " + std::to_string(primIndex) : importedMesh.name + " Primitive " + std::to_string(primIndex);
+                Entity primitiveEntity = scene.CreateEntity(primitiveName);
+
                 scene.SetParent(primitiveEntity, entity);
                 TransformComponent& primitiveTransform = scene.AddTransform(primitiveEntity);
                 primitiveTransform.position = {};
@@ -72,6 +64,8 @@ namespace Freeside::Scene
                 MeshRendererComponent& renderer = scene.AddMeshRenderer(primitiveEntity);
                 renderer.mesh = meshHandle;
                 renderer.material = materialHandle;
+
+                primIndex++;
             }
         }
 

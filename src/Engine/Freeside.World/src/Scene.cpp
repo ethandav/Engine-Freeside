@@ -249,6 +249,11 @@ namespace Freeside
 			return &m_pointLights.at(entity.id);
 		}
 
+		HierarchyComponent* Scene::GetHirearchy(Entity entity)
+		{
+			return &m_hierarchyComponents.at(entity.id);
+		}
+
 		bool Scene::HasTransform(Entity entity) const
 		{
 			return m_transforms.find(entity.id) != m_transforms.end();
@@ -272,6 +277,11 @@ namespace Freeside
 		bool Scene::HasPointLight(Entity entity) const
 		{
 			return m_pointLights.find(entity.id) != m_pointLights.end();
+		}
+
+		bool Scene::HasHirearchy(Entity entity) const
+		{
+			return m_hierarchyComponents.find(entity.id) != m_hierarchyComponents.end();
 		}
 
 		bool Scene::IsValid(Entity entity) const

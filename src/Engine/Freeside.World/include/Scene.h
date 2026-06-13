@@ -47,12 +47,14 @@ namespace Freeside
             bool HasCamera(Entity entity) const;
             bool HasDirectionalLight(Entity entity) const;
             bool HasPointLight(Entity entity) const;
+            bool HasHirearchy(Entity entity) const;
 
             TransformComponent* GetTransform(Entity entity);
             MeshRendererComponent* GetMeshRenderer(Entity entity);
             CameraComponent* GetCamera(Entity entity);
             DirectionalLightComponent* GetDirectionalLight(Entity entity);
             PointLightComponent* GetPointLight(Entity entity);
+            HierarchyComponent* GetHirearchy(Entity entity);
 
             bool IsValid(Entity entity) const;
 

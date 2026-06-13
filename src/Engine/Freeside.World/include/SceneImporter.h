@@ -13,7 +13,6 @@ namespace Freeside
         {
         public:
             static std::vector<Entity> ImportModel(Scene& scene, Assets::AssetManager& assets, const Assets::ImportedModel& model, Entity parent);
-            static Entity ImportModel(Scene& scene, Assets::AssetManager& assets, const Assets::ImportedModel& model);
 
         private:
             static Entity ImportNode(Scene& scene, Assets::AssetManager& assets, const Assets::ImportedModel& model, int nodeIndex, Entity parent);

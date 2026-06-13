@@ -39,18 +39,68 @@ namespace Freeside::Editor
 
 		for (Freeside::Entity entity : scene.GetEntities())
 		{
-			std::string label = "Entity " + entity.name;
-
-			bool selected = m_state.hasSelectedEntity && m_state.selectedEntity.id == entity.id;
-
-			if (ImGui::Selectable(label.c_str(), selected))
+			if (!scene.HasHirearchy(entity) || !scene.GetHirearchy(entity)->parent.IsValid())
 			{
-				m_state.selectedEntity = entity;
-				m_state.hasSelectedEntity = true;
+				DrawEntityNode(scene, entity);
 			}
 		}
 
 		ImGui::End();
+	}
+
+	void EditorInterface::DrawEntityNode(Scene::Scene& scene, Freeside::Entity entity)
+	{
+		const bool selected =
+			m_state.hasSelectedEntity &&
+			m_state.selectedEntity.id == entity.id;
+
+		const HierarchyComponent* hierarchy = scene.GetHierarchy(entity);
+
+		const bool hasChildren =
+			hierarchy != nullptr &&
+			!hierarchy->children.empty();
+
+		ImGuiTreeNodeFlags flags =
+			ImGuiTreeNodeFlags_OpenOnArrow |
+			ImGuiTreeNodeFlags_SpanAvailWidth;
+
+		if (!hasChildren)
+		{
+			flags |= ImGuiTreeNodeFlags_Leaf;
+			flags |= ImGuiTreeNodeFlags_NoTreePushOnOpen;
+		}
+
+		if (selected)
+		{
+			flags |= ImGuiTreeNodeFlags_Selected;
+		}
+
+		std::string label = entity.name.empty()
+			? "Entity " + std::to_string(entity.id)
+			: entity.name;
+
+		bool open = ImGui::TreeNodeEx(
+			reinterpret_cast<void*>(static_cast<uintptr_t>(entity.id)),
+			flags,
+			"%s",
+			label.c_str()
+		);
+
+		if (ImGui::IsItemClicked())
+		{
+			m_state.selectedEntity = entity;
+			m_state.hasSelectedEntity = true;
+		}
+
+		if (hasChildren && open)
+		{
+			for (Freeside::Entity child : hierarchy->children)
+			{
+				DrawEntityNode(scene, child);
+			}
+
+			ImGui::TreePop();
+		}
 	}
 
 	void EditorInterface::DrawInspector(Scene::SceneManager& sceneManager, Scene::Scene& scene)

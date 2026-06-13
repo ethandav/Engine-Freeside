@@ -15,6 +15,7 @@ namespace Freeside::Editor
 
     private:
         void DrawEntityHierarchy(Scene::Scene& scene);
+        void DrawEntityNode(Scene::Scene& scene, Freeside::Entity entity);
         void DrawInspector(Scene::SceneManager& sceneManager, Scene::Scene& scene);
         void DrawAddComponentMenu(Scene::Scene& scene, Entity entity);
         void DrawTransformComponent(TransformComponent* transform);
