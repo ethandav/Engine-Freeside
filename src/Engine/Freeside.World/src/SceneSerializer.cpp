@@ -137,13 +137,15 @@ namespace Freeside::Scene
             std::string name = meshJson["name"].get<std::string>();
 
             if (name == "cube")
-                return assets.CreateMesh(Shapes::Cube().mesh);
-
+                return assets.shapes[Shapes::Types::CUBE];
             if (name == "plane")
-                return assets.CreateMesh(Shapes::Plane().mesh);
-
+                return assets.shapes[Shapes::Types::PLANE];
             if (name == "wall")
-                return assets.CreateMesh(Shapes::Wall().mesh);
+                return assets.shapes[Shapes::Types::WALL];
+            if (name == "sphere")
+                return assets.shapes[Shapes::Types::SPHERE];
+            if (name == "pyramid")
+                return assets.shapes[Shapes::Types::PYRAMID];
 
             throw std::runtime_error("Unknown builtin mesh: " + name);
         }

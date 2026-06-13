@@ -121,7 +121,10 @@ namespace efg::d3d12
             ctx.frameContext->commandContext->SetGraphicsRootConstantBufferView(static_cast<UINT>(ForwardLitRootParameter::Material), materialCbAddress);
 
             GpuDescriptorTable textureTable = ctx.services->descriptors->AllocateShaderVisibleTableFromFrameArena(ctx.frameContext->frameResource->descriptorArena, 6);
-            ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, textureTable.cpuStart, baseColorTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            if ((material.constants.materialFlags & Freeside::MaterialFlags::MaterialFlag_HasBaseColorTexture) != 0)
+            {
+                ctx.frameContext->graphicsContext->GetDevice()->CopyDescriptorsSimple(1, textureTable.cpuStart, baseColorTexture.cpuSrv, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            }
 
             if ((material.constants.materialFlags & Freeside::MaterialFlags::MaterialFlag_HasNormalTexture) != 0)
             {

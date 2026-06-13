@@ -1,10 +1,18 @@
 #include "..\include\AssetManager.h"
+#include "..\..\Freeside.Core\include\shapes\cube.h"
 
 namespace Freeside::Assets
 {
 	void AssetManager::Initialize(Renderer* renderer)
 	{
 		m_renderer = renderer;
+		CreateBuiltIns();
+	}
+
+	void AssetManager::CreateBuiltIns()
+	{
+		defaultMaterial = CreateBuiltInMaterial();
+		CreateBuiltInMeshes();
 	}
 
 	MeshHandle AssetManager::CreateMesh(MeshDesc desc)
@@ -20,13 +28,22 @@ namespace Freeside::Assets
 		return handle;
 	}
 
-	MaterialHandle AssetManager::CreateDefaultMaterial()
+	MaterialHandle AssetManager::CreateBuiltInMaterial()
 	{
 		MaterialDesc desc = MaterialDesc();
 		MaterialHandle handle = m_renderer->RegisterMaterial(desc);
 		m_registeredMaterials[handle.index] = desc;
 
 		return handle;
+	}
+
+	void AssetManager::CreateBuiltInMeshes()
+	{
+		shapes[Shapes::Types::CUBE] = CreateMesh(Shapes::Cube().mesh);
+		shapes[Shapes::Types::PYRAMID] = CreateMesh(Shapes::Pyramid().mesh);
+		shapes[Shapes::Types::SPHERE] = CreateMesh(Shapes::Sphere().mesh);
+		shapes[Shapes::Types::WALL] = CreateMesh(Shapes::Wall().mesh);
+		shapes[Shapes::Types::PLANE] = CreateMesh(Shapes::Plane().mesh);
 	}
 
 	MaterialDesc* AssetManager::GetRegisteredMaterial(MaterialHandle handle)

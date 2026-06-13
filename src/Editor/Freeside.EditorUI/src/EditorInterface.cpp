@@ -1,5 +1,6 @@
 #include "..\include\EditorInterface.h"
 #include "..\..\..\Engine\Freeside.Platform\include\FileDialog.h"
+#include "..\..\..\Engine\Freeside.Core\include\shapes\shapes.h"
 
 namespace Freeside::Editor
 {
@@ -28,7 +29,7 @@ namespace Freeside::Editor
 
 		if (ImGui::Button("+ Entity"))
 		{
-			Freeside::Entity entity = scene.CreateEntity();
+			Freeside::Entity entity = scene.CreateEntity("New Entity");
 			scene.AddTransform(entity);
 
 			m_state.selectedEntity = entity;
@@ -106,7 +107,7 @@ namespace Freeside::Editor
 			ImGui::OpenPopup("AddComponentPopup");
 		}
 
-		DrawAddComponentMenu(scene, entity);
+		DrawAddComponentMenu(sceneManager, scene, entity);
 
 		ImGui::Separator();
 
@@ -158,7 +159,7 @@ namespace Freeside::Editor
 			{
 				if (ImGui::Button("Create Default Material"))
 				{
-					meshRenderer->material = sceneManager.Assets()->CreateDefaultMaterial();
+					meshRenderer->material = sceneManager.Assets()->CreateBuiltInMaterial();
 				}
 			}
 			else
@@ -367,7 +368,7 @@ namespace Freeside::Editor
 		}
 	}
 
-	void EditorInterface::DrawAddComponentMenu(Freeside::Scene::Scene& scene, Freeside::Entity entity)
+	void EditorInterface::DrawAddComponentMenu(Scene::SceneManager& sceneManager, Scene::Scene& scene, Freeside::Entity entity)
 	{
 		if (ImGui::BeginPopup("AddComponentPopup"))
 		{
@@ -383,7 +384,9 @@ namespace Freeside::Editor
 			{
 				if (ImGui::MenuItem("Mesh Renderer"))
 				{
-					scene.AddMeshRenderer(entity);
+					MeshRendererComponent& newMeshRenderer = scene.AddMeshRenderer(entity);
+					newMeshRenderer.material = sceneManager.Assets()->defaultMaterial;
+					newMeshRenderer.mesh = sceneManager.Assets()->shapes[Shapes::Types::CUBE];
 				}
 			}
 
