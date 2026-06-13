@@ -10,7 +10,7 @@ namespace Freeside::Editor
     class EditorInterface
     {
     public:
-        void Initialize(Renderer* renderer);
+        void Initialize(Renderer* renderer, void* hwnd);
         void Draw(Scene::SceneManager& sceneManager);
 
     private:
@@ -31,6 +31,7 @@ namespace Freeside::Editor
         };
 
         Renderer* m_renderer = nullptr;
+        void* m_ownerWindow = nullptr;
         EditorState m_state;
     };
 }

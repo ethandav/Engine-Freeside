@@ -101,4 +101,11 @@ namespace Freeside
         );
     }
 #endif
+
+#if defined(FREESIDE_EDITOR)
+    uint64_t Renderer::GetTextureID(TextureHandle handle)
+    {
+        return m_backend->GetTextureID(handle);
+    }
+#endif
 }

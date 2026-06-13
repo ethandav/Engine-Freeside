@@ -180,9 +180,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\FileDialog.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\FileDialog.h" />
     <ClInclude Include="include\InputState.h" />
     <ClInclude Include="include\Window.h" />
     <ClInclude Include="Timer.h" />

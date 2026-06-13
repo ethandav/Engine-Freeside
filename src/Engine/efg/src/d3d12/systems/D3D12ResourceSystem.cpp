@@ -218,4 +218,11 @@ namespace efg::d3d12
             m_uploadContext.RetireCompletedUploads();
         }
     }
+
+#if defined(FREESIDE_EDITOR)
+    uint64_t D3D12ResourceSystem::GetTextureID(Freeside::TextureHandle handle)
+    {
+        return m_textureLibrary.GetTexture2DByHandle(handle).gpuSrv.ptr;
+    }
+#endif
 }

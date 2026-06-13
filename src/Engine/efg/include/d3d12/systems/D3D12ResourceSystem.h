@@ -33,6 +33,10 @@ namespace efg::d3d12
 		Freeside::TextureHandle CreateTextureCube(const std::array<Freeside::TextureDesc, 6> faces);
 		void ProcessUploads(D3D12DirectCommandContext* commandContext);
 
+#if defined(FREESIDE_EDITOR)
+		uint64_t GetTextureID(Freeside::TextureHandle handle);
+#endif
+
 	private:
 		D3D12ResourceFactory m_resourceFactory = {};
 		D3D12BufferFactory m_bufferFactory = {};

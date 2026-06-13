@@ -192,4 +192,11 @@ namespace efg::d3d12
     {
         return m_resources.CreateTextureCube(faces);
     }
+
+#if defined(FREESIDE_EDITOR)
+    uint64_t D3D12RendererBackend::GetTextureID(Freeside::TextureHandle handle)
+    {
+        return m_resources.GetTextureID(handle);
+    }
+#endif
 }

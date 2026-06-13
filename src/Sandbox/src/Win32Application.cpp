@@ -12,7 +12,6 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	Freeside::Renderer renderer;
 	Freeside::Scene::SceneManager sceneManager;
 	Freeside::Assets::AssetManager assets;
-	Freeside::Editor::EditorInterface editorUi;
 
 	Freeside::RendererDesc rendererDesc = {
 		nullptr,
@@ -24,6 +23,11 @@ void Application::Run(HINSTANCE hInstance, int nCmdShow)
 	window.Show(nCmdShow);
 #ifndef FREESIDE_EDITOR
 	window.SetCursorLocked(true);
+#endif
+
+#if defined(FREESIDE_EDITOR)
+	Freeside::Editor::EditorInterface editorUi;
+	editorUi.Initialize(&renderer, window.GetHwnd());
 #endif
 
 #if defined(EFG_ENABLE_IMGUI)

@@ -157,7 +157,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;EFG_ENABLE_PIX;EFG_ENABLE_IMGUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;EFG_ENABLE_PIX;EFG_ENABLE_IMGUI;FREESIDE_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>..\..\Editor\Freeside.EditorUI\imgui\backends;..\..\Editor\Freeside.EditorUI\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

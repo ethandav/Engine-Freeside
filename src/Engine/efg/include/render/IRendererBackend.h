@@ -27,5 +27,8 @@ namespace efg::d3d12
 #if defined(EFG_ENABLE_IMGUI)
         virtual bool HandleImguiWindowMessage(void* hwnd, uint32_t message, uintptr_t wParam, intptr_t lParam, intptr_t& outResult) = 0;
 #endif
+#if defined(FREESIDE_EDITOR)
+        virtual uint64_t GetTextureID(Freeside::TextureHandle handle) = 0;
+#endif
     };
 }

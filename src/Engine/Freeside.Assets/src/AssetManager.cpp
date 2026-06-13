@@ -120,4 +120,11 @@ namespace Freeside::Assets
 
         return dst;
     }
+
+#if defined(FREESIDE_EDITOR)
+	uint64_t AssetManager::GetTextureID(TextureHandle handle)
+	{
+		return m_renderer->GetTextureID(handle);
+	}
+#endif
 }

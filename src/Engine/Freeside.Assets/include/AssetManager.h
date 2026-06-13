@@ -27,6 +27,10 @@ namespace Freeside::Assets
 		TextureHandle CreateTexture(const TextureDesc& desc);
 		TextureHandle CreateTextureCube(const std::array<TextureDesc, 6> faces);
 		MaterialDesc ConvertGLTFMaterial(const ImportedMaterial& src, const std::vector<TextureDesc>& textures);
+
+#if defined(FREESIDE_EDITOR)
+		uint64_t GetTextureID(TextureHandle handle);
+#endif
 	private:
 
 		Renderer* m_renderer = nullptr;

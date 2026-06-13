@@ -40,6 +40,9 @@ namespace Freeside
 #if defined(EFG_ENABLE_IMGUI)
 		bool HandleNativeWindowMessage(void* hwnd, uint32_t message, uintptr_t wParam, intptr_t lParam, intptr_t& outResult);
 #endif
+#if defined(FREESIDE_EDITOR)
+		uint64_t GetTextureID(TextureHandle handle);
+#endif
 	private:
 		std::unique_ptr<efg::d3d12::IRendererBackend> m_backend;
 		std::unique_ptr<efg::RenderThread> m_renderThread;

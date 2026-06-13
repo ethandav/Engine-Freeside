@@ -30,6 +30,10 @@ namespace efg::d3d12
 		Freeside::TextureHandle CreateMaterialTexture2d(const Freeside::TextureDesc& texture) override;
 		Freeside::TextureHandle CreateTextureCube(const std::array<Freeside::TextureDesc, 6> faces) override;
 
+#if defined(FREESIDE_EDITOR)
+		uint64_t GetTextureID(Freeside::TextureHandle handle) override;
+#endif
+
 	private:
 		void CreateRenderTargets(uint32_t width, uint32_t height);
 		void InitializeD3D12Systems(const Freeside::RendererDesc& desc);
