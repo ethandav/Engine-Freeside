@@ -13,6 +13,7 @@ namespace efg::d3d12
     public:
         Freeside::MaterialHandle RegisterMaterial(const Material& material);
         const Material& GetMaterialByHandle(Freeside::MaterialHandle handle) const;
+        void UpdateMaterial(Freeside::MaterialHandle handle, Material material);
         Material GetDefaultMaterial();
     private:
         std::vector<Material> m_materials = {};

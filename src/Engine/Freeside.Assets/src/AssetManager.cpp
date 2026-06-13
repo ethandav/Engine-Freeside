@@ -14,7 +14,30 @@ namespace Freeside::Assets
 
 	MaterialHandle AssetManager::CreateMaterial(MaterialDesc desc)
 	{
-		return m_renderer->RegisterMaterial(desc);
+		MaterialHandle handle = m_renderer->RegisterMaterial(desc);
+		m_registeredMaterials[handle.index] = desc;
+
+		return handle;
+	}
+
+	MaterialHandle AssetManager::CreateDefaultMaterial()
+	{
+		MaterialDesc desc = MaterialDesc();
+		MaterialHandle handle = m_renderer->RegisterMaterial(desc);
+		m_registeredMaterials[handle.index] = desc;
+
+		return handle;
+	}
+
+	MaterialDesc* AssetManager::GetRegisteredMaterial(MaterialHandle handle)
+	{
+		return &m_registeredMaterials[handle.index];
+	}
+
+	void AssetManager::UpdateMaterial(MaterialHandle handle)
+	{
+		MaterialDesc* desc = GetRegisteredMaterial(handle);
+		m_renderer->UpdateMaterial(handle, *desc);
 	}
 
 	ImportedModel AssetManager::ImportModel(const std::filesystem::path& path)

@@ -29,6 +29,10 @@ namespace Freeside
 			m_sceneQueue.push_back(SceneLoadRequest{ path });
 		}
 
+		void SceneManager::SaveActiveScene(const std::filesystem::path& path)
+		{
+		}
+
 		void SceneManager::RenderScene(uint64_t frameId)
 		{
 			if (!m_activeScene || !m_renderer)
@@ -74,9 +78,25 @@ namespace Freeside
 			LoadScene(L"scenes\\testScene\\test_scene.json");
 		}
 
+		void SceneManager::CreateBlankScene()
+		{
+			m_activeScene = std::make_unique<Scene>(L"Untitled");
+
+			Entity camera = m_activeScene->CreateEntity();
+			m_activeScene->AddTransform(camera);
+			m_activeScene->AddCamera(camera);
+		}
+
 		Scene* SceneManager::GetActiveScene()
 		{
 			return m_activeScene.get();
 		}
+
+#if defined(FREESIDE_EDITOR)
+		Assets::AssetManager* SceneManager::Assets()
+		{
+			return &m_assetManager;
+		}
 	}
+#endif
 }

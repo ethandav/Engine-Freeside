@@ -8,6 +8,7 @@
 #include "MaterialTypes.h"
 
 #include <array>
+#include <unordered_map>
 
 namespace Freeside::Assets
 {
@@ -17,6 +18,9 @@ namespace Freeside::Assets
 		void Initialize(Renderer* renderer);
 		MeshHandle CreateMesh(MeshDesc desc);
 		MaterialHandle CreateMaterial(MaterialDesc desc);
+		MaterialHandle CreateDefaultMaterial();
+		MaterialDesc* GetRegisteredMaterial(MaterialHandle handle);
+		void UpdateMaterial(MaterialHandle handle);
 		ImportedModel ImportModel(const std::filesystem::path& path);
 		TextureHandle CreateTextureFromImagePath(const std::filesystem::path& path);
 		TextureHandle CreateSkyboxFromImagePaths(const std::array<std::wstring, 6>& paths);
@@ -28,5 +32,7 @@ namespace Freeside::Assets
 		Renderer* m_renderer = nullptr;
 		ModelImporter m_modelImporter;
 		ImageLoader m_imageLoader;
+
+		std::unordered_map<uint32_t, MaterialDesc> m_registeredMaterials = {};
 	};
 }

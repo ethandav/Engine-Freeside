@@ -167,7 +167,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;EFG_ENABLE_IMGUI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;EFG_ENABLE_IMGUI;FREESIDE_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)/imgui/backends;$(ProjectDir)/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -211,6 +211,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\EditorInterface.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Engine\Freeside.World\Freeside.World.vcxproj">
+      <Project>{80132a87-973a-4f0d-aa73-38b46693166c}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

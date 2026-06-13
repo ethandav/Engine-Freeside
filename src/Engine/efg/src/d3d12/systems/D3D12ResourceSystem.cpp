@@ -93,7 +93,7 @@ namespace efg::d3d12
         */
     }
 
-    Freeside::MaterialHandle D3D12ResourceSystem::RegisterMaterial(const Freeside::MaterialDesc& desc)
+    Material D3D12ResourceSystem::CreateMaterial(const Freeside::MaterialDesc& desc)
     {
         Material material = {};
 
@@ -151,7 +151,17 @@ namespace efg::d3d12
 
         material.constants = constants;
 
-        return m_materialLibrary.RegisterMaterial(material);
+        return material;
+    }
+
+    Freeside::MaterialHandle D3D12ResourceSystem::RegisterMaterial(const Freeside::MaterialDesc& desc)
+    {
+        return m_materialLibrary.RegisterMaterial(CreateMaterial(desc));
+    }
+
+    void D3D12ResourceSystem::UpdateMaterial(const Freeside::MaterialHandle& handle, const Freeside::MaterialDesc& desc)
+    {
+        m_materialLibrary.UpdateMaterial(handle, CreateMaterial(desc));
     }
 
     Freeside::MeshHandle D3D12ResourceSystem::CreateMesh(const Freeside::MeshDesc& mesh)

@@ -34,6 +34,7 @@ namespace Freeside
 		void EndFrame();
 		MeshHandle CreateMesh(const MeshDesc& mesh);
 		MaterialHandle RegisterMaterial(const MaterialDesc& mat);
+		void UpdateMaterial(const Freeside::MaterialHandle& handle, const MaterialDesc& mat);
 		TextureHandle CreateMaterialTexture2d(const TextureDesc& texture);
 		TextureHandle CreateTextureCube(const std::array<TextureDesc, 6> faces);
 #if defined(EFG_ENABLE_IMGUI)

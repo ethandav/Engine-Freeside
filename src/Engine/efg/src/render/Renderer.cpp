@@ -74,6 +74,11 @@ namespace Freeside
         return m_backend->RegisterMaterial(mat);
     }
 
+    void Renderer::UpdateMaterial(const Freeside::MaterialHandle& handle, const Freeside::MaterialDesc& mat)
+    {
+        m_backend->UpdateMaterial(handle, mat);
+    }
+
     TextureHandle Renderer::CreateMaterialTexture2d(const TextureDesc& texture)
     {
         return m_backend->CreateMaterialTexture2d(texture);

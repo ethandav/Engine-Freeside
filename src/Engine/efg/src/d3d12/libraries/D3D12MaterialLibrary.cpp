@@ -25,6 +25,11 @@ namespace efg::d3d12
 		return m_materials[handle.index];
 	}
 
+	void D3D12MaterialLibrary::UpdateMaterial(Freeside::MaterialHandle handle, Material material)
+	{
+		m_materials[handle.index] = material;
+	}
+
 	Material D3D12MaterialLibrary::GetDefaultMaterial()
 	{
 		Material material = {};

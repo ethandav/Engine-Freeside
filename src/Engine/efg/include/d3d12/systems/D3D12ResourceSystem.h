@@ -25,7 +25,9 @@ namespace efg::d3d12
 		D3D12MeshLibrary& Meshes();
 		D3D12UploadContext& UploadContext();
 		void CreateBuiltIns();
+		Material CreateMaterial(const Freeside::MaterialDesc& materialDesc);
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& materialDesc);
+		void UpdateMaterial(const Freeside::MaterialHandle& handle, const Freeside::MaterialDesc& desc);
 		Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh);
 		Freeside::TextureHandle CreateMaterialTexture2d(const Freeside::TextureDesc& textureDesc);
 		Freeside::TextureHandle CreateTextureCube(const std::array<Freeside::TextureDesc, 6> faces);

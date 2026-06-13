@@ -26,6 +26,7 @@ namespace efg::d3d12
 		void EndFrame() override;
 		Freeside::MeshHandle CreateMesh(const Freeside::MeshDesc& mesh) override;
 		Freeside::MaterialHandle RegisterMaterial(const Freeside::MaterialDesc& mat) override;
+		void UpdateMaterial(const Freeside::MaterialHandle& handle, const Freeside::MaterialDesc& mat) override;
 		Freeside::TextureHandle CreateMaterialTexture2d(const Freeside::TextureDesc& texture) override;
 		Freeside::TextureHandle CreateTextureCube(const std::array<Freeside::TextureDesc, 6> faces) override;
 
