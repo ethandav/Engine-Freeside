@@ -117,6 +117,8 @@
             "roughnessFactor": 1.0,
             "specular": [1.0, 64.0],
             "uvScale": [2.0, 2.0],
+            "heightScale": 0.015,
+            "normalScale": 2.0,
 
             "textures": {
               "baseColor": "assets/textures/floor.png",
@@ -151,6 +153,8 @@
             "roughnessFactor": 1.0,
             "specular": [1.0, 64.0],
             "uvScale": [2.0, 2.0],
+            "heightScale": 0.015,
+            "normalScale": 2.0,
 
             "textures": {
               "baseColor": "assets/textures/brick.png",
@@ -185,6 +189,8 @@
             "roughnessFactor": 1.0,
             "specular": [1.0, 64.0],
             "uvScale": [2.0, 2.0],
+            "heightScale": 0.015,
+            "normalScale": 2.0,
 
             "textures": {
               "baseColor": "assets/textures/brick.png",
@@ -219,6 +225,8 @@
             "roughnessFactor": 1.0,
             "specular": [1.0, 64.0],
             "uvScale": [2.0, 2.0],
+            "heightScale": 0.015,
+            "normalScale": 2.0,
 
             "textures": {
               "baseColor": "assets/textures/brick.png",

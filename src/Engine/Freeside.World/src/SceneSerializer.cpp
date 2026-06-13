@@ -176,6 +176,16 @@ namespace Freeside::Scene
         else
             desc.uvScale = Math::Vec2(1.0f, 1.0f);
 
+        if (materialJson.contains("normalScale"))
+            desc.normalScale = materialJson["normalScale"].get<float>();
+        else
+            desc.normalScale = 1.0f;
+
+        if (materialJson.contains("heightScale"))
+            desc.heightScale = materialJson["heightScale"].get<float>();
+        else
+            desc.heightScale = 0.015;
+
         if (materialJson.contains("textures"))
         {
             const nlohmann::json& texturesJson = materialJson["textures"];

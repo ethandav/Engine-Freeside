@@ -142,9 +142,7 @@ namespace Freeside::Editor
 		if (ImGui::TreeNode("Material"))
 		{
 			bool valueChanged = false;
-			valueChanged |= ImGui::ColorEdit4("Base Color", &material->baseColorFactor.x);
-			valueChanged |= ImGui::DragFloat("Metallic", &material->metallicFactor, 0.01f, 0.0f, 1.0f);
-			valueChanged |= ImGui::DragFloat("Roughness", &material->roughnessFactor, 0.01f, 0.0f, 1.0f);
+
 
 			static char baseColorPath[260] = {};
 			static char normalPath[260] = {};
@@ -156,27 +154,38 @@ namespace Freeside::Editor
 			{
 				uint64_t textureId = assets->GetTextureID(material->baseColorTexture);
 
-				ImGui::Image(static_cast<ImTextureID>(textureId), ImVec2(64.0f, 64.0f));
+				if(ImGui::ImageButton("BaseColorImageButton", static_cast<ImTextureID>(textureId), ImVec2(64.0f, 64.0f)))
+				{
+					auto path = Freeside::OpenFileDialog(m_ownerWindow,
+						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
+					);
+
+					if (path)
+					{
+						material->baseColorTexture = assets->CreateTextureFromImagePath(*path);
+						assets->UpdateMaterial(materialHandle);
+					}
+				}
 			}
 			else
 			{
-				ImGui::Button("Empty", ImVec2(64.0f, 64.0f));
+				if (ImGui::Button("Empty", ImVec2(64.0f, 64.0f)))
+				{
+					auto path = Freeside::OpenFileDialog(m_ownerWindow,
+						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
+					);
+
+					if (path)
+					{
+						material->baseColorTexture = assets->CreateTextureFromImagePath(*path);
+						assets->UpdateMaterial(materialHandle);
+					}
+				}
 			}
 
 			ImGui::SameLine();
 
-			if (ImGui::Button("Choose Base Color Texture"))
-			{
-				auto path = Freeside::OpenFileDialog(m_ownerWindow,
-					L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
-				);
-
-				if (path)
-				{
-					material->baseColorTexture = assets->CreateTextureFromImagePath(*path);
-					assets->UpdateMaterial(materialHandle);
-				}
-			}
+			valueChanged |= ImGui::ColorEdit4("Base Color", &material->baseColorFactor.x);
 
 			ImGui::Text("Normal Map");
 
@@ -184,27 +193,38 @@ namespace Freeside::Editor
 			{
 				uint64_t textureId = assets->GetTextureID(material->normalTexture);
 
-				ImGui::Image(static_cast<ImTextureID>(textureId), ImVec2(64.0f, 64.0f));
+				if (ImGui::ImageButton("NormalMapImageButton", static_cast<ImTextureID>(textureId), ImVec2(64.0f, 64.0f)))
+				{
+					auto path = Freeside::OpenFileDialog(m_ownerWindow,
+						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
+					);
+
+					if (path)
+					{
+						material->normalTexture = assets->CreateTextureFromImagePath(*path);
+						assets->UpdateMaterial(materialHandle);
+					}
+				}
 			}
 			else
 			{
-				ImGui::Button("Empty", ImVec2(64.0f, 64.0f));
+				if (ImGui::Button("Empty", ImVec2(64.0f, 64.0f)))
+				{
+					auto path = Freeside::OpenFileDialog(m_ownerWindow,
+						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
+					);
+
+					if (path)
+					{
+						material->normalTexture = assets->CreateTextureFromImagePath(*path);
+						assets->UpdateMaterial(materialHandle);
+					}
+				}
 			}
 
 			ImGui::SameLine();
 
-			if (ImGui::Button("Choose Normal Map Texture"))
-			{
-				auto path = Freeside::OpenFileDialog(m_ownerWindow,
-					L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
-				);
-
-				if (path)
-				{
-					material->normalTexture = assets->CreateTextureFromImagePath(*path);
-					assets->UpdateMaterial(materialHandle);
-				}
-			}
+			valueChanged |= ImGui::DragFloat("Normal Scale", &material->normalScale, 0.01f, 0.0f, 2.0f);
 
 			ImGui::Text("Height Map");
 
@@ -212,27 +232,38 @@ namespace Freeside::Editor
 			{
 				uint64_t textureId = assets->GetTextureID(material->heightTexture);
 
-				ImGui::Image(static_cast<ImTextureID>(textureId), ImVec2(64.0f, 64.0f));
+				if (ImGui::ImageButton("HeightMapImageButton", static_cast<ImTextureID>(textureId), ImVec2(64.0f, 64.0f)))
+				{
+					auto path = Freeside::OpenFileDialog(m_ownerWindow,
+						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
+					);
+
+					if (path)
+					{
+						material->heightTexture = assets->CreateTextureFromImagePath(*path);
+						assets->UpdateMaterial(materialHandle);
+					}
+				}
 			}
 			else
 			{
-				ImGui::Button("Empty", ImVec2(64.0f, 64.0f));
+				if (ImGui::Button("Empty", ImVec2(64.0f, 64.0f)))
+				{
+					auto path = Freeside::OpenFileDialog(m_ownerWindow,
+						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
+					);
+
+					if (path)
+					{
+						material->heightTexture = assets->CreateTextureFromImagePath(*path);
+						assets->UpdateMaterial(materialHandle);
+					}
+				}
 			}
 
 			ImGui::SameLine();
 
-			if (ImGui::Button("Choose Height Map Texture"))
-			{
-				auto path = Freeside::OpenFileDialog(m_ownerWindow,
-					L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
-				);
-
-				if (path)
-				{
-					material->heightTexture = assets->CreateTextureFromImagePath(*path);
-					assets->UpdateMaterial(materialHandle);
-				}
-			}
+			valueChanged |= ImGui::DragFloat("Height Scale", &material->heightScale, 0.01f, 0.0f, 0.10f);
 
 			ImGui::Text("Metallic and Roughness Texture");
 
@@ -240,27 +271,41 @@ namespace Freeside::Editor
 			{
 				uint64_t textureId = assets->GetTextureID(material->metallicRoughnessTexture);
 
-				ImGui::Image(static_cast<ImTextureID>(textureId), ImVec2(64.0f, 64.0f));
+				if (ImGui::ImageButton("MetalicRoughnessTextureImageButton", static_cast<ImTextureID>(textureId), ImVec2(64.0f, 64.0f)))
+				{
+					auto path = Freeside::OpenFileDialog(m_ownerWindow,
+						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
+					);
+
+					if (path)
+					{
+						material->metallicRoughnessTexture = assets->CreateTextureFromImagePath(*path);
+						assets->UpdateMaterial(materialHandle);
+					}
+				}
 			}
 			else
 			{
-				ImGui::Button("Empty", ImVec2(64.0f, 64.0f));
+				if (ImGui::Button("Empty", ImVec2(64.0f, 64.0f)))
+				{
+					auto path = Freeside::OpenFileDialog(m_ownerWindow,
+						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
+					);
+
+					if (path)
+					{
+						material->metallicRoughnessTexture = assets->CreateTextureFromImagePath(*path);
+						assets->UpdateMaterial(materialHandle);
+					}
+				}
 			}
 
 			ImGui::SameLine();
 
-			if (ImGui::Button("Choose Metallic and Roughness Texture"))
-			{
-				auto path = Freeside::OpenFileDialog(m_ownerWindow,
-					L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
-				);
-
-				if (path)
-				{
-					material->metallicRoughnessTexture = assets->CreateTextureFromImagePath(*path);
-					assets->UpdateMaterial(materialHandle);
-				}
-			}
+			ImGui::BeginGroup();
+			valueChanged |= ImGui::DragFloat("Metallic", &material->metallicFactor, 0.01f, 0.0f, 1.0f);
+			valueChanged |= ImGui::DragFloat("Roughness", &material->roughnessFactor, 0.01f, 0.0f, 1.0f);
+			ImGui::EndGroup();
 
 			ImGui::TreePop();
 

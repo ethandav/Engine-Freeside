@@ -22,7 +22,7 @@ float2 ApplyParallaxOcclusionMapping(float2 uv, float3 viewDirTS)
     float2 parallaxDir = viewDirTS.xy / max(abs(viewDirTS.z), 0.25f);
     parallaxDir = clamp(parallaxDir, -2.0f.xx, 2.0f.xx);
 
-    float2 deltaUV = parallaxDir * heightScale / numLayers;
+    float2 deltaUV = parallaxDir * EmissiveAndHeight.w / numLayers;
 
     float2 currentUV = uv;
     float2 previousUV = uv;
