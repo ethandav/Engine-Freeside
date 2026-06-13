@@ -258,6 +258,7 @@ namespace Freeside::Assets
         for (const tinygltf::Mesh& mesh : model.meshes)
         {
             ImportedMesh outMesh = {};
+            outMesh.name = mesh.name;
             for (const tinygltf::Primitive& primitive : mesh.primitives)
             {
                 if (primitive.mode != TINYGLTF_MODE_TRIANGLES)

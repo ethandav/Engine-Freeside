@@ -20,6 +20,7 @@ namespace Freeside::Assets
     struct ImportedMesh
     {
         std::vector<ImportedPrimitive> primitives;
+        std::string name;
     };
 
     struct ImportedNode
