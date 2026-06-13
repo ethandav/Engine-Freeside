@@ -50,19 +50,10 @@ namespace Freeside::Editor
 
 	void EditorInterface::DrawEntityNode(Scene::Scene& scene, Freeside::Entity entity)
 	{
-		const bool selected =
-			m_state.hasSelectedEntity &&
-			m_state.selectedEntity.id == entity.id;
-
+		const bool selected = m_state.hasSelectedEntity && m_state.selectedEntity.id == entity.id;
 		const HierarchyComponent* hierarchy = scene.GetHierarchy(entity);
-
-		const bool hasChildren =
-			hierarchy != nullptr &&
-			!hierarchy->children.empty();
-
-		ImGuiTreeNodeFlags flags =
-			ImGuiTreeNodeFlags_OpenOnArrow |
-			ImGuiTreeNodeFlags_SpanAvailWidth;
+		const bool hasChildren = hierarchy != nullptr && !hierarchy->children.empty();
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
 		if (!hasChildren)
 		{
@@ -75,16 +66,8 @@ namespace Freeside::Editor
 			flags |= ImGuiTreeNodeFlags_Selected;
 		}
 
-		std::string label = entity.name.empty()
-			? "Entity " + std::to_string(entity.id)
-			: entity.name;
-
-		bool open = ImGui::TreeNodeEx(
-			reinterpret_cast<void*>(static_cast<uintptr_t>(entity.id)),
-			flags,
-			"%s",
-			label.c_str()
-		);
+		std::string label = entity.name.empty() ? "Entity " + std::to_string(entity.id) : entity.name;
+		bool open = ImGui::TreeNodeEx(reinterpret_cast<void*>(static_cast<uintptr_t>(entity.id)), flags, "%s", label.c_str());
 
 		if (ImGui::IsItemClicked())
 		{
