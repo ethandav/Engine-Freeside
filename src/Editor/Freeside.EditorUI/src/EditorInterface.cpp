@@ -203,7 +203,7 @@ namespace Freeside::Editor
 			}
 			else
 			{
-				if (ImGui::Button("Empty", ImVec2(64.0f, 64.0f)))
+				if (ImGui::Button("Empty##BaseColorTexture", ImVec2(64.0f, 64.0f)))
 				{
 					auto path = Freeside::OpenFileDialog(m_ownerWindow,
 						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
@@ -242,7 +242,7 @@ namespace Freeside::Editor
 			}
 			else
 			{
-				if (ImGui::Button("Empty", ImVec2(64.0f, 64.0f)))
+				if (ImGui::Button("Empty##NormalMap", ImVec2(64.0f, 64.0f)))
 				{
 					auto path = Freeside::OpenFileDialog(m_ownerWindow,
 						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
@@ -281,7 +281,7 @@ namespace Freeside::Editor
 			}
 			else
 			{
-				if (ImGui::Button("Empty", ImVec2(64.0f, 64.0f)))
+				if (ImGui::Button("Empty##HeightMap", ImVec2(64.0f, 64.0f)))
 				{
 					auto path = Freeside::OpenFileDialog(m_ownerWindow,
 						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
@@ -320,7 +320,7 @@ namespace Freeside::Editor
 			}
 			else
 			{
-				if (ImGui::Button("Empty", ImVec2(64.0f, 64.0f)))
+				if (ImGui::Button("Empty##MetallcRoughtnessMap", ImVec2(64.0f, 64.0f)))
 				{
 					auto path = Freeside::OpenFileDialog(m_ownerWindow,
 						L"Image Files\0*.png;*.jpg;*.jpeg;*.tga;*.bmp;*.dds\0All Files\0*.*\0"
